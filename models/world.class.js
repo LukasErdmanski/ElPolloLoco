@@ -14,8 +14,11 @@ class World {
    * "The x-coordinate where the canvas BEGINS / ENDS to draw (place) objetcs."
    */
   camera_x = 0;
-  // Status bar of character energy.
-  statusBar = new StatusBar();
+  // Initialize status bars of character's health, bottles, coins and endboss' health.
+  healthBar = new StatusBar(30, 0, IMAGES_PATHS_BAR_HEALTH, 100);
+  bootlesBar = new StatusBar(30, 50, IMAGES_PATHS_BAR_BOTTLES, 0);
+  coinsBars = new StatusBar(30, 100, IMAGES_PATHS_BAR_COINS, 0);
+  endbossBar = new StatusBar(730, 0, IMAGES_PATHS_BAR_ENDBOSS, 100);
   // Array of the throwable objects in the world.
   throwableObjects = [];
   // Status if character or endboss is dead in the world.
@@ -74,16 +77,16 @@ class World {
   }
 
   /**
-   * Check if the character is colliding with any of the enemies, if so, reduce the character's energy
-   * and set the new percentage in the energy status bar.
+   * Check if the character is colliding with any of the enemies, if so, reduce the character's health
+   * and set the new percentage in the health status bar.
    */
   checkCollisions() {
     this.level.enemies.forEach((enemy) => {
       // Check, if character collides the enemy
       if (this.character.isColliding(enemy)) {
-        // Yes, reduces character's energy and set new percentage in the energy status bar..
+        // Yes, reduces character's health and set new percentage in the health status bar..
         this.character.hit();
-        this.statusBar.setPercentage(this.character.energy);
+        this.healthBar.setPercentage(this.character.health);
       }
     });
   }
@@ -118,14 +121,17 @@ class World {
     this.addObjectsToMap(this.level.backgroundObjects);
 
     /**
-     * In order for the energy status bar (as a non-movable / fixed object) to be displayed parallel to the current
+     * In order for the status bars (as a non-movable / fixed object) to be displayed parallel to the current
      * position of the character, the canvas context must first be moved by camera_x before it is displayed.
      * Then the canvas context has to be moved back bycamera_x in order to set the movable objects correctly, moved
      * according to the character's run.
      */
     this.ctx.translate(-this.camera_x, 0); // Back
     // ------ Space for fixed objects ------
-    this.addToMap(this.statusBar);
+    this.addToMap(this.healthBar);
+    this.addToMap(this.bootlesBar);
+    this.addToMap(this.coinsBars);
+    this.addToMap(this.endbossBar);
     this.ctx.translate(this.camera_x, 0); // Forwards
 
     this.addToMap(this.character);
@@ -233,7 +239,7 @@ class World {
   }
 }
 
-// TODO: 1. Weitere 3 Leisten hinzufügen wie energy status bar. --> Vielleicht 3 separate Klassen oder eine gemeinsame für alle.
+// TODO: 1. Weitere 3 Leisten hinzufügen wie health status bar. --> Vielleicht 3 separate Klassen oder eine gemeinsame für alle.
 // TODO: 2. Die Animation für DEAD des Characters verbessern --> Aktuell Character immer noch angezeigt. Kann laufen. Spiel muss beendeet werden.
 
 // 21 - Aufgaben:

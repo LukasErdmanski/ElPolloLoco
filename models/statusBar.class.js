@@ -1,32 +1,28 @@
 class StatusBar extends DrawableObject {
-  //#region Properties
-  // Storage of paths of images.
-  IMAGES = [
-    'img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png',
-    'img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png',
-    'img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
-    'img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
-    'img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
-    'img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
-  ];
+  // Storage of paths of status bar images.
+  IMAGES_PATHS_BAR = [];
+  // Current percentage of status bar.
+  percentage;
 
-  // Current percentage of status bar, initially 100.
-  percentage = 100;
-  //#endregion Properties
-
-  //#region Methods
-  constructor() {
+  /**
+   * Initializes the one of the possible status bars, character's health, bottles or coins amount and endboss' health.
+   * @param {number} x - The x coordinate of the bar.
+   * @param {number} y - The y coordinate of the bar.
+   * @param {[String]} imagePathsArr - The array of status bar image paths.
+   * @param {number} percentage - The initial percentage of the bar status to be presented.
+   */
+  constructor(x, y, imagePathsArr, percentage) {
     // Call the constructor of the super class DrawbleObject.
     super();
-    // Load images in the array property 'IMAGES.
-    this.loadImages(this.IMAGES);
-    // Set status bar position and dimensions in the canvas.
-    this.x = 30;
-    this.y = 0;
+    this.x = x;
+    this.y = y;
     this.width = 200;
     this.height = 60;
+    this.IMAGES_PATHS_BAR = imagePathsArr;
+    // Load images in the array property 'IMAGES.
+    this.loadImages(this.IMAGES_PATHS_BAR);
     // Set initially the 'pecentage' property to 100.
-    this.setPercentage(100);
+    this.setPercentage(percentage);
   }
 
   /**
@@ -37,7 +33,7 @@ class StatusBar extends DrawableObject {
     // Set the 'percentage' to the 'precentage' argument.
     this.percentage = percentage;
     // Set the local 'path' variable with the image file path from 'IMAGES' array with resolved index.
-    let path = this.IMAGES[this.resolveImageIndex()];
+    let path = this.IMAGES_PATHS_BAR[this.resolveImageIndex()];
     // Set the 'img' property with the image object from 'imageCache' array with the key 'path'.
     this.img = this.imageCache[path];
   }
@@ -53,5 +49,4 @@ class StatusBar extends DrawableObject {
      */
     return Math.trunc(this.percentage / 20);
   }
-  //#endregion Methods
 }

@@ -116,7 +116,6 @@ function hideStartScreenAndBtnShowResetBtn() {
   getElem('resetBtn').classList.remove('dNone');
 }
 
-
 /**
  * Applies the event listener for key up event to the window object and sets the property of the keyboard object (equal
  * to the held key name) as true.
@@ -142,7 +141,7 @@ window.addEventListener('keyup', (event) => {
  * @param {boolean} keyboardPropertyValue - The value to assign to the property of the keyboard object (equal to key name).
  */
 function setTrueOrFalseTheKeyboardProperty(event, keyboardPropertyValue) {
-  if (world.character.energy != 0) {
+  if (world.character.health != 0) {
     for (const keyObject in CONTROLLER_BUTTONS) {
       if (Object.hasOwnProperty.call(CONTROLLER_BUTTONS, keyObject)) {
         const keyCodeOfKeyObject = CONTROLLER_BUTTONS[keyObject].keyCode;
@@ -320,9 +319,7 @@ function pausePlayGame() {
  */
 function setStoppableInterval(fn, time) {
   let intervalId = setInterval(() => {
-    if (!pause) {
-      fn();
-    }
+    if (!pause) fn();
   }, time);
   allIntervals.push(intervalId);
 }
@@ -344,7 +341,6 @@ function stopGame() {
 
   allIntervals = [];
 }
-
 
 async function enterFullscreen() {
   fullscreenContent = getElem('content');
@@ -504,3 +500,15 @@ setScreenBtnsAsPerGameState('start');
 document.addEventListener('dead', (e) => {
   console.log(e);
 });
+
+function name(params) {
+  let abc = 42343;
+
+  cde;
+
+  if (true) {
+    let cde = 3333;
+
+    abc;
+  }
+}

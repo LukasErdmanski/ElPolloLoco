@@ -1,13 +1,17 @@
 class Character extends MovableObject {
-  height = 250;
+  x = 120;
   y = 80;
-  speed = 10;
+  width = 100;
+  height = 250;
   offset = {
     top: 95,
     left: 15,
     right: 15,
     bottom: 12,
   };
+
+  speed = 10;
+
   // Array of image paths of this class.
   IMAGES_WALKING = [
     'img/2_character_pepe/2_walk/W-21.png',

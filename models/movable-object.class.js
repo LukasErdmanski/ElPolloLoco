@@ -7,7 +7,7 @@ class MovableObject extends DrawableObject {
   acceleration = 1;
   // Variable, welche in der neuen nicht im Video benutzten Kollisionsformel verwendet wrid. Bedeutet y-Versatz. Wird wenigstens auf 0 von mir gesetzt, damit die neue besser Kollisionsformel überhaupt funktioniert.
   offsetY = 0;
-  energy = 100;
+  health = 100;
   lastHit = 0;
   dead = new Event('dead');
 
@@ -78,14 +78,14 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Reduces movable object's energy by colliding.
+   * Reduces movable object's health by colliding.
    */
   hit() {
-    this.energy -= 5;
-    // Check if the energy is zero or negative.
-    if (this.energy <= 0) {
+    this.health -= 5;
+    // Check if the health is zero or negative.
+    if (this.health <= 0) {
       // Yes, set it minimally to zero.
-      this.energy = 0;
+      this.health = 0;
     } else {
       this.lastHit = new Date().getTime();
     }
@@ -101,10 +101,10 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Returns if movable object is dead (energy amount is zero).
+   * Returns if movable object is dead (health amount is zero).
    */
   isDead() {
-    return this.energy == 0;
+    return this.health == 0;
   }
 
   playAnimation(images) {
@@ -119,13 +119,13 @@ class MovableObject extends DrawableObject {
      * --> Continously incrementation of the counter oscilating between first and last index of the given array (here 0 and 5)..
      * Assign new value for i equal to the modulo function below in this interval.
      */
-    let i = this.currentImage % images.length;
+    let i = this.currentImgIdx % images.length;
     // Assign the current path from given 'images' array according to the 'i'.
     let path = images[i];
-    // Assign new image object / element from 'imageCache' accroding the current iterated 'path' as the key.
+    // Assign new image object from 'imageCache' accroding the current iterated 'path' as the key.
     this.img = this.imageCache[path];
     // Increase the iteration counter by one.
-    this.currentImage++;
+    this.currentImgIdx++;
   }
 
   moveRight() {

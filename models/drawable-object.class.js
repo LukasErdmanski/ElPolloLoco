@@ -1,20 +1,16 @@
 class DrawableObject {
+  x;
+  y;
+  height;
+  width;
+  offset = {};
+
   // The current drawing img / parameter of the functions drawImage of the canvas context.
   img;
-  // JSON for key-value pair (key [image PATH], value [IMAGE OBJECT / ELEMENT itself]) --> Accessing the image object / element via its path / src.
+  // JSON for key-value pair (key [image PATH], value [IMAGE OBJECT itself]) --> Accessing the image object via its path / src.
   imageCache = {};
   // High counter of the itaration through the given 'images' array the in the fuction animate()
-  currentImage = 0;
-  x = 120;
-  y = 280;
-  height = 150;
-  width = 100;
-  offset = {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  };
+  currentImgIdx = 0;
 
   // loadImage('img/test.png')
 
@@ -27,6 +23,28 @@ class DrawableObject {
   loadImage(path) {
     this.img = new Image(); // this.img = document.getElementById('image') <img id="image">
     this.img.src = path;
+  }
+
+  /**
+   * Creates a new image object for each path from given array of image paths,
+   * sets the currently iterated image path to its src attribute,
+   * adds it to imageCache as a value of the key of 'path'.
+   * --> Accesing the image object from 'imageCache' object via its path / src.
+   * @param {Array} arr -The array of image paths of the drawable object.
+   */
+  loadImages(arr) {
+    arr.forEach((path) => {
+      // Create new image object.
+      let img = new Image();
+      // Assing the current image path to src attribute of the created image object.
+      img.src = path;
+
+      /**
+       * Save the created image (with the set src attribute before) as value of the key 'path'.
+       * --> Accesing the image object from 'imageCache' object via its path / src.
+       */
+      this.imageCache[path] = img;
+    });
   }
 
   /**
@@ -83,27 +101,5 @@ class DrawableObject {
       );
       ctx.stroke();
     }
-  }
-
-  /**
-   * Creates a new image object / element for each path from given array of image paths,
-   * sets the currently iterated image path to its src attribute,
-   * adds it to imageCache as a value of the key of 'path'.
-   * --> Accesing the image object / element from 'imageCache' object via its path / src.
-   * @param {Array} arr -The array of image paths of the drawable object.
-   */
-  loadImages(arr) {
-    arr.forEach((path) => {
-      // Create new image object / element.
-      let img = new Image();
-      // Assing the current image path to src attribute of the created image object / element.
-      img.src = path;
-
-      /**
-       * Save the created image (with the set src attribute before) as value of the key 'path'.
-       * --> Accesing the image object / element from 'imageCache' object via its path / src.
-       */
-      this.imageCache[path] = img;
-    });
   }
 }
