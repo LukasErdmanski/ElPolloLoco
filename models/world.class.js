@@ -23,6 +23,8 @@ class World {
   throwableObjects = [];
   // Status if character or endboss is dead in the world.
   characterOrEndboosDead = false;
+  // Current degrees by which the image has already been rotated in the canvas.
+  rotatedDegrees = 0;
 
   constructor(canvas, keyboard) {
     // Get the context (which should be presented on) for the canvas.
@@ -99,8 +101,8 @@ class World {
     if (this.character.isDead() || this.level.enemies[3].isDead()) {
       this.characterOrEndboosDead = true;
       setTimeout(() => {
-        stopGame(); // TODO: Hier DA oder ISH Programmierer fragen, ob das clean / empfohlen / richtig ist, dass eine game.js Funktion benutzt wird.
-        setScreenBtnsAsPerGameState('over');
+        // stopGame(); // TODO: Hier DA oder ISH Programmierer fragen, ob das clean / empfohlen / richtig ist, dass eine game.js Funktion benutzt wird.
+        // setScreenBtnsAsPerGameState('over');
       }, 2000); // TODO: Die Zeit am Ende hier anpassen, dass die DIEING ANIMATION vom Character oder Endboss, WIN ANIMATION vom Character oder Endboss ausreichend zu Ende abgespielt wird. Erst dann soll over screen eintretten und stopGame (clearing all intervalls).
     }
   }
@@ -183,6 +185,10 @@ class World {
       // Yes, flip the movable object image.
       this.flipImage(mo);
     }
+
+    if ((mo instanceof Character && mo.health == 0) || (mo instanceof Endboss && mo.health == 0)) {
+      this.rotateImage(mo);
+    }
     // Pasting the image to the canvas with the settings from before.
     mo.draw(this.ctx);
     // Draw rectangle around object to analyse collisions.
@@ -195,6 +201,10 @@ class World {
     if (mo.otherDirection) {
       // Yes, flip the movable object image back.
       this.flipImageBack(mo);
+    }
+
+    if ((mo instanceof Character && mo.health == 0) || (mo instanceof Endboss && mo.health == 0)) {
+      this.rotateImageBack();
     }
   }
 
@@ -237,9 +247,33 @@ class World {
     mo.x = mo.x * -1;
     this.ctx.restore();
   }
+
+  rotateImage(mo) {
+    // Save the unrotated context of the canvas.
+    this.ctx.save();
+    // Set the pivot point in the centre of the effective image taking into account the offset distances.
+    let moImgWidthMinusOffset = mo.width - mo.offset.left - mo.offset.right;
+    let moImgHeightMinusOffset = mo.height - mo.offset.top - mo.offset.bottom;
+    let moImgCenterX = mo.x + mo.offset.left + moImgWidthMinusOffset / 2;
+    let moImgCenterY = mo.y + mo.offset.top + moImgHeightMinusOffset / 2;
+    // Check if rotatedDegrees is greater or equal to 360 degrees. Yes set it to 0 degrees.
+    if (this.rotatedDegrees >= 360) this.rotatedDegrees = 0;
+    // Incrementate 'rotatedDegrees' by 10 degrees.
+    this.rotatedDegrees += 10;
+    // Move the canvas to the center of the moving object. Matrix transformation
+    this.ctx.translate(moImgCenterX, moImgCenterY);
+    // Rotate the canvas by 'rotatedDegrees'.
+    this.ctx.rotate((Math.PI / 180) * this.rotatedDegrees);
+    // Move the canvas back to the position before moving to the center of the moving object image. Matrix tranformation.
+    this.ctx.translate(-moImgCenterX, -moImgCenterY);
+  }
+
+  rotateImageBack() {
+    // Restore the unrotated context
+    this.ctx.restore();
+  }
 }
 
-// TODO: 1. Weitere 3 Leisten hinzufügen wie health status bar. --> Vielleicht 3 separate Klassen oder eine gemeinsame für alle.
 // TODO: 2. Die Animation für DEAD des Characters verbessern --> Aktuell Character immer noch angezeigt. Kann laufen. Spiel muss beendeet werden.
 
 // 21 - Aufgaben:

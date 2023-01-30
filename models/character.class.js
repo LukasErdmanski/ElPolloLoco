@@ -96,6 +96,8 @@ class Character extends MovableObject {
     // Check if the character can jump. If yes, the character jumps.
     if (this.canJump()) this.jump();
 
+    if (this.canMoveAsDead()) this.moveAsDead();
+
     /*       if (this.world.keyboard.D && !this.bottles[0].isAboveGround()) {
       this.bottles[0].throw();
       console.log('werfe');
@@ -106,8 +108,9 @@ class Character extends MovableObject {
      * the world's 'camera_x' property can be setted from here (character class) and the world is moved in parallel
      * to the character in the opposite x-direction.
      * The character should be ever placed by 100px moved from the left canvas border.
+     * Check if character is not dead. Move the world only if character is not dead.
      */
-    this.world.camera_x = -this.x + 100;
+    if (!this.isDead()) this.world.camera_x = -this.x + 100;
   }
 
   /**
@@ -146,6 +149,10 @@ class Character extends MovableObject {
     return this.world.keyboard.UP && !this.isAboveGround();
   }
 
+  canMoveAsDead() {
+    return this.isDead();
+  }
+
   /**
    * Moves the character to the right.
    */
@@ -174,6 +181,13 @@ class Character extends MovableObject {
     super.jump();
     this.jumping_sound.volume = 0.32;
     this.jumping_sound.play();
+  }
+
+  /**
+   * Moves the character as dead.
+   */
+  moveAsDead() {
+    super.moveAsDead();
   }
 
   playCharacter() {

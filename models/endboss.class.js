@@ -1,7 +1,7 @@
 class Endboss extends MovableObject {
-  height = 400;
-  width = 250;
   y = 55;
+  width = 250;
+  height = 400;
   offset = {
     top: 65,
     left: 7,
@@ -35,6 +35,7 @@ class Endboss extends MovableObject {
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGES_ALERT);
     this.x = 2500;
+    this.applyGravity();
     this.animate();
   }
 
@@ -65,6 +66,30 @@ class Endboss extends MovableObject {
         i = 0;
         this.hadFirstContact = true;
       }
+
+      this.moveEndboss();
     }, 200); // 5 fps
+
+    // CHANGING POSITION, WAY, SPEED, ACCELERATION OF CHARACTEER--> MOVING ENDBOSS
+    /**
+     * Separated changing of x-position with a higher speed than the changing of the animation images below
+     * to created more fluent movement.
+     */
+    setStoppableInterval(() => this.moveEndboss(), 1000 / 60); // 60 fps
+  }
+
+  moveEndboss() {
+    if (this.canMoveAsDead()) this.moveAsDead();
+  }
+
+  canMoveAsDead() {
+    return this.isDead();
+  }
+
+  /**
+   * Moves the endboss as dead.
+   */
+  moveAsDead() {
+    super.moveAsDead();
   }
 }

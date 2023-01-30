@@ -9,7 +9,7 @@ class MovableObject extends DrawableObject {
   offsetY = 0;
   health = 100;
   lastHit = 0;
-  dead = new Event('dead');
+  isMoveAsDeadStarted = false;
 
   /**
    * Sets the gravity to the movable object.
@@ -20,7 +20,7 @@ class MovableObject extends DrawableObject {
        * Checks if the movable object reached the ground OR has a positive y-speed (in the initial started phase of the
        * jump / throw before reaching the highest point / falling down).
        */
-      if (this.isAboveGround() || this.speedY > 0) {
+      if (this.isAboveGround() || this.speedY > 0 || this.health == 0) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
       }
@@ -38,7 +38,7 @@ class MovableObject extends DrawableObject {
       return true;
     } else {
       // No, check if the movable object is above the ground (y = 180px). Return true if it is, no if it is not.
-      return this.y < 180;
+      return this.y + this.height < 425; // TODO: Create / improver definition of the ground line for all moving objects. It should be used initially by placing the MOs. Is is the border also, where jump should FOR ALL jumping m.o end.
     }
   }
 
@@ -107,6 +107,10 @@ class MovableObject extends DrawableObject {
     return this.health == 0;
   }
 
+  isTopImgContourVisible() {
+    return this.y < 480;
+  }
+
   playAnimation(images) {
     /**
      * Walk animation.
@@ -141,5 +145,42 @@ class MovableObject extends DrawableObject {
 
   jump() {
     this.speedY = 20;
+  }
+
+  moveAsDead() {
+    if (this.isTopImgContourVisible()) {
+      console.log('in');
+
+      // Checks if character already not started to move as dead.
+      if (!this.isMoveAsDeadStarted) {
+        // No, set the state that character started to move as dead.
+        this.isMoveAsDeadStarted = true;
+        console.log('in in');
+        // Set the horizontal and vertical speed for 'jump / falling down right' as dead.
+        this.setMoveAsDeadToLeftOrRight();
+        this.speedY = 15;
+      }
+
+      // Check if the character on the ground (actually: is not about the ground.)
+      /*       if (!this.isAboveGround()) {
+        // Yes, apply futher gravity unter the ground top horizontal border.
+        this.y -= this.speedY;
+        this.speedY -= this.acceleration;
+      } */
+
+      // Move right with another speed as dead.
+      this.moveRight();
+    }
+  }
+
+  setMoveAsDeadToLeftOrRight() {
+    let moImgWidthMinusOffset = this.width - this.offset.left - this.offset.right;
+    let moImgCenterX = this.x + this.offset.left + moImgWidthMinusOffset / 2 + world.camera_x;
+
+    if (moImgCenterX > canvas.width / 2) {
+      this.speed = -3;
+    } else {
+      this.speed = 3;
+    }
   }
 }
