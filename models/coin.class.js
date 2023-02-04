@@ -1,5 +1,10 @@
 class Coin extends MovableObject {
-  // Static property accessed when setting the x and y coordinates in the 'setXY' method of Coin.
+  /**
+   * Static property, the coin diameter of 100, accessed when setting the x and y coordinates in the {@link setXY} 
+   * method of Coin.
+   * @static
+   */
+  static diameter = 100;
   width = Coin.diameter;
   height = Coin.diameter;
   offsetValue = 34;
