@@ -1,6 +1,5 @@
 class Coin extends MovableObject {
-  // Static property accessed when setting the x and y coordinates in the getXYForCoin() function of level.js. // TODO: @see setzten zu Funktion in level.js vpm Fktn getXYForCoin().
-  static diameter = 100;
+  // Static property accessed when setting the x and y coordinates in the 'setXY' method of Coin.
   width = Coin.diameter;
   height = Coin.diameter;
   offsetValue = 34;
