@@ -1,8 +1,5 @@
 let level1;
 function initLevel() {
-  // Storage for all the coins in the game.
-  let allCoins = [];
-  initSoManyCoinsInArr(36, allCoins);
   level1 = new Level(
     // enemies
     [new Chicken(), new Chicken(), new Chicken(), new Endboss()],
@@ -42,19 +39,21 @@ function initLevel() {
       new BackgroundObject('img/5_background/layers/2_second_layer/2.png', 719 * 3),
       new BackgroundObject('img/5_background/layers/1_first_layer/2.png', 719 * 3),
     ],
-    // coins
-    allCoins
+    initSoManyCoins(36)
   );
 }
 
 /**
- * Creates new coin objects and pushes them into the 'allCoins' array.
+ * Creates an array of all coins objects in the geme level
  * @param {number} amount - The amount of coins you want to create.
- * @param {Array} allCoinsArr - The array, where the given amount of coins is pushed into (all the coins in the game).
+ * @return {Array} The array, where the given amount of coins is pushed into (all the coins in the game).
  */
-function initSoManyCoinsInArr(amount, allCoinsArr) {
+function initSoManyCoins(amount) {
+  // Storage for all the coins in the game level.
+  let allCoinsArr = [];
   for (let i = 0; i < amount; i++) {
     let coin = new Coin(allCoinsArr);
     allCoinsArr.push(coin);
   }
+  return allCoinsArr;
 }
