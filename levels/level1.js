@@ -1,10 +1,8 @@
 let level1;
-
-let allCoins = [];
-
 function initLevel() {
+  // Storage for all the coins in the game.
+  let allCoins = [];
   initSoManyCoinsInArr(36, allCoins);
-  // debugger;
   level1 = new Level(
     // enemies
     [new Chicken(), new Chicken(), new Chicken(), new Endboss()],
@@ -49,9 +47,14 @@ function initLevel() {
   );
 }
 
+/**
+ * Creates new coin objects and pushes them into the 'allCoins' array.
+ * @param {number} amount - The amount of coins you want to create.
+ * @param {Array} allCoinsArr - The array, where the given amount of coins is pushed into (all the coins in the game).
+ */
 function initSoManyCoinsInArr(amount, allCoinsArr) {
   for (let i = 0; i < amount; i++) {
     let coin = new Coin(allCoinsArr);
-    allCoins.push(coin);
+    allCoinsArr.push(coin);
   }
 }

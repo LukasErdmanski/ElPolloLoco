@@ -22,6 +22,11 @@ class Coin extends MovableObject {
     this.animate(undefined, 3);
   }
 
+  /**
+   * Returns an array with x and y coordinates for the next coin in a coin arc.
+   * @param {Array} allCoinsArr - The array of all the coins that have been created.
+   * @returns {number[]} The array with the x and y coordinates of the next coin in the coin arc.
+   */
   getXY(allCoinsArr) {
     // Interator between 0 - 8
     let i = allCoinsArr.length % 9;
@@ -41,6 +46,14 @@ class Coin extends MovableObject {
     return this.setXY(i, plusOrMinusOne, lastCoinObj);
   }
 
+  /**
+   * Sets the x and y coordinates for the next coin in a coin arc.
+   * @param {number} i - The index of the coin in the array.
+   * @param {number} plusOrMinusOne - The direction memory (can be +1 or -1) to set the y-coordinate of the coins.
+   * For the first 5 coins in the row of nine it is +1, for the last four it is -1.
+   * @param {Coin} lastCoinObj - The last coin object in the array.
+   * @returns The array with the x and y coordinates of the next coin in the coin arc.
+   */
   setXY(i, plusOrMinusOne, lastCoinObj) {
     /**
      * Initialize x-coordinate for the very first coin, y-coordinate for the first one in every row (arc) of nine coins
