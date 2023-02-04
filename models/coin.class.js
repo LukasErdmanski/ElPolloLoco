@@ -15,13 +15,49 @@ class Coin extends MovableObject {
 
   checkSetImagesInterval = () => this.changeImagesSetAndCurrentImg(this.IMAGES_PATH);
 
-  constructor(x, y) {
+  constructor(allCoinsArr) {
     super().loadImage(this.IMAGES_PATH[0]);
     this.loadImages(this.IMAGES_PATH);
-    this.x = x;
-    this.y = y;
+    [this.x, this.y] = this.getXY(allCoinsArr);
     this.animate(undefined, 3);
   }
 
-  
+  getXY(allCoinsArr) {
+    // Interator between 0 - 8
+    let i = allCoinsArr.length % 9;
+    /**
+     * Initialize the direction memory (can be +1 or -1) to set the y-coordinate of the coins. For the first 5 coins in
+     * the row of nine it is +1, for the last four it is -1.
+     */
+    let plusOrMinusOne = 1;
+    /**
+     * Check if five iteration has already beed done. Yes, change direction for setting the y-coordinate of the next
+     * coins after the fourth of nine coins in a coin row (arc).
+     */
+    if (i >= 5) plusOrMinusOne = -1;
+    // Save the last coin object from the coin array.
+    let lastCoinObj = allCoinsArr[allCoinsArr.length - 1];
+    // Set x and y coordinates for the next coin in a coin arc.
+    return this.setXY(i, plusOrMinusOne, lastCoinObj);
+  }
+
+  setXY(i, plusOrMinusOne, lastCoinObj) {
+    /**
+     * Initialize x-coordinate for the very first coin, y-coordinate for the first one in every row (arc) of nine coins
+     * and the diameter value of a coin.
+     */
+    let [x, y, coinObjDiameter] = [500, 255, Coin.diameter];
+    /**
+     * Check if is the iteration for the first of nine coins in a coin row (arc) und if is not the first coin row (arc).
+     * Yes, set the x-coordinate of the first coin by 500 more than the last coin of the last coin row (arc).
+     */
+    if (i == 0 && lastCoinObj != undefined) x = lastCoinObj.x + 500;
+    // Otherwise check if there is a coin object in the array.
+    else if (lastCoinObj != undefined) {
+      // Set x and y coordinates for the next coin in a coin arc.
+      x = lastCoinObj.x + coinObjDiameter / 1.1;
+      y = lastCoinObj.y - plusOrMinusOne * (coinObjDiameter / 2);
+    }
+    return [x, y];
+  }
 }
