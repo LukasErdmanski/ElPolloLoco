@@ -11,6 +11,18 @@ class MovableObject extends DrawableObject {
   lastHit = 0;
   isMoveAsDeadStarted = false;
 
+  hasAnimatedMovementIntervall = false;
+  hasAnimatedImagesSet = false;
+
+  checkMakeMovementInterval;
+  checkSetImagesInterval;
+
+  IMAGES_WALKING = [
+    'img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+    'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+    'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
+  ];
+
   /**
    * Sets the gravity to the movable object.
    */
@@ -111,7 +123,32 @@ class MovableObject extends DrawableObject {
     return this.y < 480;
   }
 
-  playAnimation(images) {
+  /**
+   * Animates a motion of movable object changning its position and current played images every time interval.
+   * @param {number} [movementFrameRate=60] - The movement frame rate
+   * @param {number} [imgChangeFrameRate=20] - The image change frame rate
+   */
+  animate(movementFrameRate = 60, imgChangeFrameRate = 20) {
+    // Calculate time intervals for movement and changing images
+    let movementTimeInterval = 1000 / movementFrameRate;
+    let imgChangeTimeInverval = 1000 / imgChangeFrameRate;
+
+    // CHANGING POSITION OF MOVABLE OBJECT
+    // Check if `checkMakeMovementInterval` is defined before setting interval
+    if (typeof this.checkMakeMovementInterval !== 'undefined') {
+      // Yes, set interval to `movementTimeInterval`.
+      setStoppableInterval(this.checkMakeMovementInterval, movementTimeInterval);
+    }
+
+    // CHANGING POSITION OF MOVABLE OBJECT
+    // Check if `checkSetImagesInterval` is defined before setting interval
+    if (typeof this.checkSetImagesInterval !== 'undefined') {
+      // Yes, set interval to `checkSetImagesInterval`.
+      setStoppableInterval(this.checkSetImagesInterval, imgChangeTimeInverval);
+    }
+  }
+
+  changeImagesSetAndCurrentImg(currentImagesSet) {
     /**
      * Walk animation.
      *
@@ -123,9 +160,9 @@ class MovableObject extends DrawableObject {
      * --> Continously incrementation of the counter oscilating between first and last index of the given array (here 0 and 5)..
      * Assign new value for i equal to the modulo function below in this interval.
      */
-    let i = this.currentImgIdx % images.length;
+    let i = this.currentImgIdx % currentImagesSet.length;
     // Assign the current path from given 'images' array according to the 'i'.
-    let path = images[i];
+    let path = currentImagesSet[i];
     // Assign new image object from 'imageCache' accroding the current iterated 'path' as the key.
     this.img = this.imageCache[path];
     // Increase the iteration counter by one.
@@ -182,5 +219,9 @@ class MovableObject extends DrawableObject {
     } else {
       this.speed = 3;
     }
+  }
+
+  standardCurrentMovement() {
+    console.log('standarddddd movement funktion');
   }
 }

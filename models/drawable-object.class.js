@@ -1,8 +1,8 @@
 class DrawableObject {
   x;
   y;
-  height;
   width;
+  height;
   offset = {};
 
   // The current drawing img / parameter of the functions drawImage of the canvas context.
@@ -72,7 +72,9 @@ class DrawableObject {
    */
   drawFrame(ctx) {
     // Check, if the instace is a character or chicken or endboss.
-    if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+    if (this instanceof Character || this instanceof Chicken || this instanceof Endboss
+      || this instanceof Coin
+      ) {
       // Yes, draw a frame around it.
       ctx.beginPath();
       ctx.lineWidth = '5';
@@ -88,10 +90,10 @@ class DrawableObject {
    */
   draw_Offset_Frame(ctx) {
     // Check, if the instace is a character or chicken or endboss.
-    if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+    // if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
       // Yes, draw a frame around it reduced by its offset distances.
       ctx.beginPath();
-      ctx.lineWidth = '2';
+      ctx.lineWidth = '1';
       ctx.strokeStyle = 'yellow';
       ctx.rect(
         this.x + this.offset.left,
@@ -101,5 +103,5 @@ class DrawableObject {
       );
       ctx.stroke();
     }
-  }
+  // }
 }

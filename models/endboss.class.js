@@ -39,7 +39,7 @@ class Endboss extends MovableObject {
     this.animate();
   }
 
-  animate() {
+  animate2() {
     // Counter of played animation intervalls.
     let i = 0;
     setStoppableInterval(() => {
@@ -49,9 +49,9 @@ class Endboss extends MovableObject {
        * edboss width images of the 'IMAGES_ALERT' array will be showed.
        */
       if (i < this.IMAGES_WALKING.length) {
-        this.playAnimation(this.IMAGES_WALKING);
+        this.changeImagesSetAndCurrentImg(this.IMAGES_WALKING);
       } else {
-        this.playAnimation(this.IMAGES_ALERT);
+        this.changeImagesSetAndCurrentImg(this.IMAGES_ALERT);
       }
       // Increasing the counter of played animation intervalls.
       i++;

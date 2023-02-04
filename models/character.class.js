@@ -11,6 +11,7 @@ class Character extends MovableObject {
   };
 
   speed = 10;
+  coins = 0;
 
   // Array of image paths of this class.
   IMAGES_WALKING = [
@@ -53,6 +54,9 @@ class Character extends MovableObject {
   walking_sound = new Audio('audio/running.mp3');
   jumping_sound = new Audio('audio/jump.mp3');
 
+  checkMakeMovementInterval = () => this.checkMakeMovement();
+  checkSetImagesInterval = () => this.checkSetImages();
+
   constructor() {
     // Via super() wird auf die Methode, hier z.B. loadImage() der Super Klasse zugegriffen.
     super().loadImage('img/2_character_pepe/2_walk/W-21.png');
@@ -70,10 +74,15 @@ class Character extends MovableObject {
     this.animate();
   }
 
+  takeItem(itemToTake, collection) {
+    this.world.level[collection] = this.world.level[collection].filter((obj) => obj !== itemToTake);
+    this[collection]++;
+  }
+
   /**
    * Changes the character image every set interval. --> Animate a character motion in this way.
    */
-  animate() {
+  animate2() {
     // CHANGING POSITION, WAY, SPEED, ACCELERATION OF CHARACTEER--> MOVING CHARACTER
     /**
      * Separated changing of x-position with a higher speed than the changing of the animation images below
@@ -84,7 +93,7 @@ class Character extends MovableObject {
     setStoppableInterval(() => this.playCharacter(), 50); // 20 fps
   }
 
-  moveCharacter() {
+  checkMakeMovement() {
     this.walking_sound.pause();
 
     // Check if the character can move right. If yes, the character moves right.
@@ -190,16 +199,16 @@ class Character extends MovableObject {
     super.moveAsDead();
   }
 
-  playCharacter() {
+  checkSetImages() {
     if (this.isDead()) {
       // DEAD animation
-      this.playAnimation(this.IMAGES_DEAD);
+      this.changeImagesSetAndCurrentImg(this.IMAGES_DEAD);
     } else if (this.isHurt()) {
       // HURT animation
-      this.playAnimation(this.IMAGES_HURT);
+      this.changeImagesSetAndCurrentImg(this.IMAGES_HURT);
     } else if (this.isAboveGround()) {
       // JUMP animation
-      this.playAnimation(this.IMAGES_JUMPING);
+      this.changeImagesSetAndCurrentImg(this.IMAGES_JUMPING);
     } else {
       if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
         /**
@@ -207,7 +216,7 @@ class Character extends MovableObject {
          * here: change animation images
          */
         // WALK animation
-        this.playAnimation(this.IMAGES_WALKING);
+        this.changeImagesSetAndCurrentImg(this.IMAGES_WALKING);
       }
     }
   }

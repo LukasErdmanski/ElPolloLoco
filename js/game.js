@@ -2,6 +2,11 @@ let canvas;
 let world;
 let keyboard = new Keyboard();
 let allIntervals = [];
+/**
+ * Storage if the game is paused (equal to true) or playing (equal to false). As per that the given function as 
+ * argument into the function {@link setStoppableInterval} will be executed or paused.
+ * @type {boolean}
+ */
 let pause = false;
 let gameOver = true;
 const CONTROLLER_BUTTONS = [
@@ -121,7 +126,7 @@ function hideStartScreenAndBtnShowResetBtn() {
  * to the held key name) as true.
  */
 window.addEventListener('keydown', (event) => {
-  console.log(event);
+  // console.log(event);
   setTrueOrFalseTheKeyboardProperty(event, true);
 });
 
@@ -130,7 +135,7 @@ window.addEventListener('keydown', (event) => {
  * to the released key name) as false.
  */
 window.addEventListener('keyup', (event) => {
-  console.log(event);
+  // console.log(event);
   setTrueOrFalseTheKeyboardProperty(event, false);
 });
 
@@ -166,7 +171,7 @@ function setTrueOrFalseTheKeyboardProperty(event, keyboardPropertyValue) {
  * corresponding key is held. It is false if they are released.
  */
 function checkIfAddOrRemoveBtnHighlightAddDoIt(controllerButton, keyboardPropertyValue) {
-  console.log(keyboardPropertyValue);
+  // console.log(keyboardPropertyValue);
   if (keyboardPropertyValue) {
     addBtnHighlight(controllerButton);
   } else {
@@ -313,14 +318,13 @@ function pausePlayGame() {
 }
 
 /**
- * Sets a interval of the given function and time. Saves it under an id and pushes it the 'allIntervals' array.
+ * Sets a pausable/playable interval of the given function and time. Saves it under an id and pushes it the 
+ * 'allIntervals' array. The given fuction will be executed (played) or paused as per {@link pause} variable value.
  * @param {function} fn - The given function for which a interval is to set.
  * @param {number} time - The miliseconds of the interval to set.
  */
 function setStoppableInterval(fn, time) {
-  let intervalId = setInterval(() => {
-    if (!pause) fn();
-  }, time);
+  let intervalId = setInterval(() => {if (!pause) fn()}, time);
   allIntervals.push(intervalId);
 }
 
