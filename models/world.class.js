@@ -1,11 +1,13 @@
 class World {
   // In der Klasse wird kein let, const, var für die Deklaration, Initialisierung ähnlich wie bei Fuktionen verwendet.
   character = new Character();
+
   // Current set level (with its settings) for the game world.
   level = level1;
   canvas;
   // Tool box / framework to present things ('context') on canvas.
   ctx;
+  stopDrawing = false;
   // Assigned keyboard instance.
   keyboard;
   /**
@@ -17,7 +19,7 @@ class World {
   // Initialize status bars of character's health, bottles, coins and endboss' health.
   healthBar = new StatusBar(30, 0, IMAGES_PATHS_BAR_HEALTH, 100);
   bootlesBar = new StatusBar(30, 50, IMAGES_PATHS_BAR_BOTTLES, 0);
-  coinsBars = new StatusBar(30, 100, IMAGES_PATHS_BAR_COINS, 0);
+  coinsBar = new StatusBar(30, 100, IMAGES_PATHS_BAR_COINS, 0);
   endbossBar = new StatusBar(730, 0, IMAGES_PATHS_BAR_ENDBOSS, 100);
   // Array of the throwable objects in the world.
   throwableObjects = [];
@@ -53,29 +55,41 @@ class World {
   /**
    * Group of functions checking certain events in the world all the time.
    */
+
+  runInterval;
   run() {
     setStoppableInterval(() => {
-      this.checkCollisions();
-      this.checkThrowObjects();
-      this.checkIfCharacterOrEndbossDead();
-    }, 200);
+      console.log('WIEDER IM RUN INTERVALL');
+      if (!this.characterOrEndbossRemoved) {
+        this.checkCollisions();
+        this.checkRemovals();
+        this.checkIfCharacterThrownBottle();
+      } else {
+        // clearInterval(this.runInterval);
+        stopGame();
+        this.stopDrawing = true;
+        setScreenBtnsAsPerGameState('over');
+      }
+    }, 50);
   }
-
   /**
    * Checks if the keyboard key 'D' was pressed to throw throwable objects from the array.
    */
-  checkThrowObjects() {
+  checkIfCharacterThrownBottle() {
     // Checks if the keyboard key 'D' was pressed.
     if (this.keyboard.D) {
       // Yes, initialize a new throwable object with character coordinates.
-      let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+      // let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
       /**
        * Yes, puth the new initialized throwable object to the 'throwableObjects' array.
        * This 'throwableObjects' array is displayed later via the draw function. --> In this way more preasures of key 'D' / initialized
        * throwable objects can be displayed later at the same time.
        */
-      this.throwableObjects.push(bottle);
-    }
+      // this.throwableObjects.push(bottle);
+
+      let lastThrownBottle = this.character.throwBottle();
+      if (lastThrownBottle) lastThrownBottle.this.bootlesBar.setPercentage(this.character.bottlesPercentage);
+    } // TODO: WARNSINGAL KEIN BOTTLE
   }
 
   /**
@@ -83,77 +97,138 @@ class World {
    * and set the new percentage in the health status bar.
    */
   checkCollisions() {
-    this.level.enemies.forEach((enemy) => {
-      // Check, if character collides the enemy
-      if (this.character.isColliding(enemy)) {
-        // Yes, reduces character's health and set new percentage in the health status bar..
-        this.character.hit();
-        this.healthBar.setPercentage(this.character.health);
-      }
-    });
+    // CHARACTER VS. BROWN CHICKEN
+    this.checkIf_Character_IsColliding('enemies', 'isCollidingOrPressingInJumpFallingDown', 'healthBar', 'health');
+    this.checkIf_Character_IsColliding('coins', 'takeCoin', 'coinsBar', 'coinsPercentage');
+    this.checkIf_Character_IsColliding('bottlesInGround', 'takeBottle', 'bootlesBar', 'bottlesPercentage');
 
-    this.level.coins.forEach((coin) => {
-      if (this.character.isColliding(coin)) {
-        console.log('COINNNNNN COLLIDING');
-        this.character.takeItem(coin, 'coins');
-        let coinsPercentage = (this.character.coins / this.level.coins.length) * 100;
-        this.coinsBars.setPercentage(coinsPercentage);
+    this.checkIf_BottleInLFlight_IsColliding();
+  }
+
+  checkIf_Character_IsColliding(levelArrayProperty, fnToExeAfterCollision, statusBarToSet, characterPropertyToSet) {
+    let array = this.level[levelArrayProperty];
+    array.forEach((element) => {
+      if (this.character.isColliding(element)) {
+        this.character[fnToExeAfterCollision](element);
+        this[statusBarToSet].setPercentage(this.character[characterPropertyToSet]);
+        return;
       }
     });
+  }
+
+  checkIf_BottleInLFlight_IsColliding() {
+    // THROWN BOTTLE VS. GROUND --> MIT BODEN KOOLISIONSPRÜFUNG UND SCHAUEN OB DIE KOLLISIONS DURCH WURLF / FLUG ENTSTANDEN IST
+    let arrayBottlesInFlight = this.level.bottlesInFlight;
+    let arrayLevelEnemies = this.level.enemies;
+
+    for (let i = 0; i < arrayBottlesInFlight.length; i++) {
+      const bottle = arrayBottlesInFlight[i];
+      for (let j = 0; j < arrayLevelEnemies.length; j++) {
+        const collisionEnemy = arrayLevelEnemies[j];
+        if (bottle.isColliding(collisionEnemy) || bottle.isOnGroundAfterFlight()) {
+          bottle.hit();
+          break;
+        }
+      }
+    }
+  }
+
+  checkRemovals() {
+    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
+    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
+    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.character.coins);
+    this.checkIf_CharacterOrEndboss_CanBeRemoved_And_RemoveOneOfBoth();
+  }
+
+  checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(array) {
+    array.forEach((obj) => {
+      if (obj.canBeRemoved) this.removeFromLevel(obj, array);
+    });
+  }
+
+  checkIf_CharacterOrEndboss_CanBeRemoved_And_RemoveOneOfBoth() {
+    // Prepare the local variable for endboss, if it still exists, and store it under the variable.
+    let lastEnemieInLevelArray = this.level.enemies[this.level.enemies.length - 1];
+    let endboss;
+    if (lastEnemieInLevelArray instanceof Endboss) endboss = lastEnemieInLevelArray;
+    else endboss = undefined;
+
+    // Check if Endboss storaged/exists and can be removed from level enemies array.
+    if (endboss != undefined && endboss.canBeRemoved) {
+      this.removeFromLevel(endboss, this.level.enemies);
+      this.characterOrEndbossRemoved = true;
+    }
+
+    // Check if character can be removed the world.
+    if (this.character.canBeRemoved) {
+      this.removeCharacter();
+      this.characterOrEndbossRemoved = true;
+    }
   }
 
   /**
    * Checks if the character or endboss is dead. If yes, stops the game clearing ALL of running intervalls in the world
    * and set the screen screen and buttons for 'game over' state.
    */
-  checkIfCharacterOrEndbossDead() {
-    if (this.character.isDead() || this.level.enemies[3].isDead()) {
-      this.characterOrEndboosDead = true;
+  isCharacterOrEndbossRemoved_canGameBeStopped() {
+    if (this.characterOrEndbossRemoved) {
+      stopGame();
+      this.stopDrawing = true;
+      setScreenBtnsAsPerGameState('over');
+      return true;
+
+      /*    
       setTimeout(() => {
-        // stopGame(); // TODO: Hier DA oder ISH Programmierer fragen, ob das clean / empfohlen / richtig ist, dass eine game.js Funktion benutzt wird.
-        // setScreenBtnsAsPerGameState('over');
+        stopGame(); // TODO: Hier DA oder ISH Programmierer fragen, ob das clean / empfohlen / richtig ist, dass eine game.js Funktion benutzt wird.
+        setScreenBtnsAsPerGameState('over');
       }, 2000); // TODO: Die Zeit am Ende hier anpassen, dass die DIEING ANIMATION vom Character oder Endboss, WIN ANIMATION vom Character oder Endboss ausreichend zu Ende abgespielt wird. Erst dann soll over screen eintretten und stopGame (clearing all intervalls).
+    
+     */
     }
   }
 
+  // DEAD_BOTTLE;
+
   draw() {
-    // Clears canvas before new drawing.
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (!pause) {
+      // Clears canvas before new drawing.
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Move the whole canvas context by camera_x amount to left before placing the objects.
-    this.ctx.translate(this.camera_x, 0);
+      // Move the whole canvas context by camera_x amount to left before placing the objects.
+      this.ctx.translate(this.camera_x, 0);
 
-    /**
-     * Um die Variablen explizit aus dieser Klasse zu verwenden, muss mit 'this' darauf zugegriffen werden,
-     * genauso wie beim Zugriff explizit auf Klassen Funktionen.
-     *
-     * The objects are layered on top of each other on the canvas in this order.
-     */
-    this.addObjectsToMap(this.level.backgroundObjects);
+      /**
+       * Um die Variablen explizit aus dieser Klasse zu verwenden, muss mit 'this' darauf zugegriffen werden,
+       * genauso wie beim Zugriff explizit auf Klassen Funktionen.
+       *
+       * The objects are layered on top of each other on the canvas in this order.
+       */
+      this.addObjectsToMap(this.level.backgroundObjects);
+      /**
+       * In order for the status bars (as a non-movable / fixed object) to be displayed parallel to the current
+       * position of the character, the canvas context must first be moved by camera_x before it is displayed.
+       * Then the canvas context has to be moved back bycamera_x in order to set the movable objects correctly, moved
+       * according to the character's run.
+       */
+      this.ctx.translate(-this.camera_x, 0); // Back
+      // ------ Space for fixed objects ------
+      this.addToMap(this.healthBar);
+      this.addToMap(this.bootlesBar);
+      this.addToMap(this.coinsBar);
+      this.addToMap(this.endbossBar);
+      this.ctx.translate(this.camera_x, 0); // Forwards
 
-    /**
-     * In order for the status bars (as a non-movable / fixed object) to be displayed parallel to the current
-     * position of the character, the canvas context must first be moved by camera_x before it is displayed.
-     * Then the canvas context has to be moved back bycamera_x in order to set the movable objects correctly, moved
-     * according to the character's run.
-     */
-    this.ctx.translate(-this.camera_x, 0); // Back
-    // ------ Space for fixed objects ------
-    this.addToMap(this.healthBar);
-    this.addToMap(this.bootlesBar);
-    this.addToMap(this.coinsBars);
-    this.addToMap(this.endbossBar);
-    this.ctx.translate(this.camera_x, 0); // Forwards
+      this.addToMap(this.character);
 
-    this.addToMap(this.character);
+      this.addObjectsToMap(this.level.enemies);
+      this.addObjectsToMap(this.level.clouds);
+      this.addObjectsToMap(this.level.coins);
+      this.addObjectsToMap(this.level.bottlesInGround);
+      this.addObjectsToMap(this.level.bottlesInFlight);
 
-    this.addObjectsToMap(this.level.enemies);
-    this.addObjectsToMap(this.level.clouds);
-    this.addObjectsToMap(this.level.coins);
-    this.addObjectsToMap(this.throwableObjects);
-
-    // Move the whole canvas context back to the right by camera_x amount after placing the objects.
-    this.ctx.translate(-this.camera_x, 0);
+      // Move the whole canvas context back to the right by camera_x amount after placing the objects.
+      this.ctx.translate(-this.camera_x, 0);
+    }
 
     /**
      * Hack: 'this' is not recognized in requestAnimationFrame() function.
@@ -171,7 +246,11 @@ class World {
        * Hack: 'this' is not recognized here.
        * Therefore a variable 'self' containing 'this' is needed, used.
        */
-      self.draw();
+
+      if (!self.stopDrawing) {
+        self.draw();
+        console.log('DRWAN');
+      }
     });
   }
 
@@ -190,31 +269,33 @@ class World {
    * @param {Object} mo - The movable object.
    */
   addToMap(mo) {
-    // Check if the movable object has other direction
-    if (mo.otherDirection) {
-      // Yes, flip the movable object image.
-      this.flipImage(mo);
-    }
+    if (mo != undefined && mo != null) {
+      // Check if the movable object has other direction
+      if (mo.otherDirection) {
+        // Yes, flip the movable object image.
+        this.flipImage(mo);
+      }
 
-    if ((mo instanceof Character && mo.health == 0) || (mo instanceof Endboss && mo.health == 0)) {
-      this.rotateImage(mo);
-    }
-    // Pasting the image to the canvas with the settings from before.
-    mo.draw(this.ctx);
-    // Draw rectangle around object to analyse collisions.
-    mo.drawFrame(this.ctx);
+      if ((mo instanceof Character && mo.health == 0) || (mo instanceof Endboss && mo.health == 0)) {
+        this.rotateImage(mo);
+      }
+      // Pasting the image to the canvas with the settings from before.
+      mo.draw(this.ctx);
+      // Draw rectangle around object to analyse collisions.
+      mo.drawFrame(this.ctx);
 
-    // Draw rectangle around object reduced by its offset distances to analyse collisions.
-    mo.draw_Offset_Frame(this.ctx);
+      // Draw rectangle around object reduced by its offset distances to analyse collisions.
+      mo.draw_Offset_Frame(this.ctx);
 
-    // Check if the image has beed already mirroed (equal to the check if the movable object has other direction):
-    if (mo.otherDirection) {
-      // Yes, flip the movable object image back.
-      this.flipImageBack(mo);
-    }
+      // Check if the image has beed already mirroed (equal to the check if the movable object has other direction):
+      if (mo.otherDirection) {
+        // Yes, flip the movable object image back.
+        this.flipImageBack(mo);
+      }
 
-    if ((mo instanceof Character && mo.health == 0) || (mo instanceof Endboss && mo.health == 0)) {
-      this.rotateImageBack();
+      if ((mo instanceof Character && mo.health == 0) || (mo instanceof Endboss && mo.health == 0)) {
+        this.rotateImageBack();
+      }
     }
   }
 
@@ -281,5 +362,17 @@ class World {
   rotateImageBack() {
     // Restore the unrotated context
     this.ctx.restore();
+  }
+
+  removeFromLevel(objToRemove, arrOfObj) {
+    //TODO: ab hier weiter, character, endboss werden nicht gelöscht, bei objToRemove wird nur das Character/Endboss obj an sich weitergegeben, aber nicht die vairbale world.character entleert, die Reference bleibt bestehen. Vielleicht die Methode ändern
+    let index = arrOfObj.indexOf(objToRemove);
+    if (index !== -1) {
+      arrOfObj.splice(index, 1);
+    }
+  }
+
+  removeCharacter() {
+    this.character = null;
   }
 }

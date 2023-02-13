@@ -1,8 +1,9 @@
+let amountOfAllBottles = 18;
 let level1;
 function initLevel() {
   level1 = new Level(
     // enemies
-    [new Chicken(), new Chicken(), new Chicken(), new Endboss()],
+    [new ChickenNormal(), new ChickenNormal(), new ChickenNormal(), new Endboss()],
     // clouds
     [new Cloud()],
     // background objects
@@ -39,7 +40,10 @@ function initLevel() {
       new BackgroundObject('img/5_background/layers/2_second_layer/2.png', 719 * 3),
       new BackgroundObject('img/5_background/layers/1_first_layer/2.png', 719 * 3),
     ],
-    initSoManyCoins(36)
+    initSoManyItems(Coin, amountOfAllBottles),
+    initSoManyItems(Bottle, amountOfAllBottles),
+    [],
+    amountOfAllBottles
   );
 }
 
@@ -48,11 +52,11 @@ function initLevel() {
  * @param {number} amount - The amount of coins you want to create.
  * @return {Array} The array, where the given amount of coins is pushed into (all the coins in the game).
  */
-function initSoManyCoins(amount) {
+function initSoManyItems(item, amount) {
   // Storage for all the coins in the game level.
   let allCoinsArr = [];
   for (let i = 0; i < amount; i++) {
-    let coin = new Coin(allCoinsArr);
+    let coin = new item(allCoinsArr);
     allCoinsArr.push(coin);
   }
   return allCoinsArr;

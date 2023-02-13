@@ -5,6 +5,9 @@ class DrawableObject {
   height;
   offset = {};
 
+  yOffsetToGroundLine = 55;
+  yOfGround = 480 - this.yOffsetToGroundLine;
+
   // The current drawing img / parameter of the functions drawImage of the canvas context.
   img;
   // JSON for key-value pair (key [image PATH], value [IMAGE OBJECT itself]) --> Accessing the image object via its path / src.
@@ -72,9 +75,13 @@ class DrawableObject {
    */
   drawFrame(ctx) {
     // Check, if the instace is a character or chicken or endboss.
-    if (this instanceof Character || this instanceof Chicken || this instanceof Endboss
-      || this instanceof Coin
-      ) {
+    if (
+      this instanceof Character ||
+      this instanceof ChickenNormal ||
+      this instanceof Endboss ||
+      this instanceof Coin ||
+      this instanceof Bottle
+    ) {
       // Yes, draw a frame around it.
       ctx.beginPath();
       ctx.lineWidth = '5';
@@ -91,17 +98,20 @@ class DrawableObject {
   draw_Offset_Frame(ctx) {
     // Check, if the instace is a character or chicken or endboss.
     // if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
-      // Yes, draw a frame around it reduced by its offset distances.
-      ctx.beginPath();
-      ctx.lineWidth = '1';
-      ctx.strokeStyle = 'yellow';
-      ctx.rect(
-        this.x + this.offset.left,
-        this.y + this.offset.top,
-        this.width - this.offset.left - this.offset.right,
-        this.height - this.offset.top - this.offset.bottom
-      );
-      ctx.stroke();
-    }
-  // }
+    // Yes, draw a frame around it reduced by its offset distances.
+    ctx.beginPath();
+    ctx.lineWidth = '1';
+    ctx.strokeStyle = 'yellow';
+    ctx.rect(
+      this.x + this.offset.left,
+      this.y + this.offset.top,
+      this.width - this.offset.left - this.offset.right,
+      this.height - this.offset.top - this.offset.bottom
+    );
+    ctx.stroke();
+  }
+
+  setYToPositionOnGround() {
+    this.y = 480 - (this.height - this.offset.bottom) - this.yOffsetToGroundLine;
+  }
 }

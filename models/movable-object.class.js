@@ -1,6 +1,6 @@
 class MovableObject extends DrawableObject {
   // Speed of horizontal motion animation
-  speed = 0.15;
+  speedX = 0.15;
   otherDirection = false;
   // Speed and accelaration during jump / falling down.
   speedY = 0;
@@ -11,17 +11,22 @@ class MovableObject extends DrawableObject {
   lastHit = 0;
   isMoveAsDeadStarted = false;
 
-  hasAnimatedMovementIntervall = false;
-  hasAnimatedImagesSet = false;
+  check_MakeMovement_Interval_Handler;
+  check_SetImages_Interval_Handler;
 
-  checkMakeMovementInterval;
-  checkSetImagesInterval;
+  deadAnimation_Part_SetLastImg_IsOver = false;
+  deadAnimation_Part_MakeMovement_IsOver = false;
+  canBeRemoved = false;
 
-  IMAGES_WALKING = [
+  IMAGES_PATHS_DESTROYING;
+
+  IMAGES_PATHS_WALKING = [
     'img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
     'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
     'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
   ];
+
+  currentImagesSet;
 
   /**
    * Sets the gravity to the movable object.
@@ -32,7 +37,10 @@ class MovableObject extends DrawableObject {
        * Checks if the movable object reached the ground OR has a positive y-speed (in the initial started phase of the
        * jump / throw before reaching the highest point / falling down).
        */
-      if (this.isAboveGround() || this.speedY > 0 || this.health == 0) {
+      if (
+        (this.health > 0 && (this.isAboveGround() || this.speedY > 0)) ||
+        ((this instanceof Character || this instanceof Endboss) && this.isDead())
+      ) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
       }
@@ -43,15 +51,19 @@ class MovableObject extends DrawableObject {
    * Gets if the movable object is above the ground.
    * @returns {boolean} This returns true if movable object is above ground, false if not.
    */
-  isAboveGround() {
+  isAboveGround2() {
     // Check if the movable object is a throwable object.
-    if (this instanceof ThrowableObject) {
+    if (this instanceof bottle) {
       // Yes, returns true. --> Throwable object should always fall / not stop on the ground (y = 180px).
       return true;
     } else {
       // No, check if the movable object is above the ground (y = 180px). Return true if it is, no if it is not.
-      return this.y + this.height < 425; // TODO: Create / improver definition of the ground line for all moving objects. It should be used initially by placing the MOs. Is is the border also, where jump should FOR ALL jumping m.o end.
+      return this.y + this.height < this.yOfGroundLine; // TODO: Create / improver definition of the ground line for all moving objects. It should be used initially by placing the MOs. Is is the border also, where jump should FOR ALL jumping m.o end.
     }
+  }
+
+  isAboveGround() {
+    return this.y + this.height < this.yOfGround;
   }
 
   // Alte Formel, im Modul Video benutzt und erklärt.
@@ -80,6 +92,7 @@ class MovableObject extends DrawableObject {
   // Syntax: z.B. character.isColliding(chicken)
   isColliding(obj) {
     return (
+      !this.isDead() &&
       this.x + this.width - this.offset.right >= obj.x + obj.offset.left && // R -> L. Compare the right character side width left object side considering the offset distances.
       this.y + this.height - this.offset.bottom >= obj.y + obj.offset.top && // T -> B. Compare the bottom character side width top object side considering the offset distances.
       this.x + this.offset.left <= obj.x + obj.width - obj.offset.right && // L -> R. Compare the left character side width right object side considering the offset distances.
@@ -98,9 +111,8 @@ class MovableObject extends DrawableObject {
     if (this.health <= 0) {
       // Yes, set it minimally to zero.
       this.health = 0;
-    } else {
-      this.lastHit = new Date().getTime();
     }
+    this.lastHit = new Date().getTime();
   }
 
   /**
@@ -123,6 +135,12 @@ class MovableObject extends DrawableObject {
     return this.y < 480;
   }
 
+  animationInterval_Part_Check_MakeMovement_Id;
+  animationInverval_Part_ChecK_ChangingImg_Id;
+
+  animationInterval_Part_MakeMovement_IsOver = false;
+  animationInverval_Part_ChangingImg_IsOver = false;
+
   /**
    * Animates a motion of movable object changning its position and current played images every time interval.
    * @param {number} [movementFrameRate=60] - The movement frame rate
@@ -130,25 +148,78 @@ class MovableObject extends DrawableObject {
    */
   animate(movementFrameRate = 60, imgChangeFrameRate = 20) {
     // Calculate time intervals for movement and changing images
-    let movementTimeInterval = 1000 / movementFrameRate;
-    let imgChangeTimeInverval = 1000 / imgChangeFrameRate;
+    let movementTimeout = 1000 / movementFrameRate;
+    let imgChangeTimeout = 1000 / imgChangeFrameRate;
+    this.checkIf_Check_MakeMovement_Invervall_Exist_AndSetIt(movementTimeout);
+    this.checkIf_Check_SetImages_Interval_Exist_AndSetIt(imgChangeTimeout);
+    this.checkInLoopIfBothAnimationPartInvervalAreOver();
+  }
 
-    // CHANGING POSITION OF MOVABLE OBJECT
-    // Check if `checkMakeMovementInterval` is defined before setting interval
-    if (typeof this.checkMakeMovementInterval !== 'undefined') {
-      // Yes, set interval to `movementTimeInterval`.
-      setStoppableInterval(this.checkMakeMovementInterval, movementTimeInterval);
-    }
-
-    // CHANGING POSITION OF MOVABLE OBJECT
-    // Check if `checkSetImagesInterval` is defined before setting interval
-    if (typeof this.checkSetImagesInterval !== 'undefined') {
-      // Yes, set interval to `checkSetImagesInterval`.
-      setStoppableInterval(this.checkSetImagesInterval, imgChangeTimeInverval);
+  // CHANGING POSITION OF MOVABLE OBJECT
+  checkIf_Check_MakeMovement_Invervall_Exist_AndSetIt(movementTimeout) {
+    // Check if `check_MakeMovement_Interval_Handler` is not undefined before setting interval
+    if (typeof this.check_MakeMovement_Interval_Handler !== 'undefined') {
+      // Yes, set animation part interval and save its id to 'animationInterval_Part_MakeMovement_Id'.
+      this.animationInterval_Part_Check_MakeMovement_Id = setStoppableInterval(() => {
+        /**
+         * Check if the dead animation part interval = the last possible animation part interval, is not over, for the
+         * part 'Check_MakeMovement'.
+         */
+        if (!this.deadAnimation_Part_MakeMovement_IsOver) {
+          // Execute the animation part interval handler for part 'Check_MakeMovement'.
+          this.check_MakeMovement_Interval_Handler();
+        } else {
+          // Clear the animation part interval for part 'Check_MakeMovement'.
+          clearInterval(this.animationInterval_Part_Check_MakeMovement_Id);
+          // Set the storage that animation part interval for part 'Check_MakeMovement' is over.
+          this.animationInterval_Part_MakeMovement_IsOver = true;
+        }
+      }, movementTimeout);
     }
   }
 
-  changeImagesSetAndCurrentImg(currentImagesSet) {
+  // CHANGING IMAGE OF MOVABLE OBJECT
+  checkIf_Check_SetImages_Interval_Exist_AndSetIt(imgChangeTimeout) {
+    // Check if `check_SetImages_Interval_Handler` is not undefined before setting interval
+    if (typeof this.check_SetImages_Interval_Handler !== 'undefined') {
+      // Yes, set animation part interval and save its id to 'animationInverval_Part_ChecK_ChangingImg_Id'.
+      this.animationInverval_Part_ChecK_ChangingImg_Id = setStoppableInterval(() => {
+        /**
+         * Check if the dead animation part interval = the last possible animation part interval, is not over, for the
+         * part 'Check_SetImages'.
+         */
+        if (!this.deadAnimation_Part_SetLastImg_IsOver) {
+          // Execute the animation part interval handler for part 'Check_SetImages'.
+          this.check_SetImages_Interval_Handler();
+        } else {
+          // Clear the animation part interval for part 'Check_SetImages'.
+          clearInterval(this.animationInverval_Part_ChecK_ChangingImg_Id);
+          // Set the storage that animation part interval for part 'Check_SetImages' is over.
+          this.animationInverval_Part_ChangingImg_IsOver = true;
+        }
+      }, imgChangeTimeout);
+    }
+  }
+
+  checkInLoopIfBothAnimationPartInvervalAreOver() {
+    let checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id = setStoppableInterval(() => {
+      if (
+        this.animationInterval_Part_MakeMovement_IsOver == true &&
+        this.animationInverval_Part_ChangingImg_IsOver == true
+      ) {
+        this.canBeRemoved = true;
+        clearInterval(checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id);
+      }
+    }, 1000 / 60);
+  }
+
+  changeImagesSetAndCurrentImg(newCurrentImagesSet) {
+    if (this.currentImagesSet !== newCurrentImagesSet) {
+      this.currentImagesSet = newCurrentImagesSet;
+      this.currentImgIdx = 0;
+    } else {
+      this.currentImgIdx = this.currentImgIdx % this.currentImagesSet.length;
+    }
     /**
      * Walk animation.
      *
@@ -160,24 +231,27 @@ class MovableObject extends DrawableObject {
      * --> Continously incrementation of the counter oscilating between first and last index of the given array (here 0 and 5)..
      * Assign new value for i equal to the modulo function below in this interval.
      */
-    let i = this.currentImgIdx % currentImagesSet.length;
+
     // Assign the current path from given 'images' array according to the 'i'.
-    let path = currentImagesSet[i];
+    let path = this.currentImagesSet[this.currentImgIdx];
     // Assign new image object from 'imageCache' accroding the current iterated 'path' as the key.
     this.img = this.imageCache[path];
     // Increase the iteration counter by one.
-    this.currentImgIdx++;
+    if (this.currentImgIdx == this.currentImagesSet.length - 1) {
+      if (!this.isDead()) this.currentImgIdx = 0;
+      else this.deadAnimation_Part_SetLastImg_IsOver = true;
+    } else this.currentImgIdx++;
   }
 
   moveRight() {
-    this.x += this.speed;
+    this.x += this.speedX;
   }
 
   /**
    * Moves the the movable object to the left.
    */
   moveLeft() {
-    this.x -= this.speed;
+    this.x -= this.speedX;
   }
 
   jump() {
@@ -207,7 +281,7 @@ class MovableObject extends DrawableObject {
 
       // Move right with another speed as dead.
       this.moveRight();
-    }
+    } else this.deadAnimation_Part_MakeMovement_IsOver = true;
   }
 
   setMoveAsDeadToLeftOrRight() {
@@ -215,13 +289,9 @@ class MovableObject extends DrawableObject {
     let moImgCenterX = this.x + this.offset.left + moImgWidthMinusOffset / 2 + world.camera_x;
 
     if (moImgCenterX > canvas.width / 2) {
-      this.speed = -3;
+      this.speedX = -3;
     } else {
-      this.speed = 3;
+      this.speedX = 3;
     }
-  }
-
-  standardCurrentMovement() {
-    console.log('standarddddd movement funktion');
   }
 }

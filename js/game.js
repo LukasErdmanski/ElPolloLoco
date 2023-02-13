@@ -3,7 +3,7 @@ let world;
 let keyboard = new Keyboard();
 let allIntervals = [];
 /**
- * Storage if the game is paused (equal to true) or playing (equal to false). As per that the given function as 
+ * Storage if the game is paused (equal to true) or playing (equal to false). As per that the given function as
  * argument into the function {@link setStoppableInterval} will be executed or paused.
  * @type {boolean}
  */
@@ -318,14 +318,23 @@ function pausePlayGame() {
 }
 
 /**
- * Sets a pausable/playable interval of the given function and time. Saves it under an id and pushes it the 
+ * Sets a pausable/playable interval of the given function and time. Saves it under an id and pushes it the
  * 'allIntervals' array. The given fuction will be executed (played) or paused as per {@link pause} variable value.
  * @param {function} fn - The given function for which a interval is to set.
  * @param {number} time - The miliseconds of the interval to set.
  */
 function setStoppableInterval(fn, time) {
-  let intervalId = setInterval(() => {if (!pause) fn()}, time);
+  let intervalId = setInterval(() => {
+/*     console.log(intervalId);
+    let trueOrFalse = allIntervals.includes(intervalId);
+    console.log('Idex of intervalId ' + intervalId + ' is ' + trueOrFalse); */
+    if (!pause) fn();
+/*     console.log('Ende of intervalId' + intervalId);
+    trueOrFalse = allIntervals.includes(intervalId);
+    console.log('Idex of intervalId ' + intervalId + ' is ' + trueOrFalse); */
+  }, time);
   allIntervals.push(intervalId);
+  return intervalId;
 }
 
 /**
@@ -504,15 +513,3 @@ setScreenBtnsAsPerGameState('start');
 document.addEventListener('dead', (e) => {
   console.log(e);
 });
-
-function name(params) {
-  let abc = 42343;
-
-  cde;
-
-  if (true) {
-    let cde = 3333;
-
-    abc;
-  }
-}

@@ -1,13 +1,13 @@
 class Coin extends MovableObject {
   /**
-   * Static property, the coin diameter of 100, accessed when setting the x and y coordinates in the {@link setXY} 
+   * Static property, the coin diameter of 100, accessed when setting the x and y coordinates in the {@link setXY}
    * method of Coin.
    * @static
    */
-  static diameter = 100;
+  static diameter = 85;
   width = Coin.diameter;
   height = Coin.diameter;
-  offsetValue = 34;
+  offsetValue = 30;
   offset = {
     top: this.offsetValue,
     left: this.offsetValue,
@@ -15,13 +15,13 @@ class Coin extends MovableObject {
     bottom: this.offsetValue,
   };
 
-  IMAGES_PATH = ['img/8_coin/coin_1.png', 'img/8_coin/coin_2.png'];
+  IMAGES_PATHS = ['img/8_coin/coin_1.png', 'img/8_coin/coin_2.png'];
 
-  checkSetImagesInterval = () => this.changeImagesSetAndCurrentImg(this.IMAGES_PATH);
+  check_SetImages_Interval_Handler = () => this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS);
 
   constructor(allCoinsArr) {
-    super().loadImage(this.IMAGES_PATH[0]);
-    this.loadImages(this.IMAGES_PATH);
+    super().loadImage(this.IMAGES_PATHS[0]);
+    this.loadImages(this.IMAGES_PATHS);
     [this.x, this.y] = this.getXY(allCoinsArr);
     this.animate(undefined, 3);
   }

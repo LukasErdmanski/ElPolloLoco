@@ -5,5 +5,7 @@ class Keyboard {
   DOWN = false;
   // SPACE = false;
   ESC = false;
+  A = false;
+  S = false;
   D = false;
 }

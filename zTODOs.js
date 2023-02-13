@@ -21,3 +21,4 @@
 // TODO: 16.4  Den Funktionsblock z.B der IfAbfrage canMoveRight() bei der Character Klasse in eine separate moveRight() auslagern. Wenn diese separate Fn auch eine Fn mit dem gleichen Namen ausführt, d.h. z.B. moveRight() führt eine moveRight() aus der vererbenden SuperKlasse movableObject.class.js aus, dann ist diese geerbte Fn, hier moveRight(), mittels super.moveRight() (zur Differeniezrung / "Kollision" bei gleicher FunktionsNamensGebung / Fehlervermeidung) innnerhalb der separaten Fn moveRight() auszuführen.
 // TODO: 16.5  Die IfAbfrage kann auch auf eine Zeile ohne {} Klammern verkürzt werden, wenn nur ein Statement im IfAbfrageBlock vorhanden ist.
 // TODO: 17.. FINACL CHECK / ES SOLL "PERFEKT": PORTFOLIO-READY SEIN!
+// TODO: 18. Preload Funktion, dass zuerst alle Bilder geladen werden, nicht dass schwarzes Canvas mit Rechteckecken animiert wird.

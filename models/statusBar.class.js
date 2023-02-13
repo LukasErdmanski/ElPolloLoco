@@ -1,4 +1,5 @@
 class StatusBar extends DrawableObject {
+
   // Storage of paths of status bar images.
   IMAGES_PATHS_BAR = [];
   // Current percentage of status bar.
