@@ -18,15 +18,11 @@ class MovableObject extends DrawableObject {
   deadAnimation_Part_MakeMovement_IsOver = false;
   canBeRemoved = false;
 
-  IMAGES_PATHS_DESTROYING;
-
-  IMAGES_PATHS_WALKING = [
-    'img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
-    'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
-    'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
-  ];
-
   currentImagesSet;
+  world;
+  level;
+
+  canTurnAround = false;
 
   /**
    * Sets the gravity to the movable object.
@@ -244,18 +240,30 @@ class MovableObject extends DrawableObject {
   }
 
   moveRight() {
-    this.x += this.speedX;
+    // if (this.x < this.level.end_x - this.width) this.x += this.speedX;
+    // this.x += this.speedX;
+    if (this.canTurnAround) {
+      if (this.x + this.width < this.level.end_x) this.x += this.speedX;
+      else this.otherDirection = !this.otherDirection;
+    } else this.x += this.speedX;
   }
 
   /**
    * Moves the the movable object to the left.
    */
   moveLeft() {
-    this.x -= this.speedX;
+    if (this.canTurnAround) {
+      if (this.x > this.level.start_x) this.x -= this.speedX;
+      else this.otherDirection = !this.otherDirection;
+    } else this.x -= this.speedX;
+
+    // this.x -= this.speedX;
+
+    // this.x -= this.speedX;
   }
 
-  jump() {
-    this.speedY = 20;
+  jump(speedY) {
+    this.speedY = speedY;
   }
 
   moveAsDead() {
@@ -269,7 +277,7 @@ class MovableObject extends DrawableObject {
         console.log('in in');
         // Set the horizontal and vertical speed for 'jump / falling down right' as dead.
         this.setMoveAsDeadToLeftOrRight();
-        this.speedY = 15;
+        this.jump(15);
       }
 
       // Check if the character on the ground (actually: is not about the ground.)

@@ -17,6 +17,8 @@ class Character extends MovableObject {
   coinsPercentage = 0;
   timeStempOflastMovement = new Date().getTime();
 
+  canTurnAround = true;
+
   // Array of image paths of this class.
   IMAGES_PATHS_IDLE_SHORT = [
     'img/2_character_pepe/1_idle/idle/I-1.png',
@@ -81,12 +83,9 @@ class Character extends MovableObject {
   ];
 
   // Assigned world instance. --> In this way you can access f.e world.character.world.keyboard. ...
-  world;
+  // world;
   walking_sound = new Audio('audio/running.mp3');
   jumping_sound = new Audio('audio/jump.mp3');
-
-  check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
-  check_SetImages_Interval_Handler = () => this.checkSetImages();
 
   constructor() {
     // Via super() wird auf die Methode, hier z.B. loadImage() der Super Klasse zugegriffen.
@@ -106,10 +105,18 @@ class Character extends MovableObject {
 
     this.setYToPositionOnGround();
 
+    this.setAnimateIntervalHandlers();
+
     // Apply the gravity to the character.
     this.applyGravity();
+    // this.y = -100;
     // Start character movement animation after the initialisation.
     this.animate();
+  }
+
+  setAnimateIntervalHandlers() {
+    this.check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
+    this.check_SetImages_Interval_Handler = () => this.checkSetImages();
   }
 
   takeCoin(coinObj) {
@@ -183,28 +190,16 @@ class Character extends MovableObject {
     if (this.canMoveLeft()) this.moveLeft();
 
     // Check if the character can jump. If yes, the character jumps.
-    if (this.canJump()) this.jump();
+    if (this.canJump()) this.jump(20);
 
     if (this.canMoveAsDead()) this.moveAsDead();
 
     if (this.canBuyHealth()) this.buyHealth();
 
     if (this.canBuyBottle()) this.buyBottle();
-
-    /*       if (this.world.keyboard.D && !this.bottles[0].isAboveGround()) {
-      this.bottles[0].throw();
-      console.log('werfe');
-    } */
-
-    /**
-     * Because of the world is referanced to the character (analogically f.e like the world's keyboard property),
-     * the world's 'camera_x' property can be setted from here (character class) and the world is moved in parallel
-     * to the character in the opposite x-direction.
-     * The character should be ever placed by 100px moved from the left canvas border.
-     * Check if character is not dead. Move the world only if character is not dead.
-     */
-    if (!this.isDead()) this.world.camera_x = -this.x + 100;
   }
+
+  // this.world.camera_x = -this.x + this.world.camera_x_shift;
 
   /**
    * Checks if the character can move right.
@@ -215,7 +210,7 @@ class Character extends MovableObject {
      *  Check and return true if the right arrow key is pressed on the assigned keyboard object and character is not futher than at the
      *  end x-coordinate of the current world level.
      */
-    return this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x;
+    return this.world.keyboard.RIGHT;
   }
 
   /**
@@ -227,12 +222,14 @@ class Character extends MovableObject {
      * Check and return true if the left arrow key is pressed on the assigned keyboard object and character is futher than at the
      * beginning x-coordinate.
      */
-    return this.world.keyboard.LEFT && this.x > 0;
+    // return this.world.keyboard.LEFT && this.x > this.world.level.start_x;
+    return this.world.keyboard.LEFT;
   }
 
   /**
    * Checks if the character can jump.
    * @returns {boolean} This returns true if character can jump, otherwise false.
+   *
    */
   canJump() {
     /**
@@ -278,8 +275,8 @@ class Character extends MovableObject {
   /**
    * Moves the character to the top.
    */
-  jump() {
-    super.jump();
+  jump(speedY) {
+    super.jump(speedY);
     this.jumping_sound.volume = 0.32;
     // this.jumping_sound.play();
   }
@@ -350,8 +347,10 @@ class Character extends MovableObject {
   }
 
   isCollidingOrPressingInJumpFallingDown(enemy) {
-    if (this.isAboveGround() && this.speedY <= 0) enemy.hit();
-    else if (!enemy.isHurt()) this.hit();
+    if (this.isAboveGround() && this.speedY <= 0) {
+      enemy.hit();
+      this.jump(15);
+    } else if (!enemy.isHurt()) this.hit();
   }
 
   isInLongSleep() {

@@ -15,7 +15,13 @@ class World {
    * --> The x-coordinate by which the canvas context will be translated bevor / after adding the objects to itself.
    * "The x-coordinate where the canvas BEGINS / ENDS to draw (place) objetcs."
    */
-  camera_x = 0;
+
+  camera_x_shift;
+
+  camera_x_min;
+  camera_x;
+  camera_x_max;
+
   // Initialize status bars of character's health, bottles, coins and endboss' health.
   healthBar = new StatusBar(30, 0, IMAGES_PATHS_BAR_HEALTH, 100);
   bootlesBar = new StatusBar(30, 50, IMAGES_PATHS_BAR_BOTTLES, 0);
@@ -33,6 +39,15 @@ class World {
     this.ctx = canvas.getContext('2d');
     this.canvas = canvas;
     this.keyboard = keyboard;
+
+    this.camera_x_shift = 80;
+
+    this.camera_x_min = this.level.start_x;
+
+    this.camera_x = -this.character.x + this.camera_x_shift;
+
+    this.camera_x_max = this.level.end_x - canvas.width;
+
     /**
      * Um die Funktion explizit aus dieser Klasse zu verwenden, muss mit 'this' darauf zugegriffen werden,
      * genauso wie beim Zugriff explizit auf Klassen Variablen.
@@ -50,6 +65,33 @@ class World {
    */
   setWorld() {
     this.character.world = this;
+    this.character.level = this.level;
+
+    // this.setWorldLevelToAllMovalbleObjectsInLevel();
+  }
+
+  /**
+   * Loops over all properties of the world level and checks whether its values are instances of a 'MovableObject'
+   * class. If the value is an array, the function checks each element of the array.
+   */
+  setWorldLevelToAllMovalbleObjectsInLevel() {
+    // Loop over all properties of the object.
+    for (let key in this.level) {
+      // Check whether the value of the property is an array or not.
+      // If it's an array, assign it to the variable propertyValue directly,
+      // otherwise create a new array with the value as its only element.
+      const propertyAsArray = Array.isArray(this.level[key]) ? this.level[key] : [this.level[key]];
+
+      // Loop over all values in the array propertyValue.
+      propertyAsArray.forEach((element) => {
+        // Check whether the value is an instance of the class MovableObject.
+        if (element instanceof MovableObject) {
+          // If it is, assingn the world and level property to its properties with the same names.
+          element.world = this;
+          element.level = this.level;
+        }
+      });
+    }
   }
 
   /**
@@ -59,7 +101,7 @@ class World {
   runInterval;
   run() {
     setStoppableInterval(() => {
-      console.log('WIEDER IM RUN INTERVALL');
+      // console.log('WIEDER IM RUN INTERVALL');
       if (!this.characterOrEndbossRemoved) {
         this.checkCollisions();
         this.checkRemovals();
@@ -204,6 +246,7 @@ class World {
        * The objects are layered on top of each other on the canvas in this order.
        */
       this.addObjectsToMap(this.level.backgroundObjects);
+      this.addObjectsToMap(this.level.clouds);
       /**
        * In order for the status bars (as a non-movable / fixed object) to be displayed parallel to the current
        * position of the character, the canvas context must first be moved by camera_x before it is displayed.
@@ -218,10 +261,9 @@ class World {
       this.addToMap(this.endbossBar);
       this.ctx.translate(this.camera_x, 0); // Forwards
 
+      this.addObjectsToMap(this.level.enemies);
       this.addToMap(this.character);
 
-      this.addObjectsToMap(this.level.enemies);
-      this.addObjectsToMap(this.level.clouds);
       this.addObjectsToMap(this.level.coins);
       this.addObjectsToMap(this.level.bottlesInGround);
       this.addObjectsToMap(this.level.bottlesInFlight);
@@ -248,10 +290,27 @@ class World {
        */
 
       if (!self.stopDrawing) {
+        self.updateCameraX();
         self.draw();
-        console.log('DRWAN');
+        // console.log('DRWAN');
       }
     });
+  }
+
+  /**
+   * TODO: ZUM ÄNDERN / ALTE BESCHREIBUNG ALS DIE METHODE NOCH BEI CHARACTER CLASS WAR, NUR ALS BASIS ZUR BEARBEITUNG ERST VERSCHOBEN.
+   * Because of the world is referanced to the character (analogically f.e like the world's keyboard property),
+   * the world's 'camera_x' property can be setted from here (character class) and the world is moved in parallel
+   * to the character in the opposite x-direction.
+   * The character should be ever placed by 100px moved from the left canvas border.
+   * Check if character is not dead. Move the world only if character is not dead.
+   */
+  updateCameraX() {
+    if (this.character) {
+      if (this.character.x >= this.camera_x_max + this.camera_x_shift) this.camera_x = -this.camera_x_max;
+      else if (this.character.x <= this.camera_x_min + this.camera_x_shift) this.camera_x = -this.camera_x_min;
+      else this.camera_x = -this.character.x + this.camera_x_shift;
+    }
   }
 
   /**

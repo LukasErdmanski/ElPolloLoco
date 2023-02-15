@@ -2,10 +2,6 @@ let amountOfAllBottles = 18;
 let level1;
 function initLevel() {
   level1 = new Level(
-    // enemies
-    [new ChickenNormal(), new ChickenNormal(), new ChickenNormal(), new Endboss()],
-    // clouds
-    [new Cloud()],
     // background objects
     [
       /* Analogous to the next background objects and the background continuity during the character run, the previous ones are also needed.  */
@@ -39,6 +35,30 @@ function initLevel() {
       new BackgroundObject('img/5_background/layers/3_third_layer/2.png', 719 * 3),
       new BackgroundObject('img/5_background/layers/2_second_layer/2.png', 719 * 3),
       new BackgroundObject('img/5_background/layers/1_first_layer/2.png', 719 * 3),
+    ],
+    // clouds
+    [
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+      new Cloud(),
+    ],
+    // enemies
+    [
+      new ChickenNormal(),
+      new ChickenNormal(),
+      new ChickenNormal(),
+      new ChickenSmall(),
+      new ChickenSmall(),
+      new ChickenSmall(),
+      new Endboss(),
     ],
     initSoManyItems(Coin, amountOfAllBottles),
     initSoManyItems(Bottle, amountOfAllBottles),

@@ -9,6 +9,8 @@ class Endboss extends MovableObject {
     bottom: 13,
   };
 
+  canTurnAround = true;
+
   IMAGES_PATHS_WALKING = [
     'img/4_enemie_boss_chicken/1_walk/G1.png',
     'img/4_enemie_boss_chicken/1_walk/G2.png',
@@ -53,9 +55,6 @@ class Endboss extends MovableObject {
   // Memory, if the character had already first contact with the endboss.
   hadFirstContact = false;
 
-  check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
-  check_SetImages_Interval_Handler = () => this.checkSetImages();
-
   constructor() {
     super().loadImage(this.IMAGES_PATHS_WALKING[0]);
     this.loadImages(this.IMAGES_PATHS_WALKING);
@@ -64,8 +63,14 @@ class Endboss extends MovableObject {
     this.loadImages(this.IMAGES_PATHS_HURT);
     this.loadImages(this.IMAGES_PATHS_DEAD);
     this.x = 2500;
+    this.setAnimateIntervalHandlers();
     this.applyGravity();
     this.animate();
+  }
+
+  setAnimateIntervalHandlers() {
+    this.check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
+    this.check_SetImages_Interval_Handler = () => this.checkSetImages();
   }
 
   animate2() {

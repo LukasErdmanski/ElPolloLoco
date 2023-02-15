@@ -37,10 +37,6 @@ class Bottle extends MovableObject {
 
   IMAGES_PATHS_DESTROYING = this.IMAGES_PATHS_SPLASH;
 
-  // TODO: verschiedene Movement Intervalle einbauen, für splash z.B., bis jetzt nur fly()
-  check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
-  check_SetImages_Interval_Handler = () => this.checkSetImages();
-
   /**
    * Initializes a new throwable object with the given start cooridates. Executes the throw directly afterwards.w
    * @param {number} x - The initial x position of the throwable object.
@@ -64,6 +60,8 @@ class Bottle extends MovableObject {
     this.setYToPositionOnGround();
 
     this.speedY = 0;
+
+    this.setAnimateIntervalHandlers();
 
     // Apply gravity.
     this.applyGravity();
@@ -92,6 +90,11 @@ class Bottle extends MovableObject {
     if (lastBottleObj != undefined && this.idxInBottlesGroup == 0) x = lastBottleObj.x + 300;
     else if (lastBottleObj != undefined) x = lastBottleObj.x + distanceToNextBottle;
     return x;
+  }
+
+  setAnimateIntervalHandlers() {
+    this.check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
+    this.check_SetImages_Interval_Handler = () => this.checkSetImages();
   }
 
   isOnGroundAfterFlight() {

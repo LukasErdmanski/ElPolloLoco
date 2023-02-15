@@ -325,11 +325,11 @@ function pausePlayGame() {
  */
 function setStoppableInterval(fn, time) {
   let intervalId = setInterval(() => {
-/*     console.log(intervalId);
+    /*     console.log(intervalId);
     let trueOrFalse = allIntervals.includes(intervalId);
     console.log('Idex of intervalId ' + intervalId + ' is ' + trueOrFalse); */
     if (!pause) fn();
-/*     console.log('Ende of intervalId' + intervalId);
+    /*     console.log('Ende of intervalId' + intervalId);
     trueOrFalse = allIntervals.includes(intervalId);
     console.log('Idex of intervalId ' + intervalId + ' is ' + trueOrFalse); */
   }, time);

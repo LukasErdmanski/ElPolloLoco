@@ -17,13 +17,16 @@ class Coin extends MovableObject {
 
   IMAGES_PATHS = ['img/8_coin/coin_1.png', 'img/8_coin/coin_2.png'];
 
-  check_SetImages_Interval_Handler = () => this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS);
-
   constructor(allCoinsArr) {
     super().loadImage(this.IMAGES_PATHS[0]);
     this.loadImages(this.IMAGES_PATHS);
     [this.x, this.y] = this.getXY(allCoinsArr);
+    this.setAnimateIntervalHandlers();
     this.animate(undefined, 3);
+  }
+
+  setAnimateIntervalHandlers() {
+    this.check_SetImages_Interval_Handler = () => this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS);
   }
 
   /**
