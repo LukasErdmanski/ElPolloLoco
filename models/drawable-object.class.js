@@ -111,7 +111,7 @@ class DrawableObject {
     ctx.stroke();
   }
 
-  setYToPositionOnGround() {
+  positionOnGround() {
     this.y = 480 - (this.height - this.offset.bottom) - this.yOffsetToGroundLine;
   }
 }

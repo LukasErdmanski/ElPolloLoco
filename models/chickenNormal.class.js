@@ -22,7 +22,7 @@ class ChickenNormal extends MovableObject {
     super().loadImage(this.IMAGES_PATHS_WALKING[0]);
     this.loadImages(this.IMAGES_PATHS_WALKING);
     this.loadImages(this.IMG_PATH_DEAD);
-    this.setYToPositionOnGround();
+    this.positionOnGround();
     this.setAnimateIntervalHandlers();
     this.isLevelSet();
   }

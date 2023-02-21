@@ -57,7 +57,7 @@ class Bottle extends MovableObject {
     this.height = 80;
     this.width = 70;
 
-    this.setYToPositionOnGround();
+    this.positionOnGround();
 
     this.speedY = 0;
 

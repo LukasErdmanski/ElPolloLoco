@@ -143,9 +143,6 @@ class Endboss extends MovableObject {
     // else this.walk();
   }
 
-  //TODO: Zustand/Methode von Endboss bestimmen/ergänzen, welche startAttack auslöst --> kann nur einmal gestartet werden.
-  // TODO: if startAttack() läuft oder inAttack = true kann nicht mehr attakiert werden. Erst wenn Attack/RunBack beendet wurde.
-
   inAtack = false;
 
   startAttack() {
@@ -167,6 +164,11 @@ class Endboss extends MovableObject {
     return !this.isColliding(this.world.character);
   }
 
+  stopRunToCharacterStartRunBack() {
+    this.inAtack = false;
+    this.inRunBack = true;
+  }
+
   runToCharacter() {
     if (!this.isAboveGround()) this.jump(12);
     this.setDirectionForAttack();
@@ -186,11 +188,6 @@ class Endboss extends MovableObject {
     else this.moveLeft();
   }
 
-  stopRunToCharacterStartRunBack() {
-    this.inAtack = false;
-    this.inRunBack = true;
-  }
-
   inRunBack = false;
 
   isInRunBack() {
@@ -198,11 +195,9 @@ class Endboss extends MovableObject {
   }
 
   runBack() {
-    if (!this.isAlreadyTurnedAroundForRunBack()) {
-      this.startRunBack();
-    } else if (!this.hasRunMaxXDistanceOfRunBack()) {
-      this.runBackOneXInterval();
-    } else this.stopRunBack();
+    if (!this.isAlreadyTurnedAroundForRunBack()) this.startRunBack();
+    // else if (!this.hasRunMaxXDistanceOfRunBack()) this.runBackOneXInterval();
+    else this.stopRunBack();
   }
 
   isTurnedAroundForRunBack = false;
@@ -212,27 +207,34 @@ class Endboss extends MovableObject {
   }
 
   startRunBack() {
-    this.jump(11);
-    this.setDirectionForRunBack();
+    // this.x = this.world.character.x;
+
+    //TODO: AN DIESER STELLE WEITER FUNKTION WELCHE JE NACH FALL
+    // LINKS ODER RECHTSS
+    // ZUERST ENDBOSS zu diesem Zustand weiter führt this.x = this.world.character.x;
+    // ES MUSS EINE X BERECHNUNG DER DISTANZU FINDEN
+    // ENDBOSS MUSS ZUERSR IM FLUG ODER UNTEN UM DIESE DISTANZ LINKS ODER RECHTSG GEZOGEN WERDEN
+    // DANN IST X CHARACTER GLEICH X ENDBOSS
+    // ERST DANN ERFOLGT DIE UMDRECHUNG BERECHNUNG CALC MAX.
+
     this.isTurnedAroundForRunBack = true;
+
     this.calcMaxXDistanceOfRunBack();
   }
 
   maxXDistanceOfRunBack;
 
-  setDirectionForRunBack() {
-    if (this.checkIfCharacterOnLeftOrRightCanvasHalf()) this.otherDirection = true;
-    else this.otherDirection = false;
-  }
+  calcMaxXDistanceOfRunBack() {
+    // Checking if endboss in left or right canvas half
+    this.setDirectionForRunBack();
 
-  // Checking if character in left or right canvas half. This defindes the direction for run back.
-  checkIfCharacterOnLeftOrRightCanvasHalf() {
+    //////////////////////
     let xCanvasCenter = -this.world.camera_x + this.world.canvas.width / 2;
     let xCharacterCenter = this.world.character.x + this.width / 2;
-    return xCanvasCenter > xCharacterCenter;
-  }
 
-  calcMaxXDistanceOfRunBack() {
+    // Checking if character in left or right canvas half.
+    let checkResultCharacterOnLeftOrRightCanvasHalf = xCanvasCenter > xCharacterCenter;
+
     let maxXDistanceOfRunBack;
     let canvasWidth = this.world.canvas.width;
     let xCharacter = this.world.character.x;
@@ -240,11 +242,29 @@ class Endboss extends MovableObject {
     let xDistanceToCanvasLeftBorder = xCharacter - xCanvasLeftBorder;
     let endbossWidth = this.width;
     let xEndboss = this.x;
+    let xEndbossCenter = this.x + this.width / 2;
+
     let deltaCharacterXEndbossX = xEndboss - xCharacter;
-    if (this.checkIfCharacterOnLeftOrRightCanvasHalf())
+
+    // let checkResultEndbossXGreaterThanCharacterX = xEndboss > xCharacter;
+
+    if (checkResultCharacterOnLeftOrRightCanvasHalf)
+      // if (checkResultEndbossXGreaterThanCharacterX)
       maxXDistanceOfRunBack = canvasWidth - xDistanceToCanvasLeftBorder - deltaCharacterXEndbossX - endbossWidth;
+    // else maxXDistanceOfRunBack = canvasWidth - xDistanceToCanvasLeftBorder - deltaCharacterXEndbossX - endbossWidth;
     else maxXDistanceOfRunBack = xDistanceToCanvasLeftBorder + deltaCharacterXEndbossX;
+
     this.maxXDistanceOfRunBack = maxXDistanceOfRunBack;
+  }
+
+  setDirectionForRunBack() {
+    // let xEndbossCenter = this.x + this.width / 2
+    let xCharacterCenter = this.world.character.x + this.width / 2;
+    let xCanvasCenter = -this.world.camera_x + this.world.canvas.width / 2;
+
+    // Checking if character in left or right canvas half. This defindes the direction for run back.
+    if (xCharacterCenter < xCanvasCenter) this.otherDirection = false;
+    else this.otherDirection = true;
   }
 
   currentXDistanceOfRunBack = 0;

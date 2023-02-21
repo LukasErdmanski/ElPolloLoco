@@ -1,5 +1,5 @@
 class Character extends MovableObject {
-  x = 120;
+  x = 0;
   // y =  - (this.height - this.offset.top - this.offset.bottom) - this.yOfGroundLine;
   width = 100;
   height = 250;
@@ -103,13 +103,13 @@ class Character extends MovableObject {
     // Loads the 'imageCache' with the image objects for the HURT animation according to the image path array 'IMAGES_HURT'.
     this.loadImages(this.IMAGES_PATHS_HURT);
 
-    this.setYToPositionOnGround();
+    this.positionOnGround();
 
     this.setAnimateIntervalHandlers();
 
     // Apply the gravity to the character.
     this.applyGravity();
-    // this.y = -100;
+    // this.y = 0;
     // Start character movement animation after the initialisation.
     this.animate();
   }
@@ -316,34 +316,37 @@ class Character extends MovableObject {
   }
 
   checkSetImages() {
-    if (this.isDead()) {
-      // DEAD animation
-      this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
-    } else if (this.isHurt()) {
-      // HURT animation
+    if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
+    else if (this.isInAnyStateUpdatingLastTimeStempOfLastMovement());
+    else if (this.isInLongSleep()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_LONG);
+    else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_SHORT);
+  }
+
+  isInAnyStateUpdatingLastTimeStempOfLastMovement() {
+    if (this.isHurt()) {
       this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_HURT);
-      this.updateTimeStempOflastMovement();
+      this.updateTimeStempOfLastMovement();
+      return true;
     } else if (this.isAboveGround()) {
-      // JUMP animation
       this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_JUMPING);
-      this.updateTimeStempOflastMovement();
-    } else if (
+      this.updateTimeStempOfLastMovement();
+      return true;
+    } else if (this.isMovingLeftOrRightOrBuyingOrThrowing()) {
+      this.updateTimeStempOfLastMovement();
+      this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
+      return true;
+    }
+    return false;
+  }
+
+  isMovingLeftOrRightOrBuyingOrThrowing() {
+    return (
       this.world.keyboard.RIGHT ||
       this.world.keyboard.LEFT ||
       this.world.keyboard.A ||
       this.world.keyboard.S ||
       this.world.keyboard.D
-    ) {
-      /**
-       * Check if the right or left arrow key is pressed on the assigned keyboard object to animate the character motion,
-       * here: change animation images
-       */
-      // WALK animation
-      this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
-      this.updateTimeStempOflastMovement();
-    } else if (this.isInLongSleep()) {
-      this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_LONG);
-    } else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_SHORT);
+    );
   }
 
   isCollidingOrPressingInJumpFallingDown(enemy) {
@@ -358,7 +361,7 @@ class Character extends MovableObject {
     return secondsPassed > 5;
   }
 
-  updateTimeStempOflastMovement() {
+  updateTimeStempOfLastMovement() {
     this.timeStempOflastMovement = new Date().getTime();
   }
 }

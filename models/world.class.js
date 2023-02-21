@@ -40,7 +40,8 @@ class World {
     this.canvas = canvas;
     this.keyboard = keyboard;
 
-    this.camera_x_shift = 80;
+    this.camera_x_shift = 0;
+    this.camera_x_shift = 290;
 
     this.camera_x_min = this.level.start_x;
 
@@ -65,6 +66,11 @@ class World {
    */
   setWorld() {
     this.character.world = this;
+
+    let lastLevelEnemy = this.level.enemies[this.level.enemies.length - 1];
+    let endboss = lastLevelEnemy;
+    endboss.world = this;
+
     this.character.level = this.level;
 
     // this.setWorldLevelToAllMovalbleObjectsInLevel();
@@ -101,6 +107,7 @@ class World {
   runInterval;
   run() {
     setStoppableInterval(() => {
+      world.character.health = 100;
       // console.log('WIEDER IM RUN INTERVALL');
       if (!this.characterOrEndbossRemoved) {
         this.checkCollisions();
