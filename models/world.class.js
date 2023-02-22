@@ -177,10 +177,20 @@ class World {
         if (bottle.isColliding(collisionEnemy) || bottle.isOnGroundAfterFlight()) {
           bottle.hit();
           if (!collisionEnemy.isHurt()) collisionEnemy.hit();
+          if (collisionEnemy instanceof Endboss) this.setEndbossHealthPercentage(collisionEnemy);
           break;
         }
       }
     }
+  }
+
+  setEndbossHealthPercentage(endbossObj) {
+    let endbossHealthPercentage = this.getEndbossHealthPercentage(endbossObj);
+    this.endbossBar.setPercentage(endbossHealthPercentage);
+  }
+
+  getEndbossHealthPercentage(endbossObj) {
+    return (endbossObj.health / 25) * 100;
   }
 
   checkRemovals() {
