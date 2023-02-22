@@ -22,3 +22,12 @@
 // TODO: 16.5  Die IfAbfrage kann auch auf eine Zeile ohne {} Klammern verkürzt werden, wenn nur ein Statement im IfAbfrageBlock vorhanden ist.
 // TODO: 17.. FINACL CHECK / ES SOLL "PERFEKT": PORTFOLIO-READY SEIN!
 // TODO: 18. Preload Funktion, dass zuerst alle Bilder geladen werden, nicht dass schwarzes Canvas mit Rechteckecken animiert wird.
+// TODO: Rausfinden, woran der schwarze Bild lange bleibt. Vielleicht füllen von allen ImageCaces mit loadImages(). (Idee) Vielleicht als All Promises machen, erst weiter wenn alle Promises von loadImages abgeschlossen.
+// TODO: 19. Sich die AudioPlayStop Funktionen damals von TicTacToe anschauen nehmen, hatte keine Probleme für Promises
+// TODO: 20. Statusbar Character
+// TODO: 21. Character soll auf Endboss springen können (bei Pressing berücksichtigen
+// TODO: 22. Musik nehmen hintergrund
+// TODO: 23. Alle Audio sollen in Array und stoppbar sein, wenn Spiel zu Ende
+// TODO: 24. Health überall anpassen als Vielfachen von 5, da hit -5, endboss 25, normalCHicken 10, small = 5;, bottel, Coin
+// TODO: 25. Initialisierungfunktion von Bottle und Coins im Array
+// TODO: 26. Verschiedene Farbe für statusbars

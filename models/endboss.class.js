@@ -8,6 +8,8 @@ class Endboss extends MovableObject {
     bottom: 13,
   };
 
+  health = 25;
+
   xDistanceEndbossToLevelEnd = 500;
 
   wasCharacterOnceDeteckedNearby = false;
@@ -138,6 +140,8 @@ class Endboss extends MovableObject {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   checkMakeMovement() {
     if (this.isDead()) super.moveAsDead();
+    else if (this.isHurtAndNotPreparedToAttack()) this.prepareToAttack();
+    else if (this.isPreparedToAttack()) this.startAttack();
     else if (this.isInAtack()) this.canRunOrStopRunToCharacter();
     else if (this.isInRunBack()) this.runBack();
     // else this.walk();
@@ -146,9 +150,29 @@ class Endboss extends MovableObject {
   //TODO: Zustand/Methode von Endboss bestimmen/ergänzen, welche startAttack auslöst --> kann nur einmal gestartet werden.
   // TODO: if startAttack() läuft oder inAttack = true kann nicht mehr attakiert werden. Erst wenn Attack/RunBack beendet wurde.
 
+  preparedToAttack = false;
+
+  isHurtAndNotPreparedToAttack() {
+    return super.isHurt() && !this.preparedToAttack;
+  }
+
+  prepareToAttack() {
+    this.stopCurrentArrack();
+    this.preparedToAttack = true;
+  }
+
+  stopCurrentArrack() {
+    this.inAtack = false;
+  }
+
+  isPreparedToAttack() {
+    return this.preparedToAttack && !super.isHurt();
+  }
+
   inAtack = false;
 
   startAttack() {
+    this.preparedToAttack = false;
     this.inAtack = true;
     this.speedXInitial = this.speedX;
     this.speedX = 7;
@@ -164,7 +188,7 @@ class Endboss extends MovableObject {
   }
 
   canRunToCharacter() {
-    return !this.isColliding(this.world.character);
+    return !this.world.character.isHurt();
   }
 
   runToCharacter() {
@@ -212,7 +236,7 @@ class Endboss extends MovableObject {
   }
 
   startRunBack() {
-    this.jump(11);
+    this.jump(12);
     this.setDirectionForRunBack();
     this.isTurnedAroundForRunBack = true;
     this.calcMaxXDistanceOfRunBack();

@@ -350,7 +350,7 @@ class Character extends MovableObject {
   }
 
   isCollidingOrPressingInJumpFallingDown(enemy) {
-    if (this.isAboveGround() && this.speedY <= 0) {
+    if (this.isAboveGround() && this.speedY <= 0 && !enemy instanceof Endboss) {
       enemy.hit();
       this.jump(15);
     } else if (!enemy.isHurt()) this.hit();

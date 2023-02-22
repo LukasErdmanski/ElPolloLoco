@@ -176,6 +176,7 @@ class World {
         const collisionEnemy = arrayLevelEnemies[j];
         if (bottle.isColliding(collisionEnemy) || bottle.isOnGroundAfterFlight()) {
           bottle.hit();
+          if (!collisionEnemy.isHurt()) collisionEnemy.hit();
           break;
         }
       }
