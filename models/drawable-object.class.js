@@ -5,7 +5,7 @@ class DrawableObject {
   height;
   offset = {};
 
-  yOffsetToGroundLine = 55;
+  yOffsetToGroundLine = 40;
   yOfGround = 480 - this.yOffsetToGroundLine;
 
   // The current drawing img / parameter of the functions drawImage of the canvas context.

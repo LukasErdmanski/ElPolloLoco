@@ -1,13 +1,13 @@
 class ChickenSmall extends MovableObject {
-  width = 60;
-  height = 53;
+  width = 80;
+  height = 70;
   offset = {
     top: 3,
     left: 9,
     right: 8,
     bottom: 4,
   };
-  health = 5;
+  health = 1;
   canTurnAround = true;
   lastDesireJump = new Date().getTime();
 
@@ -52,8 +52,7 @@ class ChickenSmall extends MovableObject {
   checkMakeMovement() {
     if (this.isDead()) this.deadAnimation_Part_MakeMovement_IsOver = true;
     else if (this.hasDesireToJump() && !this.isAboveGround()) super.jump(16);
-    else if (this.otherDirection == true) this.moveRight();
-    else this.moveLeft();
+    else this.moveInXDirection();
   }
 
   hasDesireToJump() {

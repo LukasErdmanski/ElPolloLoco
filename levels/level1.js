@@ -52,12 +52,12 @@ function initLevel() {
     ],
     // enemies
     [
-/*       new ChickenNormal(),
+      new ChickenNormal(),
       new ChickenNormal(),
       new ChickenNormal(),
       new ChickenSmall(),
       new ChickenSmall(),
-      new ChickenSmall(), */
+      new ChickenSmall(),
       new Endboss(),
     ],
     initSoManyItems(Coin, amountOfAllBottles),

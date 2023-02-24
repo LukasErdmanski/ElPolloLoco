@@ -183,23 +183,27 @@ class Character extends MovableObject {
   checkMakeMovement() {
     this.walking_sound.pause();
 
-    // Check if the character can move right. If yes, the character moves right.
-    if (this.canMoveRight()) this.moveRight();
-
-    // Check if the character can move left. If yes, the character moves left.
-    if (this.canMoveLeft()) this.moveLeft();
-
-    // Check if the character can jump. If yes, the character jumps.
-    if (this.canJump()) this.jump(20);
-
+    // if (this.canMoveAsDead()) this.moveAsDead();
     if (this.canMoveAsDead()) this.moveAsDead();
+    else {
+      // Check if the character can move right. If yes, the character moves right.
+      if (this.canMoveRight()) this.moveRight();
 
-    if (this.canBuyHealth()) this.buyHealth();
+      // Check if the character can move left. If yes, the character moves left.
+      if (this.canMoveLeft()) this.moveLeft();
 
-    if (this.canBuyBottle()) this.buyBottle();
+      // Check if the character can jump. If yes, the character jumps.
+      if (this.canJump()) this.jump(20);
+
+      if (this.canBuyHealth()) this.buyHealth();
+
+      if (this.canBuyBottle()) this.buyBottle();
+    }
   }
 
   // this.world.camera_x = -this.x + this.world.camera_x_shift;
+
+  isAlive() {}
 
   /**
    * Checks if the character can move right.
@@ -306,10 +310,11 @@ class Character extends MovableObject {
 
   buyHealth() {
     let coinForPaymentt = this.coins[this.coins.length - 1];
-    if (coinForPaymentt != undefined && this.health < 100) {
-      this.health += 5;
-      if (this.health > 100) this.health = 100;
-      this.world.healthBar.setPercentage(this.health);
+    if (coinForPaymentt != undefined && this.health < this.healthInitial) {
+      this.health++;
+      if (this.health > this.healthInitial) this.health = this.healthInitial;
+      this.updateHealthPercentage();
+      this.world.healthBar.setPercentage(this.healthPercentage);
       this.updateBottlesPercentage();
       this.world.bootlesBar.setPercentage(this.bottlesPercentage);
     } else console.log('SPIELT AUDIO KANN HEALTH KANN NICHT GEKAUFT WERDEN');
@@ -350,10 +355,19 @@ class Character extends MovableObject {
   }
 
   isCollidingOrPressingInJumpFallingDown(enemy) {
-    if (this.isAboveGround() && this.speedY <= 0 && !enemy instanceof Endboss) {
-      enemy.hit();
-      this.jump(15);
-    } else if (!enemy.isHurt()) this.hit();
+    if (!enemy.isHurt() && !this.isHurt()) {
+      if (this.isPressing(enemy)) {
+        enemy.hit();
+        this.jump(15);
+      } else this.hit();
+    }
+  }
+
+  isPressing(enemy) {
+    console.log(this.isAboveGround());
+    console.log(this.speedY <= 0);
+    console.log(!enemy instanceof Endboss);
+    return this.isAboveGround() && this.speedY <= 0 && !(enemy instanceof Endboss);
   }
 
   isInLongSleep() {

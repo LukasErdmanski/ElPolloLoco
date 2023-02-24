@@ -8,8 +8,6 @@ class Endboss extends MovableObject {
     bottom: 13,
   };
 
-  health = 25;
-
   xDistanceEndbossToLevelEnd = 500;
 
   wasCharacterOnceDeteckedNearby = false;
@@ -88,8 +86,8 @@ class Endboss extends MovableObject {
 
   setStartXAndSpeedX() {
     // this.x = this.level.end_x - this.xDistanceEndbossToLevelEnd;
-    this.x = 800;
-    this.speedX = 0.15 + Math.random() * 0.25; //TODO: speed START für Endboss anpassen, mit jedem Hurt soll es schneller werden
+    this.x = 1200;
+    this.speedX = 4 + Math.random() * 0.25;
     this.speedXInitial = this.speedX;
   }
 
@@ -140,20 +138,25 @@ class Endboss extends MovableObject {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   checkMakeMovement() {
     if (this.isDead()) super.moveAsDead();
-    else if (this.isHurtAndNotPreparedToAttack()) this.prepareToAttack();
-    else if (this.isPreparedToAttack()) this.startAttack();
-    else if (this.isInAtack()) this.canRunOrStopRunToCharacter();
-    else if (this.isInRunBack()) this.runBack();
-    // else this.walk();
+    else if (this.isCharacterAlive()) {
+      if (this.isHurtAndNotPreparedToAttack()) this.prepareToAttack();
+      else if (this.isPreparedToAttack()) this.startAttack();
+      else if (this.isInAtack()) this.attack();
+      else if (this.isPreparedToRunBack()) this.startRunBack();
+      else if (this.isInRunBack()) this.runBack();
+      else if (this.inInWalk()) this.walk();
+    }
   }
 
-  //TODO: Zustand/Methode von Endboss bestimmen/ergänzen, welche startAttack auslöst --> kann nur einmal gestartet werden.
-  // TODO: if startAttack() läuft oder inAttack = true kann nicht mehr attakiert werden. Erst wenn Attack/RunBack beendet wurde.
+  isCharacterAlive() {
+    return this.world.character && !this.world.character.isDead();
+  }
 
+  /****************************** PREPARING ATTACK ******************************/
   preparedToAttack = false;
 
   isHurtAndNotPreparedToAttack() {
-    return super.isHurt() && !this.preparedToAttack;
+    return this.isHurt() && !this.preparedToAttack;
   }
 
   prepareToAttack() {
@@ -162,11 +165,13 @@ class Endboss extends MovableObject {
   }
 
   stopCurrentArrack() {
+    this.speedX = this.speedXInitial;
     this.inAtack = false;
   }
 
+  /****************************** STARTING ATTACK ******************************/
   isPreparedToAttack() {
-    return this.preparedToAttack && !super.isHurt();
+    return this.preparedToAttack && !this.isHurt();
   }
 
   inAtack = false;
@@ -175,68 +180,65 @@ class Endboss extends MovableObject {
     this.preparedToAttack = false;
     this.inAtack = true;
     this.speedXInitial = this.speedX;
-    this.speedX = 7;
+    this.speedX = this.speedXInitial * 2.5;
   }
 
+  /****************************** ATTACKING ******************************/
   isInAtack() {
-    return this.inAtack;
+    return this.inAtack && !this.world.character.isHurt();
   }
 
-  canRunOrStopRunToCharacter() {
-    if (this.canRunToCharacter()) this.runToCharacter();
-    else this.stopRunToCharacterStartRunBack();
-  }
-
-  canRunToCharacter() {
-    return !this.world.character.isHurt();
-  }
-
-  runToCharacter() {
+  attack() {
     if (!this.isAboveGround()) this.jump(12);
     this.setDirectionForAttack();
-    this.moveLeftOrRight();
+    this.moveInXDirection();
   }
 
   setDirectionForAttack() {
-    let xCharacterCenter = this.world.character.x + this.width / 2;
-    let xEndbossCenter = this.x + this.width / 2;
     // Checking in which direction is character
-    if (xEndbossCenter > xCharacterCenter) this.otherDirection = false;
+    if (this.checkIfCharacterOnLeftOrRightEndbossHalf()) this.otherDirection = false;
     else this.otherDirection = true;
   }
 
-  moveLeftOrRight() {
-    if (this.otherDirection == true) this.moveRight();
-    else this.moveLeft();
+  // Checking if character in left or right endboss half. This defindes the direction for attack.
+  checkIfCharacterOnLeftOrRightEndbossHalf() {
+    let xCharacterCenter = this.world.character.x + this.world.character.width / 2;
+    let xEndbossCenter = this.x + this.width / 2;
+    return xEndbossCenter > xCharacterCenter;
   }
 
-  stopRunToCharacterStartRunBack() {
-    this.inAtack = false;
+  /****************************** STARTING RUN BACK ******************************/
+  inRunBack = false;
+
+  isPreparedToRunBack() {
+    return this.inAtack && this.world.character.isHurt() && !this.inRunBack;
+  }
+
+  startRunBack() {
+    this.stopCurrentArrack();
     this.inRunBack = true;
   }
 
-  inRunBack = false;
-
+  /****************************** CHECKING RUN BACK STEP ******************************/
   isInRunBack() {
     return this.inRunBack;
   }
 
   runBack() {
-    if (!this.isAlreadyTurnedAroundForRunBack()) {
-      this.startRunBack();
-    } else if (!this.hasRunMaxXDistanceOfRunBack()) {
-      this.runBackOneXInterval();
-    } else this.stopRunBack();
+    if (!this.isAlreadyJumpedSetDirectionCalcucaltedDistance()) this.jumpSetDirectionCalcucalteDistance();
+    else if (!this.hasRunMaxXDistanceOfRunBack()) this.runBackOneXInterval();
+    else this.stopRunBack();
   }
 
+  /****************************** RUNNING BACK - 1. START JUMPING, SETTING DIRECTION AND DISTANCE ******************************/
   isTurnedAroundForRunBack = false;
 
-  isAlreadyTurnedAroundForRunBack() {
+  isAlreadyJumpedSetDirectionCalcucaltedDistance() {
     return this.isTurnedAroundForRunBack;
   }
 
-  startRunBack() {
-    this.jump(12);
+  jumpSetDirectionCalcucalteDistance() {
+    this.jump(15);
     this.setDirectionForRunBack();
     this.isTurnedAroundForRunBack = true;
     this.calcMaxXDistanceOfRunBack();
@@ -245,15 +247,12 @@ class Endboss extends MovableObject {
   maxXDistanceOfRunBack;
 
   setDirectionForRunBack() {
-    if (this.checkIfCharacterOnLeftOrRightCanvasHalf()) this.otherDirection = true;
-    else this.otherDirection = false;
+    this.setDirectionAsPerCanvasCenter();
   }
 
   // Checking if character in left or right canvas half. This defindes the direction for run back.
   checkIfCharacterOnLeftOrRightCanvasHalf() {
-    let xCanvasCenter = -this.world.camera_x + this.world.canvas.width / 2;
-    let xCharacterCenter = this.world.character.x + this.width / 2;
-    return xCanvasCenter > xCharacterCenter;
+    return this.world.character.checkIfOnLeftOrRightCanvasHalf();
   }
 
   calcMaxXDistanceOfRunBack() {
@@ -266,11 +265,12 @@ class Endboss extends MovableObject {
     let xEndboss = this.x;
     let deltaCharacterXEndbossX = xEndboss - xCharacter;
     if (this.checkIfCharacterOnLeftOrRightCanvasHalf())
-      maxXDistanceOfRunBack = canvasWidth - xDistanceToCanvasLeftBorder - deltaCharacterXEndbossX - endbossWidth;
-    else maxXDistanceOfRunBack = xDistanceToCanvasLeftBorder + deltaCharacterXEndbossX;
+      maxXDistanceOfRunBack = xDistanceToCanvasLeftBorder + deltaCharacterXEndbossX;
+    else maxXDistanceOfRunBack = canvasWidth - xDistanceToCanvasLeftBorder - deltaCharacterXEndbossX - endbossWidth;
     this.maxXDistanceOfRunBack = maxXDistanceOfRunBack;
   }
 
+  /****************************** RUNNING BACK - 2. MOVING ******************************/
   currentXDistanceOfRunBack = 0;
 
   hasRunMaxXDistanceOfRunBack() {
@@ -278,11 +278,11 @@ class Endboss extends MovableObject {
   }
 
   runBackOneXInterval() {
-    this.moveLeftOrRight();
-
+    this.moveInXDirection();
     this.currentXDistanceOfRunBack += this.speedX;
   }
 
+  /****************************** RUNNING BACK - 3. STOP AND TOURNING AROUND ******************************/
   stopRunBack() {
     this.turnAround();
     this.currentXDistanceOfRunBack = 0;
@@ -294,19 +294,34 @@ class Endboss extends MovableObject {
     this.otherDirection = !this.otherDirection;
   }
 
+  /****************************** WALKING ******************************/
+  inInWalk() {
+    return this.wasCharacterNearby() && this.isNotInMiddleOfCharacter() && !this.isHurt();
+  }
+
+  isNotInMiddleOfCharacter() {
+    let xCharacterCenter = this.world.character.x + this.world.character.width / 2;
+    let xEndboss = this.x;
+    let xEndbossWidth = this.width;
+    if (this.checkIfCharacterOnLeftOrRightEndbossHalf()) return xEndboss >= xCharacterCenter;
+    else return xEndboss + xEndbossWidth <= xCharacterCenter;
+  }
+
   walk() {
     this.speedX = this.speedXInitial;
-    if (this.otherDirection == true) this.moveRight();
-    else this.moveLeft();
+    this.setDirectionForAttack();
+    this.moveInXDirection();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   checkSetImages() {
-    if (!this.wasCharacterNearby()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
-    else if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
-    else if (this.isHurt()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_HURT);
-    else if (this.isAboveGround()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ATTACK);
-    else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
+    if (this.isCharacterAlive()) {
+      if (!this.wasCharacterNearby()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
+      else if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
+      else if (this.isHurt()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_HURT);
+      else if (this.isFlyingOrCollidingCharacter()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ATTACK);
+      else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
+    }
   }
 
   wasCharacterNearby() {
@@ -316,9 +331,13 @@ class Endboss extends MovableObject {
 
   isCharacterNearby() {
     let nearXDistanceCharacterToEndboss = this.world.canvas.width - this.width;
-    let xRightCharacterImgSide = this.world.character.x + this.world.character.width + this.world.camera_x_shift;
-    let checkResult = xRightCharacterImgSide + nearXDistanceCharacterToEndboss >= this.x + 150;
+    let xRightCharacterImgSide = this.world.character.x + this.world.character.width;
+    let checkResult = xRightCharacterImgSide + nearXDistanceCharacterToEndboss >= this.x * 1.18;
     if (checkResult) this.wasCharacterOnceDeteckedNearby = true;
     return checkResult;
+  }
+
+  isFlyingOrCollidingCharacter() {
+    return this.isAboveGround() || this.isColliding(this.world.character);
   }
 }

@@ -1,13 +1,13 @@
 class ChickenNormal extends MovableObject {
-  width = 80;
-  height = 60;
+  width = 100;
+  height = 80;
   offset = {
     top: 3,
     left: 3,
     right: 2,
     bottom: 4,
   };
-  health = 10;
+  health = 2;
   canTurnAround = true;
 
   IMAGES_PATHS_WALKING = [
@@ -55,8 +55,7 @@ class ChickenNormal extends MovableObject {
 
   checkMakeMovement() {
     if (this.isDead()) this.deadAnimation_Part_MakeMovement_IsOver = true;
-    else if (this.otherDirection == true) this.moveRight();
-    else this.moveLeft();
+    else this.moveInXDirection();
   }
 
   checkSetImages() {

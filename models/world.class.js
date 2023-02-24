@@ -41,7 +41,7 @@ class World {
     this.keyboard = keyboard;
 
     this.camera_x_shift = 0;
-    this.camera_x_shift = 290;
+    this.camera_x_shift = 150;
 
     this.camera_x_min = this.level.start_x;
 
@@ -67,8 +67,7 @@ class World {
   setWorld() {
     this.character.world = this;
 
-    let lastLevelEnemy = this.level.enemies[this.level.enemies.length - 1];
-    let endboss = lastLevelEnemy;
+    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
     endboss.world = this;
 
     this.character.level = this.level;
@@ -107,9 +106,10 @@ class World {
   runInterval;
   run() {
     setStoppableInterval(() => {
-      world.character.health = 100;
+      ///TODO: ZUM LÖSCHEN / ZWISCHENLÖSUNG DAMIT DER CHARACTER NIE STIBRT WERDEN PROGRMAMIERUNG / TESTING / SPIEL ZU ENDE GEHT
+      // world.character.health = 5;  
       // console.log('WIEDER IM RUN INTERVALL');
-      if (!this.characterOrEndbossRemoved) {
+      if (!this.isCharacterOrEndbossRemoved()) {
         this.checkCollisions();
         this.checkRemovals();
         this.checkIfCharacterThrownBottle();
@@ -147,7 +147,12 @@ class World {
    */
   checkCollisions() {
     // CHARACTER VS. BROWN CHICKEN
-    this.checkIf_Character_IsColliding('enemies', 'isCollidingOrPressingInJumpFallingDown', 'healthBar', 'health');
+    this.checkIf_Character_IsColliding(
+      'enemies',
+      'isCollidingOrPressingInJumpFallingDown',
+      'healthBar',
+      'healthPercentage'
+    );
     this.checkIf_Character_IsColliding('coins', 'takeCoin', 'coinsBar', 'coinsPercentage');
     this.checkIf_Character_IsColliding('bottlesInGround', 'takeBottle', 'bootlesBar', 'bottlesPercentage');
 
@@ -177,27 +182,18 @@ class World {
         if (bottle.isColliding(collisionEnemy) || bottle.isOnGroundAfterFlight()) {
           bottle.hit();
           if (!collisionEnemy.isHurt()) collisionEnemy.hit();
-          if (collisionEnemy instanceof Endboss) this.setEndbossHealthPercentage(collisionEnemy);
+          if (collisionEnemy instanceof Endboss) this.endbossBar.setPercentage(collisionEnemy.healthPercentage);
           break;
         }
       }
     }
   }
 
-  setEndbossHealthPercentage(endbossObj) {
-    let endbossHealthPercentage = this.getEndbossHealthPercentage(endbossObj);
-    this.endbossBar.setPercentage(endbossHealthPercentage);
-  }
-
-  getEndbossHealthPercentage(endbossObj) {
-    return (endbossObj.health / 25) * 100;
-  }
-
   checkRemovals() {
     this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
     this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
     this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.character.coins);
-    this.checkIf_CharacterOrEndboss_CanBeRemoved_And_RemoveOneOfBoth();
+    this.checkIf_Character_CanBeRemoved_And_RemoveOneOfBoth();
   }
 
   checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(array) {
@@ -206,24 +202,20 @@ class World {
     });
   }
 
-  checkIf_CharacterOrEndboss_CanBeRemoved_And_RemoveOneOfBoth() {
-    // Prepare the local variable for endboss, if it still exists, and store it under the variable.
-    let lastEnemieInLevelArray = this.level.enemies[this.level.enemies.length - 1];
-    let endboss;
-    if (lastEnemieInLevelArray instanceof Endboss) endboss = lastEnemieInLevelArray;
-    else endboss = undefined;
-
-    // Check if Endboss storaged/exists and can be removed from level enemies array.
-    if (endboss != undefined && endboss.canBeRemoved) {
-      this.removeFromLevel(endboss, this.level.enemies);
-      this.characterOrEndbossRemoved = true;
-    }
-
+  checkIf_Character_CanBeRemoved_And_RemoveOneOfBoth() {
     // Check if character can be removed the world.
-    if (this.character.canBeRemoved) {
-      this.removeCharacter();
-      this.characterOrEndbossRemoved = true;
-    }
+    if (this.character.canBeRemoved) this.removeCharacter();
+  }
+
+  isCharacterOrEndbossRemoved() {
+    // Prepare the local variable for endboss, if it still exists, and store it under the variable.
+    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
+    return !this.character || !endboss;
+  }
+
+  getOnlyEndbossObjFromLevelEnemyArray() {
+    let endbossObjFromLevelEnemyArray = this.level.enemies.find((x) => x instanceof Endboss);
+    return endbossObjFromLevelEnemyArray;
   }
 
   /**
@@ -231,7 +223,7 @@ class World {
    * and set the screen screen and buttons for 'game over' state.
    */
   isCharacterOrEndbossRemoved_canGameBeStopped() {
-    if (this.characterOrEndbossRemoved) {
+    if (this.isCharacterOrEndbossRemoved()) {
       stopGame();
       this.stopDrawing = true;
       setScreenBtnsAsPerGameState('over');

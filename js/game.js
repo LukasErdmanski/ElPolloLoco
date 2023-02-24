@@ -146,7 +146,7 @@ window.addEventListener('keyup', (event) => {
  * @param {boolean} keyboardPropertyValue - The value to assign to the property of the keyboard object (equal to key name).
  */
 function setTrueOrFalseTheKeyboardProperty(event, keyboardPropertyValue) {
-  if (world.character.health != 0) {
+  // if (world.character.health != 0) {
     for (const keyObject in CONTROLLER_BUTTONS) {
       if (Object.hasOwnProperty.call(CONTROLLER_BUTTONS, keyObject)) {
         const keyCodeOfKeyObject = CONTROLLER_BUTTONS[keyObject].keyCode;
@@ -161,7 +161,7 @@ function setTrueOrFalseTheKeyboardProperty(event, keyboardPropertyValue) {
       }
     }
   }
-}
+// }
 
 /**
  * Checks if the given keyboardPropertyValue is true or false. If it is true, it adds the highlight effect to the given

@@ -98,7 +98,7 @@ class Bottle extends MovableObject {
   }
 
   isOnGroundAfterFlight() {
-    return !this.isAboveGround() && this.speedX > 0;
+    return !this.isAboveGround();
   }
 
   checkMakeMovement() {

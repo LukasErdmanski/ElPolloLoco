@@ -7,7 +7,11 @@ class MovableObject extends DrawableObject {
   acceleration = 1;
   // Variable, welche in der neuen nicht im Video benutzten Kollisionsformel verwendet wrid. Bedeutet y-Versatz. Wird wenigstens auf 0 von mir gesetzt, damit die neue besser Kollisionsformel überhaupt funktioniert.
   offsetY = 0;
-  health = 100;
+
+  health = 5;
+  healthInitial = this.health;
+  healthPercentage = 100;
+
   lastHit = 0;
   isMoveAsDeadStarted = false;
 
@@ -103,13 +107,18 @@ class MovableObject extends DrawableObject {
    * Reduces movable object's health by colliding.
    */
   hit() {
-    this.health -= 5;
+    this.health--;
     // Check if the health is zero or negative.
     if (this.health <= 0) {
       // Yes, set it minimally to zero.
       this.health = 0;
     }
     this.lastHit = new Date().getTime();
+    this.updateHealthPercentage();
+  }
+
+  updateHealthPercentage() {
+    this.healthPercentage = (this.health / this.healthInitial) * 100;
   }
 
   /**
@@ -151,6 +160,9 @@ class MovableObject extends DrawableObject {
     this.checkIf_Check_SetImages_Interval_Exist_AndSetIt(imgChangeTimeout);
     this.checkInLoopIfBothAnimationPartInvervalAreOver();
   }
+
+  checkMakeMovement() {}
+  checkSetImages() {}
 
   // CHANGING POSITION OF MOVABLE OBJECT
   checkIf_Check_MakeMovement_Invervall_Exist_AndSetIt(movementTimeout) {
@@ -268,39 +280,44 @@ class MovableObject extends DrawableObject {
   }
 
   moveAsDead() {
-    if (this.isTopImgContourVisible()) {
-      console.log('in');
-
-      // Checks if character already not started to move as dead.
-      if (!this.isMoveAsDeadStarted) {
-        // No, set the state that character started to move as dead.
-        this.isMoveAsDeadStarted = true;
-        console.log('in in');
-        // Set the horizontal and vertical speed for 'jump / falling down right' as dead.
-        this.setMoveAsDeadToLeftOrRight();
-        this.jump(15);
-      }
-
-      // Check if the character on the ground (actually: is not about the ground.)
-      /*       if (!this.isAboveGround()) {
-        // Yes, apply futher gravity unter the ground top horizontal border.
-        this.y -= this.speedY;
-        this.speedY -= this.acceleration;
-      } */
-
-      // Move right with another speed as dead.
-      this.moveRight();
-    } else this.deadAnimation_Part_MakeMovement_IsOver = true;
+    if (this.isPreparedToMoveAsDead()) this.startMoveAsDead();
+    else if (this.isMovingDead()) this.moveInXDirection();
+    else this.deadAnimation_Part_MakeMovement_IsOver = true;
   }
 
-  setMoveAsDeadToLeftOrRight() {
-    let moImgWidthMinusOffset = this.width - this.offset.left - this.offset.right;
-    let moImgCenterX = this.x + this.offset.left + moImgWidthMinusOffset / 2 + world.camera_x;
+  isPreparedToMoveAsDead() {
+    return !this.isMoveAsDeadStarted;
+  }
 
-    if (moImgCenterX > canvas.width / 2) {
-      this.speedX = -3;
-    } else {
-      this.speedX = 3;
-    }
+  startMoveAsDead() {
+    // No, set the state that character started to move as dead.
+    this.isMoveAsDeadStarted = true;
+    console.log('in in');
+    // Set the horizontal and vertical speed for 'jump / falling down right' as dead.
+    this.setDirectionAsPerCanvasCenter();
+    this.speedX = 5;
+    this.jump(15);
+    this.moveInXDirection();
+  }
+
+  isMovingDead() {
+    return this.isTopImgContourVisible();
+  }
+
+  setDirectionAsPerCanvasCenter() {
+    if (this.checkIfOnLeftOrRightCanvasHalf()) this.otherDirection = false;
+    else this.otherDirection = true;
+  }
+
+  checkIfOnLeftOrRightCanvasHalf() {
+    let xCanvasCenter = -this.world.camera_x + this.world.canvas.width / 2;
+    let xMOCenter = this.x + this.width / 2;
+    return xMOCenter > xCanvasCenter;
+  }
+
+  moveInXDirection() {
+    if (this.otherDirection == true) this.moveRight();
+    else this.moveLeft();
+    if (this instanceof Character) this.otherDirection = !this.otherDirection;
   }
 }

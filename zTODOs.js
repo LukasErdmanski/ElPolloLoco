@@ -30,4 +30,3 @@
 // TODO: 23. Alle Audio sollen in Array und stoppbar sein, wenn Spiel zu Ende
 // TODO: 24. Health überall anpassen als Vielfachen von 5, da hit -5, endboss 25, normalCHicken 10, small = 5;, bottel, Coin
 // TODO: 25. Initialisierungfunktion von Bottle und Coins im Array
-// TODO: 26. Verschiedene Farbe für statusbars
