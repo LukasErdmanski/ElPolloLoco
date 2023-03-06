@@ -19,6 +19,10 @@ class Character extends MovableObject {
 
   canTurnAround = true;
 
+  lastThrow = 0;
+  lastBuyingHealth = 0;
+  lastBuyingBottle = 0;
+
   // Array of image paths of this class.
   IMAGES_PATHS_IDLE_SHORT = [
     'img/2_character_pepe/1_idle/idle/I-1.png',
@@ -82,10 +86,15 @@ class Character extends MovableObject {
     'img/2_character_pepe/5_dead/D-56.png',
   ];
 
+  SOUND_DEAD = new Sound('audio/characterDead.mp3', 0.7);
+  SOUND_HURT = new Sound('audio/characterHurt.mp3', 0.7);
+  SOUND_JUMP = new Sound('audio/characterJump.mp3', 0.7);
+  SOUND_MOVE_LEFT_OR_RIGHT = new Sound('audio/characterMoveLeftRight.mp3', 0.7);
+  SOUND_SNOORING = new Sound('audio/characterSnooring.mp3', 0.7);
+  SOUND_NO_COIN_NO_BOTTLE = new Sound('audio/characterNoCoin.mp3', 0.7);
+
   // Assigned world instance. --> In this way you can access f.e world.character.world.keyboard. ...
   // world;
-  walking_sound = new Audio('audio/running.mp3');
-  jumping_sound = new Audio('audio/jump.mp3');
 
   constructor() {
     // Via super() wird auf die Methode, hier z.B. loadImage() der Super Klasse zugegriffen.
@@ -111,7 +120,7 @@ class Character extends MovableObject {
     this.applyGravity();
     // this.y = 0;
     // Start character movement animation after the initialisation.
-    this.animate();
+    // this.animate();
   }
 
   setAnimateIntervalHandlers() {
@@ -120,6 +129,7 @@ class Character extends MovableObject {
   }
 
   takeCoin(coinObj) {
+    coinObj.SOUND_COLLECT.play();
     this.world.level.coins = this.world.level.coins.filter((filteredElem) => filteredElem !== coinObj);
     this.coins.push(coinObj);
 
@@ -131,6 +141,7 @@ class Character extends MovableObject {
   }
 
   takeBottle(bottleObj) {
+    bottleObj.SOUND_COLLECT.play();
     this.world.level.bottlesInGround = this.world.level.bottlesInGround.filter(
       (filteredElem) => filteredElem !== bottleObj
     );
@@ -148,6 +159,8 @@ class Character extends MovableObject {
   throwBottle() {
     let bottle = this.bottles[this.bottles.length - 1];
     if (bottle != undefined) {
+      bottle.SOUND_THROW.play();
+
       bottle.otherDirection = this.otherDirection;
       bottle.x = this.x + this.width - this.offset.right;
       if (bottle.otherDirection) bottle.x = this.x + this.offset.right;
@@ -160,10 +173,12 @@ class Character extends MovableObject {
       // this.world.level.bottles.push(bottle);
       this.world.level.bottlesInFlight.push(bottle);
 
+      this.lastThrow = new Date().getTime();
+
       this.lastThrownBottle = bottle;
       this.updateBottlesPercentage();
       this.world.bootlesBar.setPercentage(this.bottlesPercentage);
-    }
+    } else this.SOUND_NO_COIN_NO_BOTTLE.play();
   }
 
   /**
@@ -181,10 +196,10 @@ class Character extends MovableObject {
   }
 
   checkMakeMovement() {
-    this.walking_sound.pause();
+    this.SOUND_MOVE_LEFT_OR_RIGHT.pause();
 
     // if (this.canMoveAsDead()) this.moveAsDead();
-    if (this.canMoveAsDead()) this.moveAsDead();
+    if (this.canMoveAsDead()) this.moveAsDead(); //TODO: DEAD SOLL NUR EINMALL GESPIELT WERDEN NICHT IM LOOP
     else {
       // Check if the character can move right. If yes, the character moves right.
       if (this.canMoveRight()) this.moveRight();
@@ -193,7 +208,9 @@ class Character extends MovableObject {
       if (this.canMoveLeft()) this.moveLeft();
 
       // Check if the character can jump. If yes, the character jumps.
-      if (this.canJump()) this.jump(20);
+      if (this.canJump()) this.jump(20), this.SOUND_JUMP.play();
+
+      if (this.canThrowBottle()) this.throwBottle();
 
       if (this.canBuyHealth()) this.buyHealth();
 
@@ -205,6 +222,10 @@ class Character extends MovableObject {
 
   isAlive() {}
 
+  canMoveAsDead() {
+    return this.isDead();
+  }
+
   /**
    * Checks if the character can move right.
    * @returns {boolean} This returns true if character can move right, otherwise false.
@@ -214,7 +235,7 @@ class Character extends MovableObject {
      *  Check and return true if the right arrow key is pressed on the assigned keyboard object and character is not futher than at the
      *  end x-coordinate of the current world level.
      */
-    return this.world.keyboard.RIGHT;
+    return this.world.keyboard.RIGHT.isPressed;
   }
 
   /**
@@ -227,7 +248,7 @@ class Character extends MovableObject {
      * beginning x-coordinate.
      */
     // return this.world.keyboard.LEFT && this.x > this.world.level.start_x;
-    return this.world.keyboard.LEFT;
+    return this.world.keyboard.LEFT.isPressed;
   }
 
   /**
@@ -240,19 +261,35 @@ class Character extends MovableObject {
      * Check and return true if the up key is pressed on the assigned keyboard object and character is NOT above the
      * ground.
      */
-    return this.world.keyboard.UP && !this.isAboveGround();
+    return this.world.keyboard.UP.isPressed && !this.isAboveGround();
   }
 
-  canMoveAsDead() {
-    return this.isDead();
+  canThrowBottle() {
+    return this.world.keyboard.D.isPressed && !this.isTimePassedOfLastAction(this.lastThrow);
   }
 
   canBuyHealth() {
-    return this.world.keyboard.A;
+    return this.world.keyboard.A.isPressed && !this.isTimePassedOfLastAction(this.lastBuyingHealt);
   }
 
   canBuyBottle() {
-    return this.world.keyboard.S;
+    return this.world.keyboard.S.isPressed && !this.isTimePassedOfLastAction(this.lastBuyingBottle);
+  }
+
+  /**
+   * Returns if character ended last bottle throw.
+   */
+  /**
+   * Returns if character ended last bottle throw.
+   */
+
+  /**
+   * Returns if character ended last bottle throw.
+   */
+  isTimePassedOfLastAction(timestampOfLastAction) {
+    let timePassed = new Date().getTime() - timestampOfLastAction; // Difference in ms.
+    timePassed = timePassed / 1000; // Difference in s.
+    return timePassed < 0.22;
   }
 
   /**
@@ -260,20 +297,18 @@ class Character extends MovableObject {
    */
   moveRight() {
     // Diese Funktions enthält auch eine Funktionn mit dem gleichen Namen, d.h. z.B. moveRight() führt eine moveRight() aus der vererbenden SuperKlasse movableObject.class.js aus, dann ist diese geerbte Funktion, hier moveRight(), mittels super.moveRight() (zur Differeniezrung / "Kollision" bei gleicher FunktionsNamensGebung / Fehlervermeidung) innnerhalb der Funktion moveRight() auszuführen.
+    if (!this.isAboveGround()) this.SOUND_MOVE_LEFT_OR_RIGHT.play();
     super.moveRight();
     this.otherDirection = false;
-    this.walking_sound.volume = 0.7;
-    // this.walking_sound.play();
   }
 
   /**
    * Moves the character to the left.
    */
   moveLeft() {
+    if (!this.isAboveGround()) this.SOUND_MOVE_LEFT_OR_RIGHT.play();
     super.moveLeft();
     this.otherDirection = true;
-    this.walking_sound.volume = 0.7;
-    // this.walking_sound.play();
   }
 
   /**
@@ -281,8 +316,6 @@ class Character extends MovableObject {
    */
   jump(speedY) {
     super.jump(speedY);
-    this.jumping_sound.volume = 0.32;
-    // this.jumping_sound.play();
   }
 
   /**
@@ -293,37 +326,52 @@ class Character extends MovableObject {
   }
 
   buyBottle() {
-    let coinForPaymentt = this.coins[this.coins.length - 1];
-    if (coinForPaymentt != undefined && this.bottles.length < this.world.level.amountOfAllBottles) {
-      coinForPaymentt.canBeRemoved = true;
+    let coinForPayment = this.coins[this.coins.length - 1];
+    if (coinForPayment != undefined && this.bottles.length < this.world.level.amountOfAllBottles) {
+      this.lastBuyingBottle = new Date().getTime();
+
+      coinForPayment.SOUND_BUY_HEALTH.play();
+
+      coinForPayment.canBeRemoved = true;
       this.updateCoinsPercentage();
       this.world.coinsBar.setPercentage(this.coinsPercentage);
+
       let x = this.x;
       let y = this.y;
       let boughtBottle = new Bottle(undefined, x, y);
       this.bottles.push(boughtBottle);
       this.world.level.amountOfAllBottles++;
+
       this.updateBottlesPercentage();
       this.world.bootlesBar.setPercentage(this.bottlesPercentage);
-    }
+    } else this.SOUND_NO_COIN_NO_BOTTLE.play();
   }
 
   buyHealth() {
-    let coinForPaymentt = this.coins[this.coins.length - 1];
-    if (coinForPaymentt != undefined && this.health < this.healthInitial) {
+    let coinForPayment = this.coins[this.coins.length - 1];
+    if (coinForPayment != undefined && this.health < this.healthInitial) {
+      this.lastBuyingHealth = new Date().getTime();
+
+      coinForPayment.SOUND_BUY_BOTTLE.play();
+
+      coinForPayment.canBeRemoved = true;
+      this.updateCoinsPercentage();
+      this.world.coinsBar.setPercentage(this.coinsPercentage);
+
       this.health++;
       if (this.health > this.healthInitial) this.health = this.healthInitial;
+
       this.updateHealthPercentage();
       this.world.healthBar.setPercentage(this.healthPercentage);
-      this.updateBottlesPercentage();
-      this.world.bootlesBar.setPercentage(this.bottlesPercentage);
-    } else console.log('SPIELT AUDIO KANN HEALTH KANN NICHT GEKAUFT WERDEN');
+    } else this.SOUND_NO_COIN_NO_BOTTLE.play();
   }
 
   checkSetImages() {
+    this.SOUND_SNOORING.pause();
     if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
     else if (this.isInAnyStateUpdatingLastTimeStempOfLastMovement());
-    else if (this.isInLongSleep()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_LONG);
+    else if (this.isInLongSleep())
+      this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_LONG), this.SOUND_SNOORING.play();
     else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_SHORT);
   }
 
@@ -333,6 +381,7 @@ class Character extends MovableObject {
       this.updateTimeStempOfLastMovement();
       return true;
     } else if (this.isAboveGround()) {
+      this.SOUND_MOVE_LEFT_OR_RIGHT.pause();
       this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_JUMPING);
       this.updateTimeStempOfLastMovement();
       return true;
@@ -344,18 +393,27 @@ class Character extends MovableObject {
     return false;
   }
 
+  updateTimeStempOfLastMovement() {
+    this.timeStempOflastMovement = new Date().getTime();
+  }
+
+  isInLongSleep() {
+    let secondsPassed = (new Date().getTime() - this.timeStempOflastMovement) / 1000;
+    return secondsPassed > 5;
+  }
+
   isMovingLeftOrRightOrBuyingOrThrowing() {
     return (
-      this.world.keyboard.RIGHT ||
-      this.world.keyboard.LEFT ||
-      this.world.keyboard.A ||
-      this.world.keyboard.S ||
-      this.world.keyboard.D
+      this.world.keyboard.RIGHT.isPressed ||
+      this.world.keyboard.LEFT.isPressed ||
+      this.world.keyboard.A.isPressed ||
+      this.world.keyboard.S.isPressed ||
+      this.world.keyboard.D.isPressed
     );
   }
 
   isCollidingOrPressingInJumpFallingDown(enemy) {
-    if (!enemy.isHurt() && !this.isHurt()) {
+    if (!this.isHurt() && !enemy.isHurt()) {
       if (this.isPressing(enemy)) {
         enemy.hit();
         this.jump(15);
@@ -368,14 +426,5 @@ class Character extends MovableObject {
     console.log(this.speedY <= 0);
     console.log(!enemy instanceof Endboss);
     return this.isAboveGround() && this.speedY <= 0 && !(enemy instanceof Endboss);
-  }
-
-  isInLongSleep() {
-    let secondsPassed = (new Date().getTime() - this.timeStempOflastMovement) / 1000;
-    return secondsPassed > 5;
-  }
-
-  updateTimeStempOfLastMovement() {
-    this.timeStempOflastMovement = new Date().getTime();
   }
 }

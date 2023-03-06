@@ -17,6 +17,10 @@ class Coin extends MovableObject {
 
   IMAGES_PATHS = ['img/8_coin/coin_1.png', 'img/8_coin/coin_2.png'];
 
+  SOUND_COLLECT = new Sound('audio/collectCoin.mp3', 0.7);
+  SOUND_BUY_HEALTH = new Sound('audio/buyHealth.mp3', 0.7);
+  SOUND_BUY_BOTTLE = new Sound('audio/buyBottle.mp3', 0.7);
+
   constructor(allCoinsArr) {
     super().loadImage(this.IMAGES_PATHS[0]);
     this.loadImages(this.IMAGES_PATHS);
@@ -68,7 +72,7 @@ class Coin extends MovableObject {
      */
     let [x, y, coinObjDiameter] = [500, 255, Coin.diameter];
     /**
-     * Check if is the iteration for the first of nine coins in a coin row (arc) und if is not the first coin row (arc).
+     * heck if is the iteration for the first of nine coins in a coin row (arc) und if is not the first coin row (arc).
      * Yes, set the x-coordinate of the first coin by 500 more than the last coin of the last coin row (arc).
      */
     if (i == 0 && lastCoinObj != undefined) x = lastCoinObj.x + 500;

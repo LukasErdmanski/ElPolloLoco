@@ -28,6 +28,14 @@ class MovableObject extends DrawableObject {
 
   canTurnAround = false;
 
+  static allMovableObjectsInstances = [];
+
+  constructor() {
+    super();
+    this.id = Object.keys(MovableObject.allMovableObjectsInstances).length + 1; // Set unique ID for each MovableObject instance
+    MovableObject.allMovableObjectsInstances[this.id] = this;
+  }
+
   /**
    * Sets the gravity to the movable object.
    */
@@ -107,9 +115,11 @@ class MovableObject extends DrawableObject {
    * Reduces movable object's health by colliding.
    */
   hit() {
+    if (this.SOUND_HURT) this.SOUND_HURT.play();
     this.health--;
     // Check if the health is zero or negative.
     if (this.health <= 0) {
+      this.SOUND_DEAD.play();
       // Yes, set it minimally to zero.
       this.health = 0;
     }
@@ -211,15 +221,20 @@ class MovableObject extends DrawableObject {
   }
 
   checkInLoopIfBothAnimationPartInvervalAreOver() {
-    let checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id = setStoppableInterval(() => {
-      if (
-        this.animationInterval_Part_MakeMovement_IsOver == true &&
-        this.animationInverval_Part_ChangingImg_IsOver == true
-      ) {
-        this.canBeRemoved = true;
-        clearInterval(checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id);
-      }
-    }, 1000 / 60);
+    if (
+      typeof this.check_MakeMovement_Interval_Handler !== 'undefined' &&
+      typeof this.check_SetImages_Interval_Handler !== 'undefined'
+    ) {
+      let checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id = setStoppableInterval(() => {
+        if (
+          this.animationInterval_Part_MakeMovement_IsOver == true &&
+          this.animationInverval_Part_ChangingImg_IsOver == true
+        ) {
+          this.canBeRemoved = true;
+          clearInterval(checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id);
+        }
+      }, 1000 / 60);
+    }
   }
 
   changeImagesSetAndCurrentImg(newCurrentImagesSet) {

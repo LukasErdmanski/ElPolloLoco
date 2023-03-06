@@ -18,6 +18,9 @@ class ChickenNormal extends MovableObject {
 
   IMG_PATH_DEAD = ['img/3_enemies_chicken/chicken_normal/2_dead/dead.png'];
 
+  SOUND_HURT = new Sound('audio/chickenHurt.mp3', 0.7);
+  SOUND_DEAD = new Sound('audio/chickenDead.mp3', 1);
+
   constructor() {
     super().loadImage(this.IMAGES_PATHS_WALKING[0]);
     this.loadImages(this.IMAGES_PATHS_WALKING);
@@ -37,7 +40,7 @@ class ChickenNormal extends MovableObject {
       if (this.level) {
         clearInterval(isLevelSetInterval);
         this.setStartXAndSpeedX();
-        this.animate();
+        // this.animate();
       }
     });
   }

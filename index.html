@@ -11,8 +11,8 @@
     <title>El pollo loco by Lukas Erdmanski</title>
   </head>
 
-  <!-- <body> -->
-  <body onload="init()">
+  <body onload="initOnLoad()">
+  <!-- <body onload="init()"> -->
     <h1 id="title" class="dNone">El pollo loco</h1>
     <div id="rotateDeviceInfo" class="dNone">
       <span>Please rotate<br>your device.</span>
@@ -34,8 +34,8 @@
          <!-- Buttons layer -->
         <div id="buttonsLayer" class="buttonsLayer">
           <div class="buttonsRowTop">
-            <button>i</button>
-            <button><img src="img/10_buttons/gamepad-solid.svg" alt="gamepad-icon"></button>
+            <button onclick="switchGameInfoBox()">i</button>
+            <button onclick="switchControlInfoBox()"><img src="img/10_buttons/gamepad-solid.svg" alt="gamepad-icon"></button>
             <button class="btnHover" onclick="exeFnChangeOnclickAndBtnSrc('turnMusicOff', 'turnMusicOn', this, 'img/10_buttons/bgMusicOff.png')"><img src="img/10_buttons/bgMusicOn.png" alt="bgMusic-icon"></button>
             <button onclick="exeFnChangeOnclickAndBtnSrc('turnSoundsOff', 'turnSoundsOn', this, 'img/10_buttons/sound-off-icon.svg')"><img src="img/10_buttons/sound-on-icon.svg" alt="bgMusic-icon"></button>
             <button id="enterExitFullScreenBtn" onclick="exeFnChangeOnclickAndBtnSrc('enterFullscreen', 'exitFullscreen', this, 'img/10_buttons/fullscreen-exit-128.png')"><img src="img/10_buttons/fullscreen-enter-128.png" alt="expand-icon"></button>
@@ -62,7 +62,58 @@
           </div>
         </div>
       </div>
+      <!-- Info box -->
+      <div id="infoBoxContainer" class="dNone">
+        <div id="infoBox">
+          <!-- Game info -->
+          <div id="gameInfo" class="dNone">
+            <h2>El pollo loco</h2>
+            Win the game by surviving and fighting the end boss from the end of the game level.
+            Along the way you can collect coins and bottles. For the collected coins you can either buy some health, if you have already lost some, or more bottles. All enemies met on the way can be fought either with targeted bottle throw. All enemies except endboss can be additionally fought by targeted jump on them as well.
+            The game is over when either the character or endboss survives.
+          </div>
+          <!-- Control info -->
+          <div id="controlInfo" class="dNone">
+            <h2>Control information</h2>
+            <div id="mobileOrTabletButtons" class="controlInfoButtons dNone">
+              <span>
+                <span><button><img src="img/10_buttons/arrow-left.png" alt="arrow-left-icon"></button>Move left</span>
+                <span><button><img src="img/10_buttons/arrow-right.png" alt="arrow-right-icon"></button>Move right</span>
+              </span>
+              <span>
+                <span><button><img src="img/10_buttons/arrow-up.png" alt="arrow-up-icon"></button>Jump</span>
+              <span><button><img src="img/10_buttons/throw.png" alt="throw-icon"></button>Throw bottle</span>
+              </span>
+              <span>
+                <span><button><img src="img/10_buttons/coins-128.png" alt="coin-icon"></button>Buy health</span>
+                <span><button><img src="img/10_buttons/beer-bottle-128.png" alt="bottle-icon"></button>Buy bottle</span>
+              </span>
+            </div>
+            <div id="keyboardButtons" class="controlInfoButtons dNone">
+              <span>
+                <span><button><img src="img/10_buttons/leftKey.png" alt="arrow-left-icon"></button>Move left</span>
+                <span><button><img src="img/10_buttons/rightKey.png" alt="arrow-right-icon"></button>Move right</span>
+              </span>
+              <span>
+                <span><button><img src="img/10_buttons/upKey.png" alt="arrow-up-icon"></button>Jump</span>
+                <span><button><img src="img/10_buttons/dKey.png" alt="throw-icon"></button>Throw bottle</span>
+              </span>
+              <span>
+                <span><button><img src="img/10_buttons/aKey.png" alt="coin-icon"></button>Buy health</span>
+                <span><button><img src="img/10_buttons/sKey.png" alt="bottle-icon"></button>Buy bottle</span>
+              </span>
+            </div>
+          </div>
+          <div class="closeButtonContainer">
+            <button onclick="switchInfoBox()"><img src="img/10_buttons/close.svg" alt="close-window-icon"></button>
+          </div>
+        </div>
+      </div>
 
+
+
+
+    </div>
 
     </div>
 
@@ -74,6 +125,8 @@
     <script src="models/cloud.class.js"></script>
     <script src="models/background-object.class.js"></script>
     <script src="models/statusBar.class.js"></script>
+    <script src="models/sound.class.js"></script>
+    <script src="js/sounds.js"></script>
     <script src="models/world.class.js"></script>
     <script src="models/keyboard.class.js"></script>
     <script src="models/level.class.js"></script>
@@ -84,6 +137,5 @@
     <script src="js/game.js"></script>
     <script src="js/bars.js"></script>
     <script src="js/script.js"></script>
-
   </body>
 </html>

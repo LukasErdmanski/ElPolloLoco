@@ -58,6 +58,11 @@ class Endboss extends MovableObject {
     'img/4_enemie_boss_chicken/5_dead/G26.png',
   ];
 
+  SOUND_ATTACK = new Sound('audio/endbossAttack.mp3', 0.7);
+  SOUND_CHARACTER_DETECTED = new Sound('audio/endbossCharacterDetected.mp3', 0.7);
+  SOUND_DEAD = new Sound('audio/endbossDead.mp3', 0.7);
+  SOUND_HURT = new Sound('audio/endbossHURT.mp3', 0.7);
+
   // Memory, if the character had already first contact with the endboss.
   hadFirstContact = false;
 
@@ -79,7 +84,7 @@ class Endboss extends MovableObject {
         clearInterval(isLevelSetInterval);
         this.setStartXAndSpeedX();
         this.applyGravity();
-        this.animate();
+        // this.animate();
       }
     });
   }
@@ -137,7 +142,10 @@ class Endboss extends MovableObject {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   checkMakeMovement() {
-    if (this.isDead()) super.moveAsDead();
+    this.SOUND_ATTACK.pause();
+    if (this.isDead()) {
+      this.moveAsDead();
+    } // TODO: NUR EINMAL SPIELEN NICHT IM LOOP
     else if (this.isCharacterAlive()) {
       if (this.isHurtAndNotPreparedToAttack()) this.prepareToAttack();
       else if (this.isPreparedToAttack()) this.startAttack();
@@ -146,6 +154,10 @@ class Endboss extends MovableObject {
       else if (this.isInRunBack()) this.runBack();
       else if (this.inInWalk()) this.walk();
     }
+  }
+
+  moveAsDead() {
+    super.moveAsDead();
   }
 
   isCharacterAlive() {
@@ -189,6 +201,7 @@ class Endboss extends MovableObject {
   }
 
   attack() {
+    this.SOUND_ATTACK.play();
     if (!this.isAboveGround()) this.jump(12);
     this.setDirectionForAttack();
     this.moveInXDirection();
@@ -332,8 +345,12 @@ class Endboss extends MovableObject {
   isCharacterNearby() {
     let nearXDistanceCharacterToEndboss = this.world.canvas.width - this.width;
     let xRightCharacterImgSide = this.world.character.x + this.world.character.width;
-    let checkResult = xRightCharacterImgSide + nearXDistanceCharacterToEndboss >= this.x * 1.18;
-    if (checkResult) this.wasCharacterOnceDeteckedNearby = true;
+    let checkResult = xRightCharacterImgSide + nearXDistanceCharacterToEndboss >= this.x * 1.15;
+    if (checkResult) {
+      this.wasCharacterOnceDeteckedNearby = true;
+      this.SOUND_CHARACTER_DETECTED.play();
+      changeBgMusic();
+    }
     return checkResult;
   }
 

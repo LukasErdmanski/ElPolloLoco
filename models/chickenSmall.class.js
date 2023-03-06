@@ -28,6 +28,9 @@ class ChickenSmall extends MovableObject {
     this.isLevelSet();
   }
 
+  SOUND_DEAD = new Sound('audio/chickenDead.mp3', 1);
+  SOUND_JUMP = new Sound('audio/characterJump.mp3', 1);
+
   setAnimateIntervalHandlers() {
     this.check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
     this.check_SetImages_Interval_Handler = () => this.checkSetImages();
@@ -39,7 +42,7 @@ class ChickenSmall extends MovableObject {
         clearInterval(isLevelSetInterval);
         this.setStartXAndSpeedX();
         this.applyGravity();
-        this.animate();
+        // this.animate();
       }
     });
   }
@@ -51,7 +54,7 @@ class ChickenSmall extends MovableObject {
 
   checkMakeMovement() {
     if (this.isDead()) this.deadAnimation_Part_MakeMovement_IsOver = true;
-    else if (this.hasDesireToJump() && !this.isAboveGround()) super.jump(16);
+    else if (this.hasDesireToJump() && !this.isAboveGround()) this.jump();
     else this.moveInXDirection();
   }
 
@@ -65,6 +68,11 @@ class ChickenSmall extends MovableObject {
         return true;
       }
     }
+  }
+
+  jump() {
+    this.SOUND_JUMP.play();
+    super.jump(16);
   }
 
   checkSetImages() {

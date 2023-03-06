@@ -56,7 +56,7 @@ class World {
     this.draw();
     this.setWorld();
     // Execute a group of functions checking certain events in the world all the time.
-    this.run();
+    // this.run();
   }
 
   /**
@@ -105,40 +105,32 @@ class World {
 
   runInterval;
   run() {
+    this.startAllAnimationsOfMovableObjects();
     setStoppableInterval(() => {
       ///TODO: ZUM LÖSCHEN / ZWISCHENLÖSUNG DAMIT DER CHARACTER NIE STIBRT WERDEN PROGRMAMIERUNG / TESTING / SPIEL ZU ENDE GEHT
-      // world.character.health = 5;  
+      // world.character.health = 5;
       // console.log('WIEDER IM RUN INTERVALL');
       if (!this.isCharacterOrEndbossRemoved()) {
         this.checkCollisions();
         this.checkRemovals();
-        this.checkIfCharacterThrownBottle();
-      } else {
-        // clearInterval(this.runInterval);
-        stopGame();
-        this.stopDrawing = true;
-        setScreenBtnsAsPerGameState('over');
-      }
+      } else this.stopRun();
     }, 50);
   }
-  /**
-   * Checks if the keyboard key 'D' was pressed to throw throwable objects from the array.
-   */
-  checkIfCharacterThrownBottle() {
-    // Checks if the keyboard key 'D' was pressed.
-    if (this.keyboard.D) {
-      // Yes, initialize a new throwable object with character coordinates.
-      // let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
-      /**
-       * Yes, puth the new initialized throwable object to the 'throwableObjects' array.
-       * This 'throwableObjects' array is displayed later via the draw function. --> In this way more preasures of key 'D' / initialized
-       * throwable objects can be displayed later at the same time.
-       */
-      // this.throwableObjects.push(bottle);
 
-      let lastThrownBottle = this.character.throwBottle();
-      if (lastThrownBottle) lastThrownBottle.this.bootlesBar.setPercentage(this.character.bottlesPercentage);
-    } // TODO: WARNSINGAL KEIN BOTTLE
+  startAllAnimationsOfMovableObjects() {
+    let array = MovableObject.allMovableObjectsInstances;
+
+    array.forEach((mo) => {
+      mo.animate();
+    });
+  }
+
+  stopRun() {
+    playSoundsAtGameOver();
+    // clearInterval(this.runInterval);
+    stopGame();
+    this.stopDrawing = true;
+    setScreenBtnsAsPerGameState('over');
   }
 
   /**
@@ -179,10 +171,13 @@ class World {
       const bottle = arrayBottlesInFlight[i];
       for (let j = 0; j < arrayLevelEnemies.length; j++) {
         const collisionEnemy = arrayLevelEnemies[j];
-        if (bottle.isColliding(collisionEnemy) || bottle.isOnGroundAfterFlight()) {
+        if (bottle.isColliding(collisionEnemy)) {
           bottle.hit();
           if (!collisionEnemy.isHurt()) collisionEnemy.hit();
           if (collisionEnemy instanceof Endboss) this.endbossBar.setPercentage(collisionEnemy.healthPercentage);
+          break;
+        } else if (bottle.isOnGroundAfterFlight()) {
+          bottle.hit();
           break;
         }
       }
@@ -190,10 +185,19 @@ class World {
   }
 
   checkRemovals() {
-    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
+    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
+    if (endboss.isDead()) this.removeAllEnemiesExceptEndboss();
+    else this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
     this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
     this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.character.coins);
-    this.checkIf_Character_CanBeRemoved_And_RemoveOneOfBoth();
+    this.checkIf_Character_Or_Endboss_CanBeRemoved_And_RemoveOneOfBoth();
+  }
+
+  removeAllEnemiesExceptEndboss() {
+    let array = this.level.enemies;
+    array.forEach((enemy) => {
+      if (!(enemy instanceof Endboss)) this.removeFromLevel(enemy, array);
+    });
   }
 
   checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(array) {
@@ -202,11 +206,20 @@ class World {
     });
   }
 
-  checkIf_Character_CanBeRemoved_And_RemoveOneOfBoth() {
-    // Check if character can be removed the world.
+  checkIf_Character_Or_Endboss_CanBeRemoved_And_RemoveOneOfBoth() {
+    // Check if character can be removed from the world and remove it if yes.
     if (this.character.canBeRemoved) this.removeCharacter();
+    // Check if endboss can be removed from the world level and remove it if yes.
+    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
+    let array = this.level.enemies;
+    if (endboss.canBeRemoved) {
+      this.removeFromLevel(endboss, array);
+    }
   }
 
+  /**
+   * Gets if the character or endboss is removed.
+   */
   isCharacterOrEndbossRemoved() {
     // Prepare the local variable for endboss, if it still exists, and store it under the variable.
     let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
@@ -217,29 +230,6 @@ class World {
     let endbossObjFromLevelEnemyArray = this.level.enemies.find((x) => x instanceof Endboss);
     return endbossObjFromLevelEnemyArray;
   }
-
-  /**
-   * Checks if the character or endboss is dead. If yes, stops the game clearing ALL of running intervalls in the world
-   * and set the screen screen and buttons for 'game over' state.
-   */
-  isCharacterOrEndbossRemoved_canGameBeStopped() {
-    if (this.isCharacterOrEndbossRemoved()) {
-      stopGame();
-      this.stopDrawing = true;
-      setScreenBtnsAsPerGameState('over');
-      return true;
-
-      /*    
-      setTimeout(() => {
-        stopGame(); // TODO: Hier DA oder ISH Programmierer fragen, ob das clean / empfohlen / richtig ist, dass eine game.js Funktion benutzt wird.
-        setScreenBtnsAsPerGameState('over');
-      }, 2000); // TODO: Die Zeit am Ende hier anpassen, dass die DIEING ANIMATION vom Character oder Endboss, WIN ANIMATION vom Character oder Endboss ausreichend zu Ende abgespielt wird. Erst dann soll over screen eintretten und stopGame (clearing all intervalls).
-    
-     */
-    }
-  }
-
-  // DEAD_BOTTLE;
 
   draw() {
     if (!pause) {

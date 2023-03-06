@@ -2,6 +2,7 @@ let canvas;
 let world;
 let keyboard = new Keyboard();
 let allIntervals = [];
+let allPlayingAudios = [];
 /**
  * Storage if the game is paused (equal to true) or playing (equal to false). As per that the given function as
  * argument into the function {@link setStoppableInterval} will be executed or paused.
@@ -9,36 +10,14 @@ let allIntervals = [];
  */
 let pause = false;
 let gameOver = true;
-const CONTROLLER_BUTTONS = [
-  {
-    keyName: 'LEFT',
-    keyCode: 37,
-  },
-  {
-    keyName: 'UP',
-    keyCode: 38,
-  },
-  {
-    keyName: 'RIGHT',
-    keyCode: 39,
-  },
-  /*   {
-    keyName: 'SPACE',
-    keyCode: 32,
-  }, */
-  {
-    keyName: 'A',
-    keyCode: 65,
-  },
-  {
-    keyName: 'S',
-    keyCode: 83,
-  },
-  {
-    keyName: 'D',
-    keyCode: 68,
-  },
-];
+let soundsMuted = false;
+
+gameSounds = {
+  bgMusic: new Sound('audio/bgMusic.mp3', 0.1),
+  endbossBgMusic: new Sound('audio/endbossBgMusic.mp3', 0.7),
+  over: new Sound('audio/gameOver.mp3', 0.7),
+  win: new Sound('audio/win.mp3', 0.7),
+};
 
 /**
  * Returns the HTMLelement with the given id.
@@ -49,9 +28,16 @@ function getElem(id) {
   return document.getElementById(id);
 }
 
-function init() {
-  setScreenBtnsAsPerGameState('running');
+function initOnLoad() {
+  setControlInfoBox();
+}
 
+async function init() {
+  // TODO: LOADING SCREEN TO PREPARE IMG UND AUDIO CACHE
+
+  Sound.allSoundInstances = [];
+  // setControlInfoBox();
+  loadedAudioCount = 0;
   canvas = getElem('canvas');
 
   // TODO: Hier bei Game End: alle laufende (Game, Sound) Intervalle clearen (aus einer vorher gesammelten Invervall Collection beim Game Ende)
@@ -62,7 +48,15 @@ function init() {
 
   initLevel();
 
-  world = new World(canvas, keyboard);
+  world = new World(canvas, keyboard, sounds);
+
+  await awaitAllSoundsReadyToPlay();
+  resetAllSound();
+  playBgMusic();
+
+  setScreenBtnsAsPerGameState('running');
+
+  world.run();
 
   applyOnClickEventListenerToAllButtons();
   applyMouseTouchUpDownEventListeners();
@@ -70,6 +64,16 @@ function init() {
   checkOrientationSetContentElements();
 
   console.log('My character is', world.character);
+}
+
+function setControlInfoBox() {
+  if (getIfDeviceIsMobileOrTablet()) {
+    getElem('mobileOrTabletButtons').classList.remove('dNone');
+    getElem('keyboardButtons').classList.add('dNone');
+  } else {
+    getElem('mobileOrTabletButtons').classList.add('dNone');
+    getElem('keyboardButtons').classList.remove('dNone');
+  }
 }
 
 /**
@@ -127,7 +131,7 @@ function hideStartScreenAndBtnShowResetBtn() {
  */
 window.addEventListener('keydown', (event) => {
   // console.log(event);
-  setTrueOrFalseTheKeyboardProperty(event, true);
+  setKeyObjIsPressedProperty(event, true);
 });
 
 /**
@@ -136,43 +140,39 @@ window.addEventListener('keydown', (event) => {
  */
 window.addEventListener('keyup', (event) => {
   // console.log(event);
-  setTrueOrFalseTheKeyboardProperty(event, false);
+  setKeyObjIsPressedProperty(event, false);
 });
 
 /**
- * Sets the keyboard property (equal to key name) true or false, adds the highlight effect to the equal cotroller
- * button when it is true, removes the highlight effect to the equal button when it is false.
+ * Sets the key object property 'isPressed' of the keyboard object true or false, adds the highlight effect to the
+ * equal cotroller button when it is true, removes the highlight effect to the equal button when it is false.
  * @param {event} event - The given keyboard event..
- * @param {boolean} keyboardPropertyValue - The value to assign to the property of the keyboard object (equal to key name).
+ * @param {boolean} isPressedValue - The value to assign to the key object property 'isPressed' of the keyboard object.
  */
-function setTrueOrFalseTheKeyboardProperty(event, keyboardPropertyValue) {
+function setKeyObjIsPressedProperty(event, isPressedValue) {
   // if (world.character.health != 0) {
-    for (const keyObject in CONTROLLER_BUTTONS) {
-      if (Object.hasOwnProperty.call(CONTROLLER_BUTTONS, keyObject)) {
-        const keyCodeOfKeyObject = CONTROLLER_BUTTONS[keyObject].keyCode;
-        const keyNameOfKeyObject = CONTROLLER_BUTTONS[keyObject].keyName;
-        if (event.keyCode == keyCodeOfKeyObject) {
-          keyboard[keyNameOfKeyObject] = keyboardPropertyValue;
-
-          const idOfCotrollerBtn = CONTROLLER_BUTTONS[keyObject].keyName;
-          let controllerButton = getElem(idOfCotrollerBtn);
-          checkIfAddOrRemoveBtnHighlightAddDoIt(controllerButton, keyboardPropertyValue);
-        }
+  for (const keyObj in keyboard) {
+    if (Object.hasOwnProperty.call(keyboard, keyObj)) {
+      if (event.keyCode == keyboard[keyObj].keyCode) {
+        keyboard[keyObj].isPressed = isPressedValue;
+        const idOfCotrollerBtn = keyObj;
+        let controllerButton = getElem(idOfCotrollerBtn);
+        checkIfAddOrRemoveBtnHighlightAddDoIt(controllerButton, isPressedValue);
       }
     }
   }
-// }
+}
 
 /**
- * Checks if the given keyboardPropertyValue is true or false. If it is true, it adds the highlight effect to the given
+ * Checks if the given 'isPressedValue' is true or false. If it is true, it adds the highlight effect to the given
  * controller button. If it is false, it removes the highlight effect from the given controller button.
  * @param {HTMLButtonElement} controllerButton - The given controller button you want to add or remove the highlight effect.
- * @param {boolean} keyboardPropertyValue - The given keyboardPropertyValue. It is true if the controller button or the
+ * @param {boolean} isPressedValue - The given 'isPressedValue'. It is true if the controller button or the
  * corresponding key is held. It is false if they are released.
  */
-function checkIfAddOrRemoveBtnHighlightAddDoIt(controllerButton, keyboardPropertyValue) {
-  // console.log(keyboardPropertyValue);
-  if (keyboardPropertyValue) {
+function checkIfAddOrRemoveBtnHighlightAddDoIt(controllerButton, isPressedValue) {
+  // console.log(isPressedValue);
+  if (isPressedValue) {
     addBtnHighlight(controllerButton);
   } else {
     removeBtnHighlight(controllerButton);
@@ -208,17 +208,17 @@ function applyMouseTouchUpDownEventListeners() {
 /**
  * Applys an event listener to all controller buttons.
  * @param {string} event - The event to apply.
- * @param {boolean} keyboardPropertyValue - The value to assign to the property of the keyboard object.
+ * @param {boolean} isPressedValue - The value to assign to the key object property 'isPressed' of the keyboard object.
  */
-function applyEventListenerToAllControllerButtons(event, keyboardPropertyValue) {
-  for (const keyObject in CONTROLLER_BUTTONS) {
-    if (Object.hasOwnProperty.call(CONTROLLER_BUTTONS, keyObject)) {
-      const idOrKeyName = CONTROLLER_BUTTONS[keyObject].keyName;
-      let controllerButton = getElem(idOrKeyName);
+function applyEventListenerToAllControllerButtons(event, isPressedValue) {
+  for (const keyObj in keyboard) {
+    if (Object.hasOwnProperty.call(keyboard, keyObj)) {
+      const idOfCotrollerBtn = keyObj;
+      let controllerButton = getElem(idOfCotrollerBtn);
       controllerButton.addEventListener(event, (event) => {
         event.preventDefault();
-        keyboard[idOrKeyName] = keyboardPropertyValue;
-        checkIfAddOrRemoveBtnHighlightAddDoIt(controllerButton, keyboardPropertyValue);
+        keyboard[keyObj].isPressed = isPressedValue;
+        checkIfAddOrRemoveBtnHighlightAddDoIt(controllerButton, isPressedValue);
       });
     }
   }
@@ -279,24 +279,21 @@ function changeBtnIcon(btnElem, newSrc) {
 }
 
 /**
+ * Turns on the music.
+ */
+function turnMusicOn() {
+  console.log('MUSIC IS Onnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn/OFFFFFF');
+  if (gameSounds.endbossBgMusic.loop) gameSounds.endbossBgMusic.play();
+  else gameSounds.bgMusic.play();
+}
+
+/**
  * Turns off the music.
  */
 function turnMusicOff() {
   console.log('MUSIC IS OFFFFFFFFFFFFFFFF');
-}
-
-/**
- * Turns on the music.
- */
-function turnMusicOn() {
-  console.log('MUSIC IS Onnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
-}
-
-/**
- * Turns off the sounds.
- */
-function turnSoundsOff() {
-  console.log('ALL SOUNDS IS OFFFFFFFFFFFFFFFF');
+  gameSounds.bgMusic.pause();
+  gameSounds.endbossBgMusic.pause();
 }
 
 /**
@@ -304,6 +301,90 @@ function turnSoundsOff() {
  */
 function turnSoundsOn() {
   console.log('ALL SOUNDS Onnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
+  soundsMuted = false;
+  switchMutedForAllSounds();
+}
+
+/**
+ * Turns off the sounds.
+ */
+function turnSoundsOff() {
+  console.log('ALL SOUNDS IS OFFFFFFFFFFFFFFFF');
+  soundsMuted = true;
+  switchMutedForAllSounds();
+}
+
+function switchMutedForAllSounds() {
+  let array = Object.values(Sound.allSoundInstances);
+  array.forEach((soundInstance) => {
+    soundInstance.muted = soundsMuted;
+  });
+}
+
+function resetAllSound() {
+  let array = Object.values(Sound.allSoundInstances);
+  array.forEach((soundInstance) => {
+    if (!soundInstance.paused) {
+      soundInstance.pause();
+      soundInstance.loop = false;
+      soundInstance.currentTime = 0;
+    }
+  });
+}
+
+function playBgMusic() {
+  gameSounds.bgMusic.loop = true;
+  gameSounds.bgMusic.play();
+}
+
+function changeBgMusic() {
+  gameSounds.bgMusic.pause();
+  gameSounds.endbossBgMusic.loop = true;
+  gameSounds.endbossBgMusic.play();
+}
+
+function playSoundsAtGameOver() {
+  gameSounds.bgMusic.pause();
+  gameSounds.endbossBgMusic.pause();
+  pauseAllSounds();
+  if (!world.character) gameSounds.over.play();
+  else gameSounds.win.play();
+}
+
+function pauseAllSounds() {
+  let array = Object.values(Sound.allSoundInstances);
+  array.forEach((soundInstance) => {
+    if (!soundInstance.paused) soundInstance.pause();
+  });
+}
+
+let loadedAudioCount = 0;
+
+function awaitAllSoundsReadyToPlay() {
+  return new Promise(function (resolve) {
+    let array = Object.values(Sound.allSoundInstances);
+
+    array.forEach((audioObj) => {
+      audioObj.addEventListener('canplaythrough', () => {
+        loadedAudioCount++;
+        if (loadedAudioCount === array.length) {
+          resolve();
+        }
+      });
+    });
+  });
+}
+
+function simulateUserInteraction() {
+  // Fügen Sie ein Ereignislistener hinzu, um eine Interaktion auszulösen
+  document.addEventListener('click', () => {
+    console.log('User interaction.');
+    gameSounds.bgMusic.play();
+    gameSounds.bgMusic.pause();
+  });
+
+  // Simulieren Sie das Klicken auf die Seite, um das Abspielen von Audio zu starten
+  document.dispatchEvent(new Event('click'));
 }
 
 /**
@@ -381,6 +462,7 @@ function checkOrientationSetContentElements() {
   adjustWidthHeightOfScreensButtonLayer();
   setVisibilityFullscreenBtn();
   turnOnOffHoverEffectForBtns();
+  setControlInfoBox();
 }
 
 function switchContentVisibilityAsPerOrientation() {
@@ -505,6 +587,23 @@ function turnOnOffHoverEffectForBtns() {
 function getIfDeviceIsMobileOrTablet() {
   // Detect if at least one pointing device has limited accuracy. If yes, it is a mobile / tablet device.
   return window.matchMedia('(any-pointer:coarse)').matches;
+}
+
+function switchGameInfoBox() {
+  switchInfoBox();
+  getElem('gameInfo').classList.remove('dNone');
+  getElem('controlInfo').classList.add('dNone');
+}
+
+function switchControlInfoBox() {
+  switchInfoBox();
+  getElem('controlInfo').classList.remove('dNone');
+  getElem('gameInfo').classList.add('dNone');
+}
+
+function switchInfoBox() {
+  getElem('infoBoxContainer').classList.toggle('dNone');
+  pausePlayGame();
 }
 
 checkOrientationSetContentElements();

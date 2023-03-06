@@ -37,6 +37,10 @@ class Bottle extends MovableObject {
 
   IMAGES_PATHS_DESTROYING = this.IMAGES_PATHS_SPLASH;
 
+  SOUND_COLLECT = new Sound('audio/collectBottle.mp3', 0.7);
+  SOUND_THROW = new Sound('audio/bottleThrow.mp3', 0.7);
+  SOUND_DEAD = new Sound('audio/bottleHitOnGround.mp3', 0.7);
+
   /**
    * Initializes a new throwable object with the given start cooridates. Executes the throw directly afterwards.w
    * @param {number} x - The initial x position of the throwable object.
@@ -66,7 +70,8 @@ class Bottle extends MovableObject {
     // Apply gravity.
     this.applyGravity();
 
-    this.animate();
+    // this.animate();
+
     // this.throw();
   }
 

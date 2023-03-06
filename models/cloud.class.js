@@ -21,7 +21,7 @@ class Cloud extends MovableObject {
       if (this.level) {
         clearInterval(isLevelSetInterval);
         this.setStartX();
-        this.animate();
+        // this.animate();
       }
     });
   }
