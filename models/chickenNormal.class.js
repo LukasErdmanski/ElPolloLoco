@@ -18,31 +18,17 @@ class ChickenNormal extends MovableObject {
 
   IMG_PATH_DEAD = ['img/3_enemies_chicken/chicken_normal/2_dead/dead.png'];
 
-  SOUND_HURT = new Sound('audio/chickenHurt.mp3', 0.7);
-  SOUND_DEAD = new Sound('audio/chickenDead.mp3', 1);
-
   constructor() {
     super().loadImage(this.IMAGES_PATHS_WALKING[0]);
     this.loadImages(this.IMAGES_PATHS_WALKING);
     this.loadImages(this.IMG_PATH_DEAD);
     this.positionOnGround();
     this.setAnimateIntervalHandlers();
-    this.isLevelSet();
   }
 
   setAnimateIntervalHandlers() {
-    this.check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
-    this.check_SetImages_Interval_Handler = () => this.checkSetImages();
-  }
-
-  isLevelSet() {
-    let isLevelSetInterval = setStoppableInterval(() => {
-      if (this.level) {
-        clearInterval(isLevelSetInterval);
-        this.setStartXAndSpeedX();
-        // this.animate();
-      }
-    });
+    this.check_MakeMovement_Interval_Handler = this.checkMakeMovement.bind(this);
+    this.check_SetImages_Interval_Handler = this.checkSetImages.bind(this);
   }
 
   setStartXAndSpeedX() {

@@ -1,8 +1,7 @@
+
 let canvas;
-let world;
 let keyboard = new Keyboard();
 let allIntervals = [];
-let allPlayingAudios = [];
 /**
  * Storage if the game is paused (equal to true) or playing (equal to false). As per that the given function as
  * argument into the function {@link setStoppableInterval} will be executed or paused.
@@ -10,14 +9,9 @@ let allPlayingAudios = [];
  */
 let pause = false;
 let gameOver = true;
-let soundsMuted = false;
 
-gameSounds = {
-  bgMusic: new Sound('audio/bgMusic.mp3', 0.1),
-  endbossBgMusic: new Sound('audio/endbossBgMusic.mp3', 0.7),
-  over: new Sound('audio/gameOver.mp3', 0.7),
-  win: new Sound('audio/win.mp3', 0.7),
-};
+let musicMuted = false;
+let soundsMuted = false;
 
 /**
  * Returns the HTMLelement with the given id.
@@ -28,42 +22,79 @@ function getElem(id) {
   return document.getElementById(id);
 }
 
-function initOnLoad() {
-  setControlInfoBox();
-}
-
-async function init() {
-  // TODO: LOADING SCREEN TO PREPARE IMG UND AUDIO CACHE
-
-  Sound.allSoundInstances = [];
-  // setControlInfoBox();
-  loadedAudioCount = 0;
+async function load() {
+  resetLoadCounter();
   canvas = getElem('canvas');
 
-  // TODO: Hier bei Game End: alle laufende (Game, Sound) Intervalle clearen (aus einer vorher gesammelten Invervall Collection beim Game Ende)
-  // TODO: Alle Sounds stoppen UND ZURÜCKSETZEN
-  // TODO: Canvan mit setTimeOut von 500 ms starten, damit am Anfang canvan nicht ruckelt.
-
-  stopGame();
-
   initLevel();
+  worldSingletonInstance = WorldSingleton.getInstance(canvas, keyboard);
+  await Promise.all([checkAllImagesPreloaded(), checkAllSoundsReadyToPlay()]);
 
-  world = new World(canvas, keyboard, sounds);
-
-  await awaitAllSoundsReadyToPlay();
-  resetAllSound();
-  playBgMusic();
-
-  setScreenBtnsAsPerGameState('running');
-
-  world.run();
-
+  setControlInfoBox();
   applyOnClickEventListenerToAllButtons();
   applyMouseTouchUpDownEventListeners();
 
   checkOrientationSetContentElements();
+  hideLoadingScreen();
+}
 
-  console.log('My character is', world.character);
+function removeWorldLevel() {
+  level1 = null;
+  worldSingletonInstance = null;
+  WorldSingleton.removeInstance();
+}
+
+function resetLoadCounter() {
+  DrawableObject.numImagesToLoad = 0;
+  DrawableObject.numImagesLoaded = 0;
+}
+
+/**
+ * Hides the start loading screen and shows the start app content.
+ */
+function hideLoadingScreen() {
+  getElem('loadingScreen').classList.add('translateLoadingScreen');
+}
+
+alreadyImagesAudioLoaded = false;
+
+async function init() {
+  clearAllStoppableIntervals();
+  pause = false;
+  removeWorldLevel();
+
+  // TODO: DIESE SACHEN MÜSSEN NICHT IMMER NEU GELADEN WERDEN / RESET GAME IMG CACHE VERBESSERN
+
+  // TODO: PRÜFEN OB ALLE IMAGES IN EINER GAME SESSION VOR DEM RESET SCHON MALL KOMPLETT GELADEN WURDEN
+  // TODO: IMG AUF ERSTES REASETEN
+
+  // TODO: Canvan mit setTimeOut von 500 ms starten, damit am Anfang canvan nicht ruckelt.
+
+  canvas = getElem('canvas');
+
+  resetAllSound();
+
+  initLevel();
+
+  worldSingletonInstance = WorldSingleton.getInstance(canvas, keyboard);
+
+  setScreenBtnsAsPerGameState('running');
+
+  worldSingletonInstance.run();
+
+  playBgMusic();
+  if (musicMuted) turnMusicOff();
+}
+
+function checkAllImagesPreloaded() {
+  return new Promise((resolve) => {
+    const checkInterval = setInterval(() => {
+      if (DrawableObject.numImagesLoaded === DrawableObject.numImagesToLoad) {
+        clearInterval(checkInterval);
+        resolve();
+      }
+    }, 50);
+  });
 }
 
 function setControlInfoBox() {
@@ -277,78 +308,82 @@ function changeBtnIcon(btnElem, newSrc) {
   imgElem.src = newSrc;
   return currentSrc;
 }
-
-/**
- * Turns on the music.
- */
-function turnMusicOn() {
-  console.log('MUSIC IS Onnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn/OFFFFFF');
-  if (gameSounds.endbossBgMusic.loop) gameSounds.endbossBgMusic.play();
-  else gameSounds.bgMusic.play();
-}
-
-/**
- * Turns off the music.
- */
-function turnMusicOff() {
-  console.log('MUSIC IS OFFFFFFFFFFFFFFFF');
-  gameSounds.bgMusic.pause();
-  gameSounds.endbossBgMusic.pause();
-}
+let volume = 1;
 
 /**
  * Turns on the sound.
  */
 function turnSoundsOn() {
-  console.log('ALL SOUNDS Onnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
-  soundsMuted = false;
-  switchMutedForAllSounds();
+  Sound.allSoundInstancesMuted = false;
+
+  if (musicMuted) turnMusicOff();
+  else turnMusicOn();
 }
 
 /**
  * Turns off the sounds.
  */
 function turnSoundsOff() {
-  console.log('ALL SOUNDS IS OFFFFFFFFFFFFFFFF');
-  soundsMuted = true;
-  switchMutedForAllSounds();
+  Sound.allSoundInstancesMuted = true;
+
+  let musicMutedValueToSet = musicMuted;
+  turnMusicOff();
+  musicMuted = musicMutedValueToSet;
+}
+/**
+ * Turns on the music.
+ */
+function turnMusicOn() {
+  musicMuted = false;
+
+  if (!Sound.allSoundInstancesMuted) {
+    sounds.game.bgMusic.volume = sounds.game.bgMusic.volumeInitial;
+    sounds.game.bgMusic.muted = false;
+
+    sounds.game.endbossBgMusic.volume = sounds.game.endbossBgMusic.volumeInitial;
+    sounds.game.endbossBgMusic.muted = false;
+  }
 }
 
-function switchMutedForAllSounds() {
-  let array = Object.values(Sound.allSoundInstances);
-  array.forEach((soundInstance) => {
-    soundInstance.muted = soundsMuted;
-  });
+/**
+ * Turns off the music.
+ */
+function turnMusicOff() {
+  musicMuted = true;
+
+  sounds.game.bgMusic.volume = 0;
+  sounds.game.bgMusic.muted = true;
+
+  sounds.game.endbossBgMusic.volume = 0;
+  sounds.game.endbossBgMusic.muted = true;
 }
 
 function resetAllSound() {
   let array = Object.values(Sound.allSoundInstances);
   array.forEach((soundInstance) => {
-    if (!soundInstance.paused) {
-      soundInstance.pause();
-      soundInstance.loop = false;
-      soundInstance.currentTime = 0;
-    }
+    soundInstance.pause();
+    soundInstance.loop = false;
+    soundInstance.currentTime = 0;
   });
 }
 
 function playBgMusic() {
-  gameSounds.bgMusic.loop = true;
-  gameSounds.bgMusic.play();
+  sounds.game.bgMusic.loop = true;
+  sounds.game.bgMusic.play();
 }
 
 function changeBgMusic() {
-  gameSounds.bgMusic.pause();
-  gameSounds.endbossBgMusic.loop = true;
-  gameSounds.endbossBgMusic.play();
+  sounds.game.bgMusic.pause();
+  sounds.game.endbossBgMusic.loop = true;
+  sounds.game.endbossBgMusic.play();
 }
 
 function playSoundsAtGameOver() {
-  gameSounds.bgMusic.pause();
-  gameSounds.endbossBgMusic.pause();
+  sounds.game.bgMusic.pause();
+  sounds.game.endbossBgMusic.pause();
   pauseAllSounds();
-  if (!world.character) gameSounds.over.play();
-  else gameSounds.win.play();
+  if (!worldSingletonInstance.character) sounds.game.over.play();
+  else sounds.game.win.play();
 }
 
 function pauseAllSounds() {
@@ -358,20 +393,16 @@ function pauseAllSounds() {
   });
 }
 
-let loadedAudioCount = 0;
+let loadedSoundsCount = 0;
 
-function awaitAllSoundsReadyToPlay() {
-  return new Promise(function (resolve) {
-    let array = Object.values(Sound.allSoundInstances);
-
-    array.forEach((audioObj) => {
-      audioObj.addEventListener('canplaythrough', () => {
-        loadedAudioCount++;
-        if (loadedAudioCount === array.length) {
-          resolve();
-        }
-      });
-    });
+function checkAllSoundsReadyToPlay() {
+  return new Promise((resolve) => {
+    const checkInterval = setInterval(() => {
+      if (Sound.numSoundsLoaded === Sound.numSoundsToLoad) {
+        clearInterval(checkInterval);
+        resolve();
+      }
+    }, 50);
   });
 }
 
@@ -379,8 +410,8 @@ function simulateUserInteraction() {
   // Fügen Sie ein Ereignislistener hinzu, um eine Interaktion auszulösen
   document.addEventListener('click', () => {
     console.log('User interaction.');
-    gameSounds.bgMusic.play();
-    gameSounds.bgMusic.pause();
+    sounds.game.bgMusic.play();
+    sounds.game.bgMusic.pause();
   });
 
   // Simulieren Sie das Klicken auf die Seite, um das Abspielen von Audio zu starten
@@ -398,6 +429,17 @@ function pausePlayGame() {
   }
 }
 
+function setStoppableInterval3(fn, time) {
+  let intervalId = setInterval(
+    function () {
+      if (!this.pause) fn();
+    }.bind(this),
+    time
+  );
+  this.allIntervals.push(intervalId);
+  return intervalId;
+}
+
 /**
  * Sets a pausable/playable interval of the given function and time. Saves it under an id and pushes it the
  * 'allIntervals' array. The given fuction will be executed (played) or paused as per {@link pause} variable value.
@@ -405,15 +447,12 @@ function pausePlayGame() {
  * @param {number} time - The miliseconds of the interval to set.
  */
 function setStoppableInterval(fn, time) {
-  let intervalId = setInterval(() => {
-    /*     console.log(intervalId);
-    let trueOrFalse = allIntervals.includes(intervalId);
-    console.log('Idex of intervalId ' + intervalId + ' is ' + trueOrFalse); */
-    if (!pause) fn();
-    /*     console.log('Ende of intervalId' + intervalId);
-    trueOrFalse = allIntervals.includes(intervalId);
-    console.log('Idex of intervalId ' + intervalId + ' is ' + trueOrFalse); */
-  }, time);
+  let intervalId = setInterval(
+    function () {
+      if (!pause) fn();
+    }.bind(this),
+    time
+  );
   allIntervals.push(intervalId);
   return intervalId;
 }
@@ -421,7 +460,7 @@ function setStoppableInterval(fn, time) {
 /**
  * Stops the game by clearing all running intervals saved in 'intervalIds' array.
  */
-function stopGame() {
+function clearAllStoppableIntervals() {
   /**
    * Alle intervalle beenden.
    *

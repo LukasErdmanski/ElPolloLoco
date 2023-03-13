@@ -9,21 +9,10 @@ class Cloud extends MovableObject {
     let randomIdxZeroOrOne = Math.round(Math.random());
     super().loadImage(this.IMAGES_PATHS[randomIdxZeroOrOne]);
     this.setAnimateIntervalHandlers();
-    this.isLevelSet();
   }
 
   setAnimateIntervalHandlers() {
-    this.check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
-  }
-
-  isLevelSet() {
-    let isLevelSetInterval = setStoppableInterval(() => {
-      if (this.level) {
-        clearInterval(isLevelSetInterval);
-        this.setStartX();
-        // this.animate();
-      }
-    });
+    this.check_MakeMovement_Interval_Handler = this.checkMakeMovement.bind(this);
   }
 
   setStartX() {

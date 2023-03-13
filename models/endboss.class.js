@@ -58,13 +58,10 @@ class Endboss extends MovableObject {
     'img/4_enemie_boss_chicken/5_dead/G26.png',
   ];
 
-  SOUND_ATTACK = new Sound('audio/endbossAttack.mp3', 0.7);
-  SOUND_CHARACTER_DETECTED = new Sound('audio/endbossCharacterDetected.mp3', 0.7);
-  SOUND_DEAD = new Sound('audio/endbossDead.mp3', 0.7);
-  SOUND_HURT = new Sound('audio/endbossHURT.mp3', 0.7);
-
   // Memory, if the character had already first contact with the endboss.
   hadFirstContact = false;
+
+  world;
 
   constructor() {
     super().loadImage(this.IMAGES_PATHS_ALERT[0]);
@@ -75,30 +72,23 @@ class Endboss extends MovableObject {
     this.loadImages(this.IMAGES_PATHS_DEAD);
     this.positionOnGround();
     this.setAnimateIntervalHandlers();
-    this.isLevelSet();
-  }
-
-  isLevelSet() {
-    let isLevelSetInterval = setStoppableInterval(() => {
-      if (this.level) {
-        clearInterval(isLevelSetInterval);
-        this.setStartXAndSpeedX();
-        this.applyGravity();
-        // this.animate();
-      }
-    });
   }
 
   setStartXAndSpeedX() {
     // this.x = this.level.end_x - this.xDistanceEndbossToLevelEnd;
-    this.x = 1200;
+    this.x = 1900;
     this.speedX = 4 + Math.random() * 0.25;
     this.speedXInitial = this.speedX;
   }
 
   setAnimateIntervalHandlers() {
-    this.check_MakeMovement_Interval_Handler = () => this.checkMakeMovement();
-    this.check_SetImages_Interval_Handler = () => this.checkSetImages();
+    this.check_MakeMovement_Interval_Handler = this.checkMakeMovement.bind(this);
+    this.check_SetImages_Interval_Handler = this.checkSetImages.bind(this);
+  }
+
+  setAnimateIntervalHandlers2() {
+    this.check_MakeMovement_Interval_Handler = this.checkMakeMovement.bind(this);
+    this.check_SetImages_Interval_Handler = this.checkSetImages.bind(this);
   }
 
   animate2() {
@@ -124,7 +114,7 @@ class Endboss extends MovableObject {
        * Therefore the counter of played animation intervall for this case has to be reseted and the first contact
        * between character and endboss saved as true.
        */
-      if (world.character.x > 2000 && !this.hadFirstContact) {
+      if (this.world.character.x > 2000 && !this.hadFirstContact) {
         i = 0;
         this.hadFirstContact = true;
       }
@@ -142,7 +132,7 @@ class Endboss extends MovableObject {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   checkMakeMovement() {
-    this.SOUND_ATTACK.pause();
+    sounds.endboss.attack.pause();
     if (this.isDead()) {
       this.moveAsDead();
     } // TODO: NUR EINMAL SPIELEN NICHT IM LOOP
@@ -161,7 +151,8 @@ class Endboss extends MovableObject {
   }
 
   isCharacterAlive() {
-    return this.world.character && !this.world.character.isDead();
+    // return this.world.character != null && !this.world.character.isDead();
+    return this.world && this.world.character != null && !this.world.character.isDead();
   }
 
   /****************************** PREPARING ATTACK ******************************/
@@ -201,7 +192,7 @@ class Endboss extends MovableObject {
   }
 
   attack() {
-    this.SOUND_ATTACK.play();
+    sounds.endboss.attack.play();
     if (!this.isAboveGround()) this.jump(12);
     this.setDirectionForAttack();
     this.moveInXDirection();
@@ -348,7 +339,7 @@ class Endboss extends MovableObject {
     let checkResult = xRightCharacterImgSide + nearXDistanceCharacterToEndboss >= this.x * 1.15;
     if (checkResult) {
       this.wasCharacterOnceDeteckedNearby = true;
-      this.SOUND_CHARACTER_DETECTED.play();
+      sounds.endboss.characterDetected.play();
       changeBgMusic();
     }
     return checkResult;

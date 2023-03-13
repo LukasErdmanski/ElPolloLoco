@@ -44,10 +44,12 @@ class Level {
   setLevel() {
     this.enemies.forEach((enemy) => {
       enemy.level = this;
+      enemy.setStartXAndSpeedX();
     });
 
     this.clouds.forEach((cloud) => {
       cloud.level = this;
+      cloud.setStartX();
     });
   }
 }

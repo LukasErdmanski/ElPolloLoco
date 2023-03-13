@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Zabars';
-  src: url('fonts/Zabars.ttf') format('truetype'); /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
+  src: url('../fonts/Zabars.ttf') format('truetype'); /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
 }
 
 * {
@@ -14,7 +14,7 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
-  background-image: url('img/5_background/app_background.jpg');
+  background-image: url('../img/5_background/app_background.jpg');
   background-position: center;
   background-size: cover;
 }

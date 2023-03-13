@@ -54,7 +54,7 @@ class World {
      * genauso wie beim Zugriff explizit auf Klassen Variablen.
      */
     this.draw();
-    this.setWorld();
+
     // Execute a group of functions checking certain events in the world all the time.
     // this.run();
   }
@@ -65,12 +65,13 @@ class World {
    * In this way movable object knows/has access to the variable, methods of the instance of 'world' class like f.e. keyboard.
    */
   setWorld() {
-    this.character.world = this;
-
+    // this.character.world = this;
+    this.character.world = worldSingletonInstance;
     let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
-    endboss.world = this;
+    // endboss.world = this;
+    endboss.world = worldSingletonInstance;
 
-    this.character.level = this.level;
+    this.character.level = worldSingletonInstance.level;
 
     // this.setWorldLevelToAllMovalbleObjectsInLevel();
   }
@@ -105,8 +106,12 @@ class World {
 
   runInterval;
   run() {
+    this.setWorld();
     this.startAllAnimationsOfMovableObjects();
     setStoppableInterval(() => {
+      /*   if (this.character.oneBottleCollected && this.character.bottles.length == 0) {
+        debugger;
+      } */
       ///TODO: ZUM LÖSCHEN / ZWISCHENLÖSUNG DAMIT DER CHARACTER NIE STIBRT WERDEN PROGRMAMIERUNG / TESTING / SPIEL ZU ENDE GEHT
       // world.character.health = 5;
       // console.log('WIEDER IM RUN INTERVALL');
@@ -118,9 +123,27 @@ class World {
   }
 
   startAllAnimationsOfMovableObjects() {
-    let array = MovableObject.allMovableObjectsInstances;
+    // let array = MovableObject.allMovableObjectsInstances;
 
-    array.forEach((mo) => {
+    this.character.applyGravity();
+    this.aaaa(this.level.clouds);
+    this.aaaa(this.level.enemies);
+    this.aaaa(this.level.coins);
+    // this.aaaa(this.level.bottlesInGround);
+
+    this.character.animate();
+    this.bbbb(this.level.enemies);
+    // this.bbbb(this.level.bottlesInGround);
+  }
+
+  aaaa(levelPropertyArray) {
+    levelPropertyArray.forEach((mo) => {
+      if (mo instanceof Character || mo instanceof ChickenSmall || mo instanceof Endboss) mo.applyGravity();
+    });
+  }
+
+  bbbb(levelPropertyArray) {
+    levelPropertyArray.forEach((mo) => {
       mo.animate();
     });
   }
@@ -128,7 +151,7 @@ class World {
   stopRun() {
     playSoundsAtGameOver();
     // clearInterval(this.runInterval);
-    stopGame();
+    clearAllStoppableIntervals();
     this.stopDrawing = true;
     setScreenBtnsAsPerGameState('over');
   }

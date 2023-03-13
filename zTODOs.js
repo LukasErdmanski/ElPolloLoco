@@ -30,3 +30,23 @@
 //TODO:  Failed to load resource: net::ERR_CACHE_OPERATION_NOT_SUPPORTED
 
 //TODO: PAUSE / PLAY BUTTON, PLAY WIRD NICHT NACH PAUSE ANGEZEIGT
+
+//TODO:  Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause(). 
+// MOVE LEFT RIGHT ÜBERLAPPEND!!
+
+// TODO: Pause Icon play ändern
+
+// Aniamze function einfacher machen / virual mehtode nicht in mo class
+
+
+// Set level methode in mo löschen prüfen
+
+// bottle coin mit amoun hinzufpügen in level class einfach machen
+
+// game js, load init aufräumen
+
+// globales img cache in drawable img machen
+
+// löschen von coins, bottle in wolrd verbsessern, unnötig da jetzt buy Health, buy bottle, throw botte dirket gelöscht wird
+
+// TODO: wenn man auf a,s, d drück wird der warlking images abgespielt --> flasch andern

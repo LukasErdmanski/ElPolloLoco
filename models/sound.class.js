@@ -1,23 +1,48 @@
 class Sound extends Audio {
   static allSoundInstances = [];
-  // readyToPlay = false;
+  static allSoundInstancesMuted = false;
+  static numSoundsToLoad = 0;
+  static numSoundsLoaded = 0;
 
   constructor(src, volume) {
-    super();
-    this.src = src;
-    this.volume = volume;
-    this.autoplay = false;
+    super(src);
+    Sound.numSoundsToLoad++;
+    this.volumeInitial = volume;
+    this.volume = this.volumeInitial;
     this.muted = false;
-    this.id = Object.keys(Sound.allSoundInstances).length + 1; // Set unique ID for each audio instance
-    Sound.allSoundInstances[this.id] = this;
-    // this.addEventListener('canplaythrough', () => (this.readyToPlay = true));
+    this.autoplay = false;
+    this.loop = false;
+
+    Sound.allSoundInstances.push(this);
+
+    this.oncanplaythrough = Sound.numSoundsLoaded++;
   }
 
   play() {
-    if (this.paused) super.play();
+    if (Sound.allSoundInstancesMuted) {
+      this.volume = 0;
+      this.muted = true;
+    } else {
+      this.volume = this.volumeInitial;
+      this.muted = false;
+    }
+
+    if (!this.isPaying()) super.play();
   }
 
   pause() {
-    if (!this.paused) super.pause();
+    if (this.isPaying()) super.pause();
+  }
+
+  isPaying() {
+    return this.currentTime > 0 && !this.paused && !this.ended && this.readyState > this.HAVE_CURRENT_DATA;
+  }
+
+  static getAllSoundInstances() {
+    return Sound.allSoundInstances;
+  }
+
+  static setAllSoundsInstances(allSoundInstances) {
+    Sound.allSoundInstances = allSoundInstances;
   }
 }

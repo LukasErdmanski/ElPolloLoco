@@ -6,13 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="img/11_favicon/favicon.png" type="image/x-icon">
 
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/loader.css" />
 
     <title>El pollo loco by Lukas Erdmanski</title>
   </head>
 
-  <body onload="initOnLoad()">
+  <body onload="load()">
   <!-- <body onload="init()"> -->
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" class="loadingScreen">
+      <div class="loaderContent">
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        <img class="loadingScreenloaderContentImgZIndex" src="img/11_favicon/favicon.png" alt="logo-icon">
+      </div>
+    </div>
+    
+    <!-- GAME -->
     <h1 id="title" class="dNone">El pollo loco</h1>
     <div id="rotateDeviceInfo" class="dNone">
       <span>Please rotate<br>your device.</span>
@@ -36,8 +46,8 @@
           <div class="buttonsRowTop">
             <button onclick="switchGameInfoBox()">i</button>
             <button onclick="switchControlInfoBox()"><img src="img/10_buttons/gamepad-solid.svg" alt="gamepad-icon"></button>
-            <button class="btnHover" onclick="exeFnChangeOnclickAndBtnSrc('turnMusicOff', 'turnMusicOn', this, 'img/10_buttons/bgMusicOff.png')"><img src="img/10_buttons/bgMusicOn.png" alt="bgMusic-icon"></button>
-            <button onclick="exeFnChangeOnclickAndBtnSrc('turnSoundsOff', 'turnSoundsOn', this, 'img/10_buttons/sound-off-icon.svg')"><img src="img/10_buttons/sound-on-icon.svg" alt="bgMusic-icon"></button>
+            <button id="turnOnOfMusicBtn" class="btnHover" onclick="exeFnChangeOnclickAndBtnSrc('turnMusicOff', 'turnMusicOn', this, 'img/10_buttons/bgMusicOff.png')"><img src="img/10_buttons/bgMusicOn.png" alt="bgMusic-icon"></button>
+            <button id="turnOnOfSoundsBtn" onclick="exeFnChangeOnclickAndBtnSrc('turnSoundsOff', 'turnSoundsOn', this, 'img/10_buttons/sound-off-icon.svg')"><img src="img/10_buttons/sound-on-icon.svg" alt="bgMusic-icon"></button>
             <button id="enterExitFullScreenBtn" onclick="exeFnChangeOnclickAndBtnSrc('enterFullscreen', 'exitFullscreen', this, 'img/10_buttons/fullscreen-exit-128.png')"><img src="img/10_buttons/fullscreen-enter-128.png" alt="expand-icon"></button>
           </div>
   
@@ -127,6 +137,7 @@
     <script src="models/statusBar.class.js"></script>
     <script src="models/sound.class.js"></script>
     <script src="js/sounds.js"></script>
+    <script src="models/worldSingletron.class.js"></script>
     <script src="models/world.class.js"></script>
     <script src="models/keyboard.class.js"></script>
     <script src="models/level.class.js"></script>
@@ -136,6 +147,5 @@
     <script src="levels/level1.js"></script>
     <script src="js/game.js"></script>
     <script src="js/bars.js"></script>
-    <script src="js/script.js"></script>
   </body>
 </html>

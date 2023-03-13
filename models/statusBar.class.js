@@ -48,6 +48,6 @@ class StatusBar extends DrawableObject {
      * Calculate and return only the integer part of the division 100 / 20, i.e. 5, 4, 3, 2, 1, 0, one of the possible
      * six indices 'IMAGES' array.
      */
-    return Math.trunc(this.percentage / 20);
+    return Math.ceil(this.percentage / 20);
   }
 }

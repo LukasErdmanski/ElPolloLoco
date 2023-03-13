@@ -37,10 +37,6 @@ class Bottle extends MovableObject {
 
   IMAGES_PATHS_DESTROYING = this.IMAGES_PATHS_SPLASH;
 
-  SOUND_COLLECT = new Sound('audio/collectBottle.mp3', 0.7);
-  SOUND_THROW = new Sound('audio/bottleThrow.mp3', 0.7);
-  SOUND_DEAD = new Sound('audio/bottleHitOnGround.mp3', 0.7);
-
   /**
    * Initializes a new throwable object with the given start cooridates. Executes the throw directly afterwards.w
    * @param {number} x - The initial x position of the throwable object.
@@ -63,12 +59,13 @@ class Bottle extends MovableObject {
 
     this.positionOnGround();
 
+    this.speedX = 0;
     this.speedY = 0;
 
     this.setAnimateIntervalHandlers();
 
     // Apply gravity.
-    this.applyGravity();
+    // this.applyGravity();
 
     // this.animate();
 
@@ -107,7 +104,9 @@ class Bottle extends MovableObject {
   }
 
   checkMakeMovement() {
-    if (this.isThrown) this.fallDown();
+    if (this.isThrown) {
+      this.fallDown();
+    }
     if (this.speedX > 0 && this.otherDirection) this.moveLeft();
     if (this.speedX > 0 && !this.otherDirection) this.moveRight();
     if (this.isDead()) this.deadAnimation_Part_MakeMovement_IsOver = true;

@@ -12,8 +12,10 @@ class DrawableObject {
   img;
   // JSON for key-value pair (key [image PATH], value [IMAGE OBJECT itself]) --> Accessing the image object via its path / src.
   imageCache = {};
-  // High counter of the itaration through the given 'images' array the in the fuction animate()
-  currentImgIdx = 0;
+
+
+  static numImagesLoaded = 0;
+  static numImagesToLoad = 0;
 
   // loadImage('img/test.png')
 
@@ -24,8 +26,10 @@ class DrawableObject {
    * function at the beginning.
    */
   loadImage(path) {
+    DrawableObject.numImagesToLoad++;
     this.img = new Image(); // this.img = document.getElementById('image') <img id="image">
     this.img.src = path;
+    this.img.onload = DrawableObject.numImagesLoaded++;
   }
 
   /**
@@ -37,8 +41,11 @@ class DrawableObject {
    */
   loadImages(arr) {
     arr.forEach((path) => {
+      DrawableObject.numImagesToLoad++;
+
       // Create new image object.
       let img = new Image();
+
       // Assing the current image path to src attribute of the created image object.
       img.src = path;
 
@@ -47,6 +54,8 @@ class DrawableObject {
        * --> Accesing the image object from 'imageCache' object via its path / src.
        */
       this.imageCache[path] = img;
+
+      img.onload = DrawableObject.numImagesLoaded++;
     });
   }
 

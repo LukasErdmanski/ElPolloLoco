@@ -17,20 +17,16 @@ class Coin extends MovableObject {
 
   IMAGES_PATHS = ['img/8_coin/coin_1.png', 'img/8_coin/coin_2.png'];
 
-  SOUND_COLLECT = new Sound('audio/collectCoin.mp3', 0.7);
-  SOUND_BUY_HEALTH = new Sound('audio/buyHealth.mp3', 0.7);
-  SOUND_BUY_BOTTLE = new Sound('audio/buyBottle.mp3', 0.7);
-
   constructor(allCoinsArr) {
     super().loadImage(this.IMAGES_PATHS[0]);
     this.loadImages(this.IMAGES_PATHS);
     [this.x, this.y] = this.getXY(allCoinsArr);
     this.setAnimateIntervalHandlers();
-    this.animate(undefined, 3);
+    // this.animate(undefined, 3);
   }
 
   setAnimateIntervalHandlers() {
-    this.check_SetImages_Interval_Handler = () => this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS);
+    this.check_SetImages_Interval_Handler = this.changeImagesSetAndCurrentImg.bind(this, this.IMAGES_PATHS);
   }
 
   /**

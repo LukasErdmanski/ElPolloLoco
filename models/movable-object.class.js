@@ -8,6 +8,9 @@ class MovableObject extends DrawableObject {
   // Variable, welche in der neuen nicht im Video benutzten Kollisionsformel verwendet wrid. Bedeutet y-Versatz. Wird wenigstens auf 0 von mir gesetzt, damit die neue besser Kollisionsformel überhaupt funktioniert.
   offsetY = 0;
 
+  // High counter of the itaration through the given 'images' array the in the fuction animate()
+  currentImgIdx = 0;
+
   health = 5;
   healthInitial = this.health;
   healthPercentage = 100;
@@ -32,8 +35,8 @@ class MovableObject extends DrawableObject {
 
   constructor() {
     super();
-    this.id = Object.keys(MovableObject.allMovableObjectsInstances).length + 1; // Set unique ID for each MovableObject instance
-    MovableObject.allMovableObjectsInstances[this.id] = this;
+/*     this.id = Object.keys(MovableObject.allMovableObjectsInstances).length + 1; // Set unique ID for each MovableObject instance
+    MovableObject.allMovableObjectsInstances[this.id] = this; */
   }
 
   /**
@@ -115,11 +118,31 @@ class MovableObject extends DrawableObject {
    * Reduces movable object's health by colliding.
    */
   hit() {
-    if (this.SOUND_HURT) this.SOUND_HURT.play();
+    if (this instanceof Character) {
+      sounds.character.hurt.currentTime = 0;
+      sounds.character.hurt.play();
+    }
+    if (this instanceof ChickenNormal || this instanceof ChickenSmall) {
+      sounds.chicken.hurt.currentTime = 0;
+      sounds.chicken.hurt.play();
+    }
+    if (this instanceof Endboss) {
+      sounds.endboss.hurt.currentTime = 0;
+      sounds.endboss.hurt.play();
+    }
     this.health--;
     // Check if the health is zero or negative.
     if (this.health <= 0) {
-      this.SOUND_DEAD.play();
+      if (this instanceof Character) {
+        sounds.character.dead.play();
+      }
+      if (this instanceof ChickenNormal || this instanceof ChickenSmall) {
+        sounds.chicken.dead.currentTime = 0;
+        sounds.chicken.dead.play();
+      }
+      if (this instanceof Endboss) {
+        sounds.endboss.dead.play();
+      }
       // Yes, set it minimally to zero.
       this.health = 0;
     }

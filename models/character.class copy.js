@@ -22,8 +22,11 @@ class Character extends MovableObject {
   lastBuyingHealth = 0;
   lastBuyingBottle = 0;
 
-  bottles = [];
-  coins = [];
+/*   static coins = []; */
+/*   static bottles = [ */]
+
+bottles = []
+coins = []
 
   // Array of image paths of this class.
   IMAGES_PATHS_IDLE_SHORT = [
@@ -280,13 +283,14 @@ class Character extends MovableObject {
     sounds.coin.collect.currentTime = 0;
     sounds.coin.collect.play();
     this.world.level.coins = this.world.level.coins.filter((filteredElem) => filteredElem !== coinObj);
-    this.coins.push(coinObj);
+    Character.coins.push(coinObj);
 
+    console.log(this.coinsPercentage);
     this.updateCoinsPercentage();
   }
 
   updateCoinsPercentage() {
-    this.coinsPercentage = (this.coins.length / this.world.level.amountOfAllCoins) * 100;
+    this.coinsPercentage = (Character.coins.length / this.world.level.amountOfAllCoins) * 100;
   }
 
   takeBottle(bottleObj) {
@@ -295,21 +299,20 @@ class Character extends MovableObject {
     this.world.level.bottlesInGround = this.world.level.bottlesInGround.filter(
       (filteredElem) => filteredElem !== bottleObj
     );
-    this.bottles.push(bottleObj);
+    Character.bottles.push(bottleObj);
 
     this.updateBottlesPercentage();
   }
 
   updateBottlesPercentage() {
-    this.bottlesPercentage = (this.bottles.length / this.world.level.amountOfAllBottles) * 100;
+    this.bottlesPercentage = (Character.bottles.length / this.world.level.amountOfAllBottles) * 100;
   }
 
-  // TODO: AM ENDE LÖSCHEN
   lastThrownBottle;
 
   throwBottle() {
     this.lastThrow = new Date().getTime();
-    let bottle = this.bottles[this.bottles.length - 1];
+    let bottle = Character.bottles[Character.bottles.length - 1];
     if (bottle != undefined) {
       sounds.character.noCoinNoBottle.pause();
       sounds.character.noCoinNoBottle.currentTime = 0;
@@ -319,16 +322,19 @@ class Character extends MovableObject {
       bottle.otherDirection = this.otherDirection;
       bottle.x = this.x + this.width - this.offset.right;
       if (bottle.otherDirection) bottle.x = this.x + this.offset.right;
+
       bottle.y = this.y + 100;
 
+      // this.world.level.bottles.push(bottle);
       this.world.level.bottlesInFlight.push(bottle);
-      bottle.isThrown = true;
+
       bottle.applyGravity();
       bottle.animate();
+      bottle.isThrown = true;
 
-      // TODO: AM ENDE LÖSCHEN
       this.lastThrownBottle = bottle;
-      this.bottles.pop();
+      // debugger;
+      Character.bottles.pop();
 
       this.updateBottlesPercentage();
       this.world.bootlesBar.setPercentage(this.bottlesPercentage);
@@ -337,23 +343,23 @@ class Character extends MovableObject {
 
   buyBottle() {
     this.lastBuyingBottle = new Date().getTime();
-    let coinForPayment = this.coins[this.coins.length - 1];
-    if (coinForPayment != undefined && this.bottles.length < this.world.level.amountOfAllBottles) {
+    let coinForPayment = Character.coins[Character.coins.length - 1];
+    if (coinForPayment != undefined && Character.bottles.length < this.world.level.amountOfAllBottles) {
       sounds.character.noCoinNoBottle.pause();
       sounds.character.noCoinNoBottle.currentTime = 0;
       sounds.coin.buyBottle.currentTime = 0;
       sounds.coin.buyBottle.play();
 
-      // TODO: AM ENDE LÖSCHEN
       // coinForPayment.canBeRemoved = true;
-      this.coins.pop();
+      Character.coins.pop();
+      console.log(this.coinsPercentage);
       this.updateCoinsPercentage();
       this.world.coinsBar.setPercentage(this.coinsPercentage);
 
       let x = this.x;
       let y = this.y;
       let boughtBottle = new Bottle(undefined, x, y);
-      this.bottles.push(boughtBottle);
+      Character.bottles.push(boughtBottle);
       this.world.level.amountOfAllBottles++;
 
       this.updateBottlesPercentage();
@@ -363,21 +369,19 @@ class Character extends MovableObject {
 
   buyHealth() {
     this.lastBuyingHealth = new Date().getTime();
-    let coinForPayment = this.coins[this.coins.length - 1];
+    let coinForPayment = Character.coins[Character.coins.length - 1];
     if (coinForPayment != undefined && this.health < this.healthInitial) {
       sounds.character.noCoinNoBottle.pause();
       sounds.character.noCoinNoBottle.currentTime = 0;
       sounds.coin.buyHealth.currentTime = 0;
       sounds.coin.buyHealth.play();
 
-      // TODO: AM ENDE LÖSCHEN
       // coinForPayment.canBeRemoved = true;
-      this.coins.pop();
+      Character.coins.pop();
       this.updateCoinsPercentage();
       this.world.coinsBar.setPercentage(this.coinsPercentage);
 
       this.health++;
-      // TODO: AM ENDE LÖSCHEN
       // if (this.health > this.healthInitial) this.health = this.healthInitial;
 
       this.updateHealthPercentage();
