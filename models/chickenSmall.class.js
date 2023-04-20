@@ -20,9 +20,7 @@ class ChickenSmall extends MovableObject {
   IMG_PATH_DEAD = ['img/3_enemies_chicken/chicken_small/2_dead/dead.png'];
 
   constructor() {
-    super().loadImage(this.IMAGES_PATHS_WALKING[0]);
-    this.loadImages(this.IMAGES_PATHS_WALKING);
-    this.loadImages(this.IMG_PATH_DEAD);
+    super().loadImageFromImageCache(this.IMAGES_PATHS_WALKING[0]);
     this.positionOnGround();
     this.setAnimateIntervalHandlers();
   }

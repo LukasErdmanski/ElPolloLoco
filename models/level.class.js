@@ -13,17 +13,17 @@ class Level {
   start_x;
   end_x;
 
-  constructor(backgroundObjects, clouds, enemies, coins, bottlesInGround, bottlesInFlight, amountOfAllBottles) {
+  constructor(backgroundObjects, clouds, enemies, coins, bottlesInGround, bottlesInFlight) {
     this.backgroundObjects = backgroundObjects;
     this.clouds = clouds;
     this.enemies = enemies;
     this.coins = coins;
     this.bottlesInGround = bottlesInGround;
     this.bottlesInFlight = bottlesInFlight;
-    // TODO: DIE Anzahl der Coins bleibt nach Init KONSTANT, nicht wie bottles.
-    this.amountOfAllCoins = amountOfAllBottles;
-    // TODO: WENN SPÄTER DIE FUNKTIONS Umwandel Coins to Bottles muss sich das hier mit jedem Kauf dynamisch ädern damit die prozentuale Berechnung stimmt für Statusanzeige, da die unrsprünglichen 100% anwachsen.
-    this.amountOfAllBottles = amountOfAllBottles;
+
+    this.amountOfAllCoins = this.coins.length;
+    this.amountOfAllBottles = this.bottlesInGround.length;
+    
     this.start_x = this.getLevelStartX();
     this.end_x = this.getLevelEndX();
     this.setLevel();

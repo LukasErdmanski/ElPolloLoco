@@ -64,12 +64,7 @@ class Endboss extends MovableObject {
   world;
 
   constructor() {
-    super().loadImage(this.IMAGES_PATHS_ALERT[0]);
-    this.loadImages(this.IMAGES_PATHS_ALERT);
-    this.loadImages(this.IMAGES_PATHS_WALKING);
-    this.loadImages(this.IMAGES_PATHS_ATTACK);
-    this.loadImages(this.IMAGES_PATHS_HURT);
-    this.loadImages(this.IMAGES_PATHS_DEAD);
+    super().loadImageFromImageCache(this.IMAGES_PATHS_ALERT[0]);
     this.positionOnGround();
     this.setAnimateIntervalHandlers();
   }
@@ -82,11 +77,6 @@ class Endboss extends MovableObject {
   }
 
   setAnimateIntervalHandlers() {
-    this.check_MakeMovement_Interval_Handler = this.checkMakeMovement.bind(this);
-    this.check_SetImages_Interval_Handler = this.checkSetImages.bind(this);
-  }
-
-  setAnimateIntervalHandlers2() {
     this.check_MakeMovement_Interval_Handler = this.checkMakeMovement.bind(this);
     this.check_SetImages_Interval_Handler = this.checkSetImages.bind(this);
   }
@@ -133,9 +123,7 @@ class Endboss extends MovableObject {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   checkMakeMovement() {
     sounds.endboss.attack.pause();
-    if (this.isDead()) {
-      this.moveAsDead();
-    } // TODO: NUR EINMAL SPIELEN NICHT IM LOOP
+    if (this.canMoveAsDead()) this.moveAsDead();
     else if (this.isCharacterAlive()) {
       if (this.isHurtAndNotPreparedToAttack()) this.prepareToAttack();
       else if (this.isPreparedToAttack()) this.startAttack();
@@ -146,6 +134,13 @@ class Endboss extends MovableObject {
     }
   }
 
+  canMoveAsDead() {
+    return this.isDead();
+  }
+  
+  /**
+   * Moves the endboss as dead.
+   */
   moveAsDead() {
     super.moveAsDead();
   }

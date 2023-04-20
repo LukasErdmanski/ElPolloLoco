@@ -1,5 +1,4 @@
 class Bottle extends MovableObject {
-  // y = 360;
   offset = {
     top: 15,
     left: 23,
@@ -43,13 +42,8 @@ class Bottle extends MovableObject {
    * @param {number} y - The initial y position of the throwable object.
    */
   constructor(allBottlesArr, x, y) {
-    // constructor(x, y) {
     let randomIdxInImagesPaths = Math.round(Math.random());
-    super().loadImage(this.IMAGES_PATHS_ON_GROUND[randomIdxInImagesPaths]);
-    // TODO: das tun ALLE DRAWABLE OBJEKTE DIE MEHRERE IMG ARRAYS HABEN, das soll in einem Schritt für alle DOs bei init mit einer Zeile gemacht werden, z.B. ein JSON mit mehreren IMAGES PATHS könnten geladen werden. IMG.PATH.JSON vielleicht auslager
-    this.loadImages(this.IMAGES_PATHS_ON_GROUND);
-    this.loadImages(this.IMAGES_PATHS_ROTATION);
-    this.loadImages(this.IMAGES_PATHS_SPLASH);
+    super().loadImageFromImageCache(this.IMAGES_PATHS_ON_GROUND[randomIdxInImagesPaths]);
 
     if (allBottlesArr) this.x = this.getX(allBottlesArr);
     else (this.x = x), (this.y = y);
@@ -63,13 +57,6 @@ class Bottle extends MovableObject {
     this.speedY = 0;
 
     this.setAnimateIntervalHandlers();
-
-    // Apply gravity.
-    // this.applyGravity();
-
-    // this.animate();
-
-    // this.throw();
   }
 
   getX(allBottlesArr) {
@@ -109,7 +96,7 @@ class Bottle extends MovableObject {
     }
     if (this.speedX > 0 && this.otherDirection) this.moveLeft();
     if (this.speedX > 0 && !this.otherDirection) this.moveRight();
-    if (this.isDead()) this.deadAnimation_Part_MakeMovement_IsOver = true;
+    if (this.isDead()) this.stopFlight();
   }
 
   /**
@@ -117,7 +104,6 @@ class Bottle extends MovableObject {
    */
   fallDown() {
     this.isThrown = false;
-    console.log('IST THROWNNNNnnnnn');
     this.speedX = 9 + Math.random() * 4;
     this.accelerationX = 0.1;
     this.speedY = 10;
@@ -133,7 +119,7 @@ class Bottle extends MovableObject {
     this.speedX -= this.accelerationX;
   }
 
-  stopFligt() {
+  stopFlight() {
     this.deadAnimation_Part_MakeMovement_IsOver = true;
   }
 

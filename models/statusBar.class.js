@@ -1,5 +1,4 @@
 class StatusBar extends DrawableObject {
-
   // Storage of paths of status bar images.
   IMAGES_PATHS_BAR = [];
   // Current percentage of status bar.
@@ -20,9 +19,9 @@ class StatusBar extends DrawableObject {
     this.width = 200;
     this.height = 60;
     this.IMAGES_PATHS_BAR = imagePathsArr;
-    // Load images in the array property 'IMAGES.
-    this.loadImages(this.IMAGES_PATHS_BAR);
-    // Set initially the 'pecentage' property to 100.
+    // this.loadImageFromImageCache(this.IMAGES_PATHS_BAR[0]);
+
+    // Set initially the 'pecentage' property to the given pecentage.
     this.setPercentage(percentage);
   }
 
@@ -31,12 +30,12 @@ class StatusBar extends DrawableObject {
    * @param {number} percentage - The percentage of the status bar.
    */
   setPercentage(percentage) {
-    // Set the 'percentage' to the 'precentage' argument.
-    this.percentage = percentage;
-    // Set the local 'path' variable with the image file path from 'IMAGES' array with resolved index.
-    let path = this.IMAGES_PATHS_BAR[this.resolveImageIndex()];
-    // Set the 'img' property with the image object from 'imageCache' array with the key 'path'.
-    this.img = this.imageCache[path];
+      // Set the 'percentage' to the 'precentage' argument.
+      this.percentage = percentage;
+      // Set the local 'path' variable with the image file path from 'IMAGES' array with resolved index.
+      let path = this.IMAGES_PATHS_BAR[this.resolveImageIndex()];
+      // Set the 'img' property with the image object from 'imageCache' array with the key 'path'.
+      this.img = DrawableObject.imageCache[path];
   }
 
   /**

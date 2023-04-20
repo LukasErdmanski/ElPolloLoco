@@ -1,4 +1,4 @@
-sounds2 = {
+sounds = {
   game: {
     bgMusic: new Sound('audio/bgMusic.mp3', 0.1),
     endbossBgMusic: new Sound('audio/endbossBgMusic.mp3', 0.1),

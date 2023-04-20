@@ -53,10 +53,10 @@ class World {
      * Um die Funktion explizit aus dieser Klasse zu verwenden, muss mit 'this' darauf zugegriffen werden,
      * genauso wie beim Zugriff explizit auf Klassen Variablen.
      */
-    this.draw();
+
+    // debugger;
 
     // Execute a group of functions checking certain events in the world all the time.
-    // this.run();
   }
 
   /**
@@ -107,53 +107,46 @@ class World {
   runInterval;
   run() {
     this.setWorld();
-    this.startAllAnimationsOfMovableObjects();
+    this.draw();
+    this.applyGravityStartAnimations();
     setStoppableInterval(() => {
-      /*   if (this.character.oneBottleCollected && this.character.bottles.length == 0) {
-        debugger;
-      } */
-      ///TODO: ZUM LÖSCHEN / ZWISCHENLÖSUNG DAMIT DER CHARACTER NIE STIBRT WERDEN PROGRMAMIERUNG / TESTING / SPIEL ZU ENDE GEHT
-      // world.character.health = 5;
-      // console.log('WIEDER IM RUN INTERVALL');
       if (!this.isCharacterOrEndbossRemoved()) {
         this.checkCollisions();
+        this.checkEndbossDeath();
         this.checkRemovals();
       } else this.stopRun();
     }, 50);
   }
 
-  startAllAnimationsOfMovableObjects() {
-    // let array = MovableObject.allMovableObjectsInstances;
-
+  applyGravityStartAnimations() {
     this.character.applyGravity();
-    this.aaaa(this.level.clouds);
-    this.aaaa(this.level.enemies);
-    this.aaaa(this.level.coins);
-    // this.aaaa(this.level.bottlesInGround);
+    this.applyGravityForJumpableMovingObjects(this.level.enemies);
+    this.applyGravityForJumpableMovingObjects(this.level.coins);
 
     this.character.animate();
-    this.bbbb(this.level.enemies);
-    // this.bbbb(this.level.bottlesInGround);
+    this.startAnimations(this.level.coins, undefined, 3);
+    this.startAnimations(this.level.enemies);
   }
 
-  aaaa(levelPropertyArray) {
+  applyGravityForJumpableMovingObjects(levelPropertyArray) {
     levelPropertyArray.forEach((mo) => {
       if (mo instanceof Character || mo instanceof ChickenSmall || mo instanceof Endboss) mo.applyGravity();
     });
   }
 
-  bbbb(levelPropertyArray) {
+  startAnimations(levelPropertyArray, movementFrameRate, imgChangeFrameRate) {
     levelPropertyArray.forEach((mo) => {
-      mo.animate();
+      mo.animate(movementFrameRate, imgChangeFrameRate);
     });
   }
 
   stopRun() {
     playSoundsAtGameOver();
-    // clearInterval(this.runInterval);
     clearAllStoppableIntervals();
     this.stopDrawing = true;
-    setScreenBtnsAsPerGameState('over');
+    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
+    if (endboss) setScreenBtnsAsPerGameState('loss');
+    else setScreenBtnsAsPerGameState('win');
   }
 
   /**
@@ -207,20 +200,22 @@ class World {
     }
   }
 
-  checkRemovals() {
+  checkEndbossDeath() {
     let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
-    if (endboss.isDead()) this.removeAllEnemiesExceptEndboss();
-    else this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
-    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
-    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.character.coins);
-    this.checkIf_Character_Or_Endboss_CanBeRemoved_And_RemoveOneOfBoth();
+    if (endboss.isDead()) this.killAllEnemiesExceptEndboss();
   }
 
-  removeAllEnemiesExceptEndboss() {
+  killAllEnemiesExceptEndboss() {
     let array = this.level.enemies;
     array.forEach((enemy) => {
-      if (!(enemy instanceof Endboss)) this.removeFromLevel(enemy, array);
+      if (!(enemy instanceof Endboss)) enemy.health = 0;
     });
+  }
+
+  checkRemovals() {
+    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
+    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
+    this.checkIf_Character_CanBeRemoved_And_RemoveHim();
   }
 
   checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(array) {
@@ -229,15 +224,20 @@ class World {
     });
   }
 
-  checkIf_Character_Or_Endboss_CanBeRemoved_And_RemoveOneOfBoth() {
+  checkIf_Character_CanBeRemoved_And_RemoveHim() {
     // Check if character can be removed from the world and remove it if yes.
     if (this.character.canBeRemoved) this.removeCharacter();
-    // Check if endboss can be removed from the world level and remove it if yes.
-    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
-    let array = this.level.enemies;
-    if (endboss.canBeRemoved) {
-      this.removeFromLevel(endboss, array);
+  }
+
+  removeFromLevel(objToRemove, arrOfObj) {
+    let index = arrOfObj.indexOf(objToRemove);
+    if (index !== -1) {
+      arrOfObj.splice(index, 1);
     }
+  }
+
+  removeCharacter() {
+    this.character = null;
   }
 
   /**
@@ -306,28 +306,19 @@ class World {
      * @param {FrameRequestCallback} callback - The draw() function itself as a callback function
      * to animate another frame at the next repaint. requestAnimationFrame() is 1 shot.
      */
-    requestAnimationFrame(function () {
-      /**
-       * Hack: 'this' is not recognized here.
-       * Therefore a variable 'self' containing 'this' is needed, used.
-       */
-
-      if (!self.stopDrawing) {
+    if (!self.stopDrawing) {
+      requestAnimationFrame(() => {
+        /**
+         * Hack: 'this' is not recognized here.
+         * Therefore a variable 'self' containing 'this' is needed, used.
+         */
         self.updateCameraX();
         self.draw();
         // console.log('DRWAN');
-      }
-    });
+      });
+    }
   }
 
-  /**
-   * TODO: ZUM ÄNDERN / ALTE BESCHREIBUNG ALS DIE METHODE NOCH BEI CHARACTER CLASS WAR, NUR ALS BASIS ZUR BEARBEITUNG ERST VERSCHOBEN.
-   * Because of the world is referanced to the character (analogically f.e like the world's keyboard property),
-   * the world's 'camera_x' property can be setted from here (character class) and the world is moved in parallel
-   * to the character in the opposite x-direction.
-   * The character should be ever placed by 100px moved from the left canvas border.
-   * Check if character is not dead. Move the world only if character is not dead.
-   */
   updateCameraX() {
     if (this.character) {
       if (this.character.x >= this.camera_x_max + this.camera_x_shift) this.camera_x = -this.camera_x_max;
@@ -339,18 +330,22 @@ class World {
   /**
    * Adds an array of objects to the map (canvas).
    * @param {Array} objects - An array of objects to add to the map.
+   * @param {Boolean} [inclImgFrame=false] - This turns on / off the frame around the the object added to the map (canvas).
+   * @param {Boolean} [inclImgOffsetFrame=false] - This turns on / off the offset frame around the the object added to the map (canvas).
    */
-  addObjectsToMap(objects) {
+  addObjectsToMap(objects, inclImgFrame = false, inclImgOffsetFrame = false) {
     objects.forEach((object) => {
-      this.addToMap(object);
+      this.addToMap(object, inclImgFrame, inclImgOffsetFrame);
     });
   }
 
   /**
    * Adds the object to the map (canvas).
    * @param {Object} mo - The movable object.
+   * @param {Boolean} [inclImgFrame=false] - This turns on / off the frame around the the object added to the map (canvas).
+   * @param {Boolean} [inclImgOffsetFrame=false] - This turns on / off the offset frame around the the object added to the map (canvas).
    */
-  addToMap(mo) {
+  addToMap(mo, inclImgFrame = false, inclImgOffsetFrame = false) {
     if (mo != undefined && mo != null) {
       // Check if the movable object has other direction
       if (mo.otherDirection) {
@@ -364,10 +359,10 @@ class World {
       // Pasting the image to the canvas with the settings from before.
       mo.draw(this.ctx);
       // Draw rectangle around object to analyse collisions.
-      mo.drawFrame(this.ctx);
+      if (inclImgFrame) mo.drawFrame(this.ctx);
 
       // Draw rectangle around object reduced by its offset distances to analyse collisions.
-      mo.draw_Offset_Frame(this.ctx);
+      if (inclImgOffsetFrame) mo.draw_Offset_Frame(this.ctx);
 
       // Check if the image has beed already mirroed (equal to the check if the movable object has other direction):
       if (mo.otherDirection) {
@@ -444,17 +439,5 @@ class World {
   rotateImageBack() {
     // Restore the unrotated context
     this.ctx.restore();
-  }
-
-  removeFromLevel(objToRemove, arrOfObj) {
-    //TODO: ab hier weiter, character, endboss werden nicht gelöscht, bei objToRemove wird nur das Character/Endboss obj an sich weitergegeben, aber nicht die vairbale world.character entleert, die Reference bleibt bestehen. Vielleicht die Methode ändern
-    let index = arrOfObj.indexOf(objToRemove);
-    if (index !== -1) {
-      arrOfObj.splice(index, 1);
-    }
-  }
-
-  removeCharacter() {
-    this.character = null;
   }
 }

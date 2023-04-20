@@ -7,7 +7,7 @@ class Cloud extends MovableObject {
 
   constructor() {
     let randomIdxZeroOrOne = Math.round(Math.random());
-    super().loadImage(this.IMAGES_PATHS[randomIdxZeroOrOne]);
+    super().loadImageFromImageCache(this.IMAGES_PATHS[randomIdxZeroOrOne]);
     this.setAnimateIntervalHandlers();
   }
 

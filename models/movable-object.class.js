@@ -16,7 +16,7 @@ class MovableObject extends DrawableObject {
   healthPercentage = 100;
 
   lastHit = 0;
-  isMoveAsDeadStarted = false;
+  moveAsDeadStarted = false;
 
   check_MakeMovement_Interval_Handler;
   check_SetImages_Interval_Handler;
@@ -35,7 +35,7 @@ class MovableObject extends DrawableObject {
 
   constructor() {
     super();
-/*     this.id = Object.keys(MovableObject.allMovableObjectsInstances).length + 1; // Set unique ID for each MovableObject instance
+    /*     this.id = Object.keys(MovableObject.allMovableObjectsInstances).length + 1; // Set unique ID for each MovableObject instance
     MovableObject.allMovableObjectsInstances[this.id] = this; */
   }
 
@@ -129,6 +129,10 @@ class MovableObject extends DrawableObject {
     if (this instanceof Endboss) {
       sounds.endboss.hurt.currentTime = 0;
       sounds.endboss.hurt.play();
+    }
+    if (this instanceof Bottle) {
+      sounds.bottle.dead.currentTime = 0;
+      sounds.bottle.dead.play();
     }
     this.health--;
     // Check if the health is zero or negative.
@@ -282,7 +286,7 @@ class MovableObject extends DrawableObject {
     // Assign the current path from given 'images' array according to the 'i'.
     let path = this.currentImagesSet[this.currentImgIdx];
     // Assign new image object from 'imageCache' accroding the current iterated 'path' as the key.
-    this.img = this.imageCache[path];
+    this.img = DrawableObject.imageCache[path];
     // Increase the iteration counter by one.
     if (this.currentImgIdx == this.currentImagesSet.length - 1) {
       if (!this.isDead()) this.currentImgIdx = 0;
@@ -318,18 +322,18 @@ class MovableObject extends DrawableObject {
   }
 
   moveAsDead() {
-    if (this.isPreparedToMoveAsDead()) this.startMoveAsDead();
+    if (this.hasMoveAsDeadNotStarted()) this.startMoveAsDead();
     else if (this.isMovingDead()) this.moveInXDirection();
     else this.deadAnimation_Part_MakeMovement_IsOver = true;
   }
 
-  isPreparedToMoveAsDead() {
-    return !this.isMoveAsDeadStarted;
+  hasMoveAsDeadNotStarted() {
+    return !this.moveAsDeadStarted;
   }
 
   startMoveAsDead() {
     // No, set the state that character started to move as dead.
-    this.isMoveAsDeadStarted = true;
+    this.moveAsDeadStarted = true;
     console.log('in in');
     // Set the horizontal and vertical speed for 'jump / falling down right' as dead.
     this.setDirectionAsPerCanvasCenter();

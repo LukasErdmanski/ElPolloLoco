@@ -1,4 +1,3 @@
-
 let canvas;
 let keyboard = new Keyboard();
 let allIntervals = [];
@@ -22,13 +21,30 @@ function getElem(id) {
   return document.getElementById(id);
 }
 
-async function load() {
-  resetLoadCounter();
+async function init() {
+  // resetLoadCounter();
   canvas = getElem('canvas');
+  try {
+    preloadImagesSoundsPromise = preloadImagesSounds(imagePaths, sounds);
+    await preloadImagesSoundsPromise;
 
+    WEITERE_FUNKTIONEN();
+  } catch (error) {
+    debugger;
+    // Das Versprechen wurde zurückgewiesen, also gab es einen Fehler in einem der Ladevorgänge
+    console.warn(error);
+    debugger;
+/*     alert(
+      'Loading required image or sounds resources for the game failed.\nPress OK to try to reload the webpage and resources again!'
+    ); */
+    // location.reload();
+  }
+}
+
+function WEITERE_FUNKTIONEN() {
   initLevel();
   worldSingletonInstance = WorldSingleton.getInstance(canvas, keyboard);
-  await Promise.all([checkAllImagesPreloaded(), checkAllSoundsReadyToPlay()]);
+  // await Promise.all([checkAllImagesPreloaded(), checkAllSoundsReadyToPlay()]);
 
   setControlInfoBox();
   applyOnClickEventListenerToAllButtons();
@@ -45,8 +61,7 @@ function removeWorldLevel() {
 }
 
 function resetLoadCounter() {
-  DrawableObject.numImagesToLoad = 0;
-  DrawableObject.numImagesLoaded = 0;
+
 }
 
 /**
@@ -58,7 +73,7 @@ function hideLoadingScreen() {
 
 alreadyImagesAudioLoaded = false;
 
-async function init() {
+async function startGame() {
   clearAllStoppableIntervals();
   pause = false;
   removeWorldLevel();
@@ -68,7 +83,6 @@ async function init() {
   // TODO: PRÜFEN OB ALLE IMAGES IN EINER GAME SESSION VOR DEM RESET SCHON MALL KOMPLETT GELADEN WURDEN
   // TODO: IMG AUF ERSTES REASETEN
 
-  // TODO: Canvan mit setTimeOut von 500 ms starten, damit am Anfang canvan nicht ruckelt.
 
   canvas = getElem('canvas');
 
@@ -86,16 +100,6 @@ async function init() {
   if (musicMuted) turnMusicOff();
 }
 
-function checkAllImagesPreloaded() {
-  return new Promise((resolve) => {
-    const checkInterval = setInterval(() => {
-      if (DrawableObject.numImagesLoaded === DrawableObject.numImagesToLoad) {
-        clearInterval(checkInterval);
-        resolve();
-      }
-    }, 50);
-  });
-}
 
 function setControlInfoBox() {
   if (getIfDeviceIsMobileOrTablet()) {
@@ -119,9 +123,14 @@ function setScreenBtnsAsPerGameState(gameState) {
     setBtnsAsPerGameState();
     setScreenAsPerGameState();
   }
-  if (gameState == 'over') {
+  if (gameState == 'loss') {
     setBtnsAsPerGameState('resetBtn');
-    setScreenAsPerGameState('gameOverScreen');
+    setScreenAsPerGameState('lossScreen');
+  }
+
+  if (gameState == 'win') {
+    setBtnsAsPerGameState('resetBtn');
+    setScreenAsPerGameState('winScreen');
   }
 }
 
@@ -139,11 +148,12 @@ function setBtnsAsPerGameState(idOfVisibleBtn) {
   if (idOfVisibleBtn != 'startBtn') getElem('startBtn').classList.add('dNone');
 }
 
-function setScreenAsPerGameState(ifOfVisibleScreen) {
+function setScreenAsPerGameState(idOfVisibleScreen) {
   getElem('startScreen').classList.add('dNone');
-  getElem('gameOverScreen').classList.add('dNone');
+  getElem('lossScreen').classList.add('dNone');
+  getElem('winScreen').classList.add('dNone');
 
-  if (ifOfVisibleScreen) getElem(ifOfVisibleScreen).classList.remove('dNone');
+  if (idOfVisibleScreen) getElem(idOfVisibleScreen).classList.remove('dNone');
 }
 
 /**

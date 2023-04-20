@@ -11,13 +11,9 @@ class DrawableObject {
   // The current drawing img / parameter of the functions drawImage of the canvas context.
   img;
   // JSON for key-value pair (key [image PATH], value [IMAGE OBJECT itself]) --> Accessing the image object via its path / src.
-  imageCache = {};
+  static imageCache = {};
 
-
-  static numImagesLoaded = 0;
-  static numImagesToLoad = 0;
-
-  // loadImage('img/test.png')
+  // loadImageToImageCache('img/test.png')
 
   /**
    * Loads the first image object into the variable 'img' used in the function 'draw(ctx)' at the beginning, so that
@@ -25,38 +21,9 @@ class DrawableObject {
    * @param {string} path - The path of the first image to be stored in the variable 'img' and used in the 'draw(ctx)'
    * function at the beginning.
    */
-  loadImage(path) {
-    DrawableObject.numImagesToLoad++;
-    this.img = new Image(); // this.img = document.getElementById('image') <img id="image">
-    this.img.src = path;
-    this.img.onload = DrawableObject.numImagesLoaded++;
-  }
-
-  /**
-   * Creates a new image object for each path from given array of image paths,
-   * sets the currently iterated image path to its src attribute,
-   * adds it to imageCache as a value of the key of 'path'.
-   * --> Accesing the image object from 'imageCache' object via its path / src.
-   * @param {Array} arr -The array of image paths of the drawable object.
-   */
-  loadImages(arr) {
-    arr.forEach((path) => {
-      DrawableObject.numImagesToLoad++;
-
-      // Create new image object.
-      let img = new Image();
-
-      // Assing the current image path to src attribute of the created image object.
-      img.src = path;
-
-      /**
-       * Save the created image (with the set src attribute before) as value of the key 'path'.
-       * --> Accesing the image object from 'imageCache' object via its path / src.
-       */
-      this.imageCache[path] = img;
-
-      img.onload = DrawableObject.numImagesLoaded++;
-    });
+  loadImageFromImageCache(path) {
+    // Assing the current image to the img from 'imageCache' saved under the given image path as the key.
+    this.img =  DrawableObject.imageCache[path]
   }
 
   /**
@@ -73,6 +40,7 @@ class DrawableObject {
     try {
       ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     } catch (error) {
+      debugger
       console.warn('Error loading image', error);
       console.log('Could not load image', this.img.src);
     }

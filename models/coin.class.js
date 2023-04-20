@@ -18,11 +18,9 @@ class Coin extends MovableObject {
   IMAGES_PATHS = ['img/8_coin/coin_1.png', 'img/8_coin/coin_2.png'];
 
   constructor(allCoinsArr) {
-    super().loadImage(this.IMAGES_PATHS[0]);
-    this.loadImages(this.IMAGES_PATHS);
+    super().loadImageFromImageCache(this.IMAGES_PATHS[0]);
     [this.x, this.y] = this.getXY(allCoinsArr);
     this.setAnimateIntervalHandlers();
-    // this.animate(undefined, 3);
   }
 
   setAnimateIntervalHandlers() {

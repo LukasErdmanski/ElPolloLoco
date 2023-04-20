@@ -1,6 +1,5 @@
 class Character extends MovableObject {
   x = 0;
-  // y =  - (this.height - this.offset.top - this.offset.bottom) - this.yOfGroundLine;
   width = 100;
   height = 250;
   offset = {
@@ -9,19 +8,14 @@ class Character extends MovableObject {
     right: 15,
     bottom: 12,
   };
-
   speedX = 10;
-
   bottlesPercentage = 0;
   coinsPercentage = 0;
   timeStempOflastMovement = new Date().getTime();
-
   canTurnAround = true;
-
   lastThrow = 0;
   lastBuyingHealth = 0;
   lastBuyingBottle = 0;
-
   bottles = [];
   coins = [];
 
@@ -92,31 +86,17 @@ class Character extends MovableObject {
   world;
 
   constructor() {
-    // Via super() wird auf die Methode, hier z.B. loadImage() der Super Klasse zugegriffen.
-    super().loadImage('img/2_character_pepe/2_walk/W-21.png');
-
-    this.loadImages(this.IMAGES_PATHS_IDLE_SHORT);
-    this.loadImages(this.IMAGES_PATHS_IDLE_LONG);
-
     // Loads the 'imageCache' with the image objects for the WALKING animation according to the image path array 'IMAGES_WALKING'.
-    this.loadImages(this.IMAGES_PATHS_WALKING);
-    // Loads the 'imageCache' with the image objects for the JUMP animation according to the image path array 'IMAGES_JUMP'.
-    this.loadImages(this.IMAGES_PATHS_JUMPING);
-    // Loads the 'imageCache' with the image objects for the DEAD animation according to the image path array 'IMAGES_DEAD'.
-    this.loadImages(this.IMAGES_PATHS_DEAD);
-    // Loads the 'imageCache' with the image objects for the HURT animation according to the image path array 'IMAGES_HURT'.
-    this.loadImages(this.IMAGES_PATHS_HURT);
+
+    super().loadImageFromImageCache(this.IMAGES_PATHS_WALKING[0]);
 
     this.positionOnGround();
 
     this.setAnimateIntervalHandlers();
 
     // Apply the gravity to the character.
-    // this.applyGravity();
 
-    // this.y = 0;
     // Start character movement animation after the initialisation.
-    // this.animate();
   }
 
   /**
@@ -136,8 +116,7 @@ class Character extends MovableObject {
   checkMakeMovement() {
     sounds.character.moveLeftOrRight.pause();
 
-    // if (this.canMoveAsDead()) this.moveAsDead();
-    if (this.canMoveAsDead()) this.moveAsDead(); //TODO: DEAD SOLL NUR EINMALL GESPIELT WERDEN NICHT IM LOOP
+    if (this.canMoveAsDead()) this.moveAsDead();
     else {
       // Check if the character can move right. If yes, the character moves right.
       if (this.canMoveRight()) this.moveRight();
@@ -158,7 +137,6 @@ class Character extends MovableObject {
     }
   }
 
-  // this.world.camera_x = -this.x + this.world.camera_x_shift;
 
   isAlive() {}
 
@@ -263,6 +241,7 @@ class Character extends MovableObject {
    * Moves the character as dead.
    */
   moveAsDead() {
+    console.warn("______REINGEKOMMEN IN MOVE AS DEAD CHARACTER")
     super.moveAsDead();
   }
 
@@ -304,8 +283,6 @@ class Character extends MovableObject {
     this.bottlesPercentage = (this.bottles.length / this.world.level.amountOfAllBottles) * 100;
   }
 
-  // TODO: AM ENDE LÖSCHEN
-  lastThrownBottle;
 
   throwBottle() {
     this.lastThrow = new Date().getTime();
@@ -326,8 +303,6 @@ class Character extends MovableObject {
       bottle.applyGravity();
       bottle.animate();
 
-      // TODO: AM ENDE LÖSCHEN
-      this.lastThrownBottle = bottle;
       this.bottles.pop();
 
       this.updateBottlesPercentage();
@@ -344,8 +319,6 @@ class Character extends MovableObject {
       sounds.coin.buyBottle.currentTime = 0;
       sounds.coin.buyBottle.play();
 
-      // TODO: AM ENDE LÖSCHEN
-      // coinForPayment.canBeRemoved = true;
       this.coins.pop();
       this.updateCoinsPercentage();
       this.world.coinsBar.setPercentage(this.coinsPercentage);
@@ -354,7 +327,6 @@ class Character extends MovableObject {
       let y = this.y;
       let boughtBottle = new Bottle(undefined, x, y);
       this.bottles.push(boughtBottle);
-      this.world.level.amountOfAllBottles++;
 
       this.updateBottlesPercentage();
       this.world.bootlesBar.setPercentage(this.bottlesPercentage);
@@ -369,17 +341,10 @@ class Character extends MovableObject {
       sounds.character.noCoinNoBottle.currentTime = 0;
       sounds.coin.buyHealth.currentTime = 0;
       sounds.coin.buyHealth.play();
-
-      // TODO: AM ENDE LÖSCHEN
-      // coinForPayment.canBeRemoved = true;
       this.coins.pop();
       this.updateCoinsPercentage();
       this.world.coinsBar.setPercentage(this.coinsPercentage);
-
       this.health++;
-      // TODO: AM ENDE LÖSCHEN
-      // if (this.health > this.healthInitial) this.health = this.healthInitial;
-
       this.updateHealthPercentage();
       this.world.healthBar.setPercentage(this.healthPercentage);
     } else sounds.character.noCoinNoBottle.play();
@@ -389,31 +354,32 @@ class Character extends MovableObject {
     sounds.character.snooring.pause();
     if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
     else if (this.isInAnyStateUpdatingLastTimeStempOfLastMovement());
-    else if (this.isInLongSleep())
+    else if (this.isInLongSleep()) {
       this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_LONG), sounds.character.snooring.play();
-    else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_SHORT);
+    } else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_IDLE_SHORT);
   }
 
   isInAnyStateUpdatingLastTimeStempOfLastMovement() {
     if (this.isHurt()) {
       this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_HURT);
-      this.updateTimeStempOfLastMovement();
-      return true;
+      return this.updateTimeStempOfLastMovement();
     } else if (this.isAboveGround()) {
       sounds.character.moveLeftOrRight.pause();
       this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_JUMPING);
-      this.updateTimeStempOfLastMovement();
-      return true;
-    } else if (this.isMovingLeftOrRightOrBuyingOrThrowing()) {
-      this.updateTimeStempOfLastMovement();
+      return this.updateTimeStempOfLastMovement();
+    } else if (this.isMovingLeftOrRight()) {
       this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
-      return true;
+      return this.updateTimeStempOfLastMovement();
+    } else if (this.isBuyingOrThrowing()) {
+      this.loadImageFromImageCache('img/2_character_pepe/2_walk/W-25.png');
+      return this.updateTimeStempOfLastMovement();
     }
     return false;
   }
 
   updateTimeStempOfLastMovement() {
     this.timeStempOflastMovement = new Date().getTime();
+    return true;
   }
 
   isInLongSleep() {
@@ -421,14 +387,12 @@ class Character extends MovableObject {
     return secondsPassed > 5;
   }
 
-  isMovingLeftOrRightOrBuyingOrThrowing() {
-    return (
-      this.world.keyboard.RIGHT.isPressed ||
-      this.world.keyboard.LEFT.isPressed ||
-      this.world.keyboard.A.isPressed ||
-      this.world.keyboard.S.isPressed ||
-      this.world.keyboard.D.isPressed
-    );
+  isMovingLeftOrRight() {
+    return this.world.keyboard.RIGHT.isPressed || this.world.keyboard.LEFT.isPressed;
+  }
+
+  isBuyingOrThrowing() {
+    return this.world.keyboard.A.isPressed || this.world.keyboard.S.isPressed || this.world.keyboard.D.isPressed;
   }
 
   isCollidingOrPressingInJumpFallingDown(enemy) {
