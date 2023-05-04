@@ -62,10 +62,10 @@
               <button id="RIGHT"><img src="img/10_buttons/arrow-right.png" alt="arrow-right-icon"></button>
             </div>
     
-            <div class="buttonsGroup">
+            <div id="buttonsRowBottomButtonsGroupCenter" class="buttonsGroup">
               <button id="startBtn" onclick="startGame()"><img src="img/10_buttons/start.png" alt="start-button-icon"></button>
               <button id="resetBtn" onclick="startGame()" class="dNone"><img src="img/10_buttons/restart.png" alt="reset-button-icon"></button>
-              <button id="enterExitFullScreenBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', this, 'img/10_buttons/pause-128.png')"><img src="img/10_buttons/play-button.png" alt="play-button-icon"></button>
+              <button id="pausePlayBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', this, 'img/10_buttons/play-button.png')"><img src="img/10_buttons/pause-128.png" alt="pause-play-button-icon"></button>
             </div>
     
             <div class="buttonsGroup buttonsGroupColumn">
@@ -141,7 +141,6 @@
     <script src="models/background-object.class.js"></script>
     <script src="models/statusBar.class.js"></script>
     <script src="models/sound.class.js"></script>
-    <script src="js/sounds.js"></script>
     <script src="models/worldSingletron.class.js"></script>
     <script src="models/world.class.js"></script>
     <script src="models/keyboard.class.js"></script>
@@ -150,7 +149,14 @@
     <script src="models/coin.class.js"></script>
     <script src="models/endboss.class.js"></script>
     <script src="levels/level1.js"></script>
-    <script src="js/game.js"></script>
+    <script src="js/soundPaths.js"></script>
+    <script src="js/imagePaths.js"></script>
     <script src="js/bars.js"></script>
+    <script src="js/preload.js"></script>
+    <script src="js/screenButtonsFunctions.js"></script>
+    <script src="js/soundFunctions.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+  </body>
   </body>
 </html>

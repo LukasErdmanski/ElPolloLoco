@@ -1,56 +1,106 @@
+/**
+ * Represents a normal chicken object.
+ * @class
+ * @extends MovableObject
+ */
 class ChickenNormal extends MovableObject {
+  /**
+   * The width of the chicken.
+   * @type {number}
+   */
   width = 100;
+
+  /**
+   * The height of the chicken.
+   * @type {number}
+   */
   height = 80;
+
+  /**
+   * The offset of the chicken.
+   * @type {{top: number, left: number, right: number, bottom: number}}
+   */
   offset = {
     top: 3,
     left: 3,
     right: 2,
     bottom: 4,
   };
+
+  /**
+   * The health of the chicken.
+   * @type {number}
+   */
   health = 2;
+
+  /**
+   * Whether or not the chicken can turn around.
+   * @type {boolean}
+   */
   canTurnAround = true;
 
+  /**
+   * The image paths for the walking animation of the chicken.
+   * @type {string[]}
+   */
   IMAGES_PATHS_WALKING = [
     'img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
     'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
     'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
   ];
 
+  /**
+   * The image path for the dead state of the chicken.
+   * @type {string[]}
+   */
   IMG_PATH_DEAD = ['img/3_enemies_chicken/chicken_normal/2_dead/dead.png'];
 
-  constructor() {
+  /**
+   * Creates a new instance of the ChickenNormal class.
+   * @constructor
+   * @param {number} x - The horizontal coordinate of the object.
+   * @param {number} y - The vertical coordinate of the object.
+   */
+  constructor(x, y) {
     super().loadImageFromImageCache(this.IMAGES_PATHS_WALKING[0]);
     this.positionOnGround();
-    this.setAnimateIntervalHandlers();
   }
 
-  setAnimateIntervalHandlers() {
-    this.check_MakeMovement_Interval_Handler = this.checkMakeMovement.bind(this);
-    this.check_SetImages_Interval_Handler = this.checkSetImages.bind(this);
-  }
-
+  /**
+   * Sets the starting x position and speed of the chicken.
+   */
   setStartXAndSpeedX() {
-    /**
-     * super() wird nur verwendet, wenn Methoden von der Super Klasse verwendet.
-     * Auf Variablen von Super Klasse kann direkt zugegriffen werden (ohne super() davor).
-     * Math.random() returnt eine Random Zahl zw. 0 und 1.
-     */
-    this.x = this.level.end_x * 0.15 + Math.random() * this.level.end_x * 0.5; // Random Zahl zwischen 200 und 700
-    // Set random motion speed for instance of chicken class after the initialisation.
+    this.x = this.level.end_x * 0.15 + Math.random() * this.level.end_x * 0.5;
+    // Set random motion speed for instance of chicken class after the initialization.
     this.speedX = 0.15 + Math.random() * 0.25;
   }
 
-  checkMakeMovement() {
-    if (this.isDead()) this.deadAnimation_Part_MakeMovement_IsOver = true;
-    else this.moveInXDirection();
+  /**
+   * Checks which movement the normal chicken can do and make it if valid.
+   * @override
+   * @see {@link MovableObject.checkMakeMovementIntervalHandler} for the default implementation in the parent class.
+   */
+  checkMakeMovementIntervalHandler() {
+    if (this.isDead()) {
+      this.deadAnimation_Part_MakeMovement_IsOver = true;
+    } else {
+      this.moveInXDirection();
+    }
   }
 
-  checkSetImages() {
+  /**
+   * Checks in which state is the normal chicken and sets the images for the chicken state.
+   * @override
+   * @see {@link MovableObject.checkSetImagesIntervalHandler} for the default implementation in the parent class.
+   */
+  checkSetImagesIntervalHandler() {
     if (this.isDead()) {
       this.changeImagesSetAndCurrentImg(this.IMG_PATH_DEAD);
       this.deadAnimation_Part_SetLastImg_IsOver = true;
     } else if (this.isHurt()) {
       this.changeImagesSetAndCurrentImg(this.IMG_PATH_DEAD);
-    } else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
+    } else {
+      this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
+    }
   }
 }

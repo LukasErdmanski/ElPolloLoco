@@ -7,7 +7,7 @@ class World {
   canvas;
   // Tool box / framework to present things ('context') on canvas.
   ctx;
-  stopDrawing = false;
+  drawingForbidden = false;
   // Assigned keyboard instance.
   keyboard;
   /**
@@ -34,6 +34,10 @@ class World {
   // Current degrees by which the image has already been rotated in the canvas.
   rotatedDegrees = 0;
 
+  endboss;
+
+  endbossDead = false;
+
   constructor(canvas, keyboard) {
     // Get the context (which should be presented on) for the canvas.
     this.ctx = canvas.getContext('2d');
@@ -54,7 +58,6 @@ class World {
      * genauso wie beim Zugriff explizit auf Klassen Variablen.
      */
 
-    // debugger;
 
     // Execute a group of functions checking certain events in the world all the time.
   }
@@ -67,37 +70,9 @@ class World {
   setWorld() {
     // this.character.world = this;
     this.character.world = worldSingletonInstance;
-    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
-    // endboss.world = this;
-    endboss.world = worldSingletonInstance;
-
     this.character.level = worldSingletonInstance.level;
-
-    // this.setWorldLevelToAllMovalbleObjectsInLevel();
-  }
-
-  /**
-   * Loops over all properties of the world level and checks whether its values are instances of a 'MovableObject'
-   * class. If the value is an array, the function checks each element of the array.
-   */
-  setWorldLevelToAllMovalbleObjectsInLevel() {
-    // Loop over all properties of the object.
-    for (let key in this.level) {
-      // Check whether the value of the property is an array or not.
-      // If it's an array, assign it to the variable propertyValue directly,
-      // otherwise create a new array with the value as its only element.
-      const propertyAsArray = Array.isArray(this.level[key]) ? this.level[key] : [this.level[key]];
-
-      // Loop over all values in the array propertyValue.
-      propertyAsArray.forEach((element) => {
-        // Check whether the value is an instance of the class MovableObject.
-        if (element instanceof MovableObject) {
-          // If it is, assingn the world and level property to its properties with the same names.
-          element.world = this;
-          element.level = this.level;
-        }
-      });
-    }
+    this.endboss = this.getEndbossObjFromLevelEnemyArray();
+    this.endboss.world = worldSingletonInstance;
   }
 
   /**
@@ -107,12 +82,13 @@ class World {
   runInterval;
   run() {
     this.setWorld();
-    this.draw();
     this.applyGravityStartAnimations();
+    this.draw();
     setStoppableInterval(() => {
       if (!this.isCharacterOrEndbossRemoved()) {
-        this.checkCollisions();
+        this.checkCharacterDeath();
         this.checkEndbossDeath();
+        this.checkCollisions();
         this.checkRemovals();
       } else this.stopRun();
     }, 50);
@@ -135,18 +111,19 @@ class World {
   }
 
   startAnimations(levelPropertyArray, movementFrameRate, imgChangeFrameRate) {
-    levelPropertyArray.forEach((mo) => {
-      mo.animate(movementFrameRate, imgChangeFrameRate);
-    });
+    levelPropertyArray.forEach((mo) => mo.animate(movementFrameRate, imgChangeFrameRate));
   }
 
   stopRun() {
     playSoundsAtGameOver();
+    this.stopDrawing();
     clearAllStoppableIntervals();
-    this.stopDrawing = true;
-    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
-    if (endboss) setScreenBtnsAsPerGameState('loss');
+    if (this.endboss) setScreenBtnsAsPerGameState('loss');
     else setScreenBtnsAsPerGameState('win');
+  }
+
+  stopDrawing() {
+    this.drawingForbidden = true;
   }
 
   /**
@@ -185,24 +162,37 @@ class World {
 
     for (let i = 0; i < arrayBottlesInFlight.length; i++) {
       const bottle = arrayBottlesInFlight[i];
-      for (let j = 0; j < arrayLevelEnemies.length; j++) {
-        const collisionEnemy = arrayLevelEnemies[j];
-        if (bottle.isColliding(collisionEnemy)) {
-          bottle.hit();
-          if (!collisionEnemy.isHurt()) collisionEnemy.hit();
-          if (collisionEnemy instanceof Endboss) this.endbossBar.setPercentage(collisionEnemy.healthPercentage);
-          break;
-        } else if (bottle.isOnGroundAfterFlight()) {
-          bottle.hit();
-          break;
+      //
+      if (!bottle.isDead()) {
+        for (let j = 0; j < arrayLevelEnemies.length; j++) {
+          const collisionEnemy = arrayLevelEnemies[j];
+          if (bottle.isColliding(collisionEnemy)) {
+            bottle.hit();
+            if (!collisionEnemy.isHurt()) collisionEnemy.hit();
+            if (collisionEnemy instanceof Endboss) this.endbossBar.setPercentage(collisionEnemy.healthPercentage);
+            break;
+          } else if (bottle.isOnGroundAfterFlight()) {
+            bottle.hit();
+            break;
+          }
         }
       }
     }
   }
 
+  checkCharacterDeath() {
+    if (this.character.isDead()) hideControllerButtons();
+  }
+
   checkEndbossDeath() {
-    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
-    if (endboss.isDead()) this.killAllEnemiesExceptEndboss();
+    if (!this.endbossDead) {
+      if (this.endboss.isDead()) {
+        this.endbossDead = true;
+        this.character.movementPossible = false;
+        hideControllerButtons();
+        this.killAllEnemiesExceptEndboss();
+      }
+    }
   }
 
   killAllEnemiesExceptEndboss() {
@@ -216,6 +206,7 @@ class World {
     this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
     this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
     this.checkIf_Character_CanBeRemoved_And_RemoveHim();
+    this.checkIf_Endboss_CanBeRemoved_And_RemoveHim();
   }
 
   checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(array) {
@@ -229,15 +220,22 @@ class World {
     if (this.character.canBeRemoved) this.removeCharacter();
   }
 
+  checkIf_Endboss_CanBeRemoved_And_RemoveHim() {
+    // Check if character can be removed from the world and remove it if yes.
+    if (this.endboss.canBeRemoved) this.removeEndboss();
+  }
+
   removeFromLevel(objToRemove, arrOfObj) {
     let index = arrOfObj.indexOf(objToRemove);
-    if (index !== -1) {
-      arrOfObj.splice(index, 1);
-    }
+    if (index !== -1) arrOfObj.splice(index, 1);
   }
 
   removeCharacter() {
     this.character = null;
+  }
+
+  removeEndboss() {
+    this.endboss = null;
   }
 
   /**
@@ -245,11 +243,10 @@ class World {
    */
   isCharacterOrEndbossRemoved() {
     // Prepare the local variable for endboss, if it still exists, and store it under the variable.
-    let endboss = this.getOnlyEndbossObjFromLevelEnemyArray();
-    return !this.character || !endboss;
+    return !this.character || !this.endboss;
   }
 
-  getOnlyEndbossObjFromLevelEnemyArray() {
+  getEndbossObjFromLevelEnemyArray() {
     let endbossObjFromLevelEnemyArray = this.level.enemies.find((x) => x instanceof Endboss);
     return endbossObjFromLevelEnemyArray;
   }
@@ -306,17 +303,18 @@ class World {
      * @param {FrameRequestCallback} callback - The draw() function itself as a callback function
      * to animate another frame at the next repaint. requestAnimationFrame() is 1 shot.
      */
-    if (!self.stopDrawing) {
-      requestAnimationFrame(() => {
-        /**
-         * Hack: 'this' is not recognized here.
-         * Therefore a variable 'self' containing 'this' is needed, used.
-         */
+
+    requestAnimationFrame(() => {
+      /**
+       * Hack: 'this' is not recognized here.
+       * Therefore a variable 'self' containing 'this' is needed, used.
+       */
+      if (!worldSingletonInstance.drawingForbidden) {
         self.updateCameraX();
         self.draw();
-        // console.log('DRWAN');
-      });
-    }
+      }
+      // console.log('DRWAN');
+    });
   }
 
   updateCameraX() {
@@ -334,9 +332,7 @@ class World {
    * @param {Boolean} [inclImgOffsetFrame=false] - This turns on / off the offset frame around the the object added to the map (canvas).
    */
   addObjectsToMap(objects, inclImgFrame = false, inclImgOffsetFrame = false) {
-    objects.forEach((object) => {
-      this.addToMap(object, inclImgFrame, inclImgOffsetFrame);
-    });
+    objects.forEach((object) => this.addToMap(object, inclImgFrame, inclImgOffsetFrame));
   }
 
   /**
@@ -347,15 +343,13 @@ class World {
    */
   addToMap(mo, inclImgFrame = false, inclImgOffsetFrame = false) {
     if (mo != undefined && mo != null) {
-      // Check if the movable object has other direction
-      if (mo.otherDirection) {
-        // Yes, flip the movable object image.
-        this.flipImage(mo);
-      }
+      // Check if the movable object has other direction. If yes, flip the movable object image.
+      if (mo.otherDirection) this.flipImage(mo);
 
       if ((mo instanceof Character && mo.health == 0) || (mo instanceof Endboss && mo.health == 0)) {
         this.rotateImage(mo);
       }
+
       // Pasting the image to the canvas with the settings from before.
       mo.draw(this.ctx);
       // Draw rectangle around object to analyse collisions.
@@ -364,11 +358,8 @@ class World {
       // Draw rectangle around object reduced by its offset distances to analyse collisions.
       if (inclImgOffsetFrame) mo.draw_Offset_Frame(this.ctx);
 
-      // Check if the image has beed already mirroed (equal to the check if the movable object has other direction):
-      if (mo.otherDirection) {
-        // Yes, flip the movable object image back.
-        this.flipImageBack(mo);
-      }
+      // Check if the image has beed already mirroed (equal to the check if the movable object has other direction). If yes, flip the movable object image back.
+      if (mo.otherDirection) this.flipImageBack(mo);
 
       if ((mo instanceof Character && mo.health == 0) || (mo instanceof Endboss && mo.health == 0)) {
         this.rotateImageBack();

@@ -1,32 +1,4 @@
-let preloadImagesSoundsPromise;
-
-//#region init preloadImagesSounds =================================================================================
-/**
- * Initializes the game by preloading all necessary images and sounds.
- * @async
- * @function
- * @returns {Promise<void>} A promise that resolves once all images and sounds have been preloaded.
- */
-async function init333() {
-  debugger;
-  // let preloadImagesSoundsPromise
-  try {
-    preloadImagesSoundsPromise = preloadImagesSounds(imagePaths, sounds);
-    await preloadImagesSoundsPromise;
-
-    // WEITERE FUNKTION
-  } catch (error) {
-    debugger;
-    // Das Versprechen wurde zurückgewiesen, also gab es einen Fehler in einem der Ladevorgänge
-    console.warn(error);
-    debugger;
-/*     alert(
-      'Loading required image or sounds resources for the game failed.\nPress OK to try to reload the webpage and resources again!'
-    ); */
-    // location.reload();
-  }
-}
-
+//#region preloadImagesSounds =================================================================================
 /**
  * Preloads all images and sounds needed for the game.
  * @async
@@ -39,7 +11,7 @@ async function init333() {
 async function preloadImagesSounds(imagePaths, soundsObj) {
   return await Promise.all([createLoadRenderSaveImages(imagePaths), createLoadSaveSounds(soundsObj)]);
 }
-//#endregion init preloadImagesSounds =================================================================================
+//#endregion preloadImagesSounds =================================================================================
 
 //#region createLoadRenderSaveImages ===============================================================================
 /**
@@ -96,13 +68,12 @@ function createTempCanvasesContainer() {
 function createLoadRenderSaveImg(path, tempCanvasSettings) {
   return new Promise(async (resolve, reject) => {
     try {
-      const img = await createLoadImg(path);
       const [maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases] = tempCanvasSettings;
-      const tempCanvas = getOrCreateTempCanvas(maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases);
-      const tempCanvasCtx = tempCanvas.getContext('2d');
-      const [scaleImg, scaledWidth, scaledHeight] = setScaleWidthHeight(img, maxWidth, maxHeight);
-      // await img.complete == true;
-      // Draw image on temporary canvas
+      // Create and scale the image.
+      const [scaleImg, scaledWidth, scaledHeight] = await createScaleImgWithScaledWidthHeight(path, maxWidth, maxHeight);
+      // Set up the temporary canvas and context.
+      const [tempCanvas, tempCanvasCtx] = setTempCanvasWithContext(maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases);
+      // Draw the image onto the temporary canvas.
       tempCanvasCtx.drawImage(scaleImg, 0, 0, scaledWidth, scaledHeight);
       // Make temporary canvas free and push it into 'freeTempCanvases'
       freeTempCanvases.push(tempCanvas);
@@ -117,6 +88,40 @@ function createLoadRenderSaveImg(path, tempCanvasSettings) {
 }
 
 /**
+ * Creates an image from the specified path, scales it to the specified maximum dimensions, and returns the scaled
+ * image and its dimensions.
+ * @function
+ * @async
+ * @param {string} path - The path of the image to be loaded.
+ * @param {number} maxWidth - The maximum width of the scaled image.
+ * @param {number} maxHeight - The maximum height of the scaled image.
+ * @returns {Promise<[HTMLCanvasElement, number, number]>} A promise that resolves with an array containing the scaled
+ * image, its width, and its height.
+ */
+async function createScaleImgWithScaledWidthHeight(path, maxWidth, maxHeight) {
+  const img = await createLoadImg(path);
+  const [scaleImg, scaledWidth, scaledHeight] = setScaleImgWidthHeight(img, maxWidth, maxHeight);
+  return [scaleImg, scaledWidth, scaledHeight];
+}
+
+/**
+ * Creates a temporary canvas element and returns it with its context.
+ * @function
+ * @param {number} maxWidth - The maximum width of the temporary canvas.
+ * @param {number} maxHeight - The maximum height of the temporary canvas.
+ * @param {HTMLDivElement} tempCanvasesContainer - The container element for temporary canvases.
+ * @param {Array<HTMLCanvasElement>} freeTempCanvases - An array of free temporary canvases.
+ * @returns {[HTMLCanvasElement, CanvasRenderingContext2D]} An array containing the temporary canvas and its 2D context.
+ */
+function setTempCanvasWithContext(maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases) {
+  // Get or create a new free temporary canvas.
+  const tempCanvas = getOrCreateTempCanvas(maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases);
+  // Get the 2D rendering context for the temporary canvas.
+  const tempCanvasCtx = tempCanvas.getContext('2d');
+  return [tempCanvas, tempCanvasCtx];
+}
+
+/**
  * Creates a promise to create and load a image, The promise resolves when the image has been created and loaded.
  * @function
  * @param {string} imgPath - The path of the image file to be loaded.
@@ -127,13 +132,10 @@ function createLoadImg(imgPath) {
     const img = new Image();
     img.src = imgPath;
     const checkIfLoaded = () => {
-      if (img.complete && img.naturalWidth !== 0) {
-        resolve(img);
-      } else if (img.complete && img.naturalWidth === 0) {
+      if (img.complete && img.naturalWidth !== 0) resolve(img);
+      else if (img.complete && img.naturalWidth === 0)
         reject(new Error(`Loading source '${img.src}' for an Image object failed.`));
-      } else {
-        requestAnimationFrame(checkIfLoaded);
-      }
+      else requestAnimationFrame(checkIfLoaded);
     };
     checkIfLoaded();
   });
@@ -154,9 +156,7 @@ function getOrCreateTempCanvas(maxWidth, maxHeight, tempCanvasesContainer, freeT
     tempCanvas.width = maxWidth;
     tempCanvas.height = maxHeight;
     tempCanvasesContainer.appendChild(tempCanvas);
-  } else {
-    tempCanvas = freeTempCanvases.pop();
-  }
+  } else tempCanvas = freeTempCanvases.pop();
   return tempCanvas;
 }
 
@@ -168,7 +168,7 @@ function getOrCreateTempCanvas(maxWidth, maxHeight, tempCanvasesContainer, freeT
  * @param {number} maxHeight - The maximum height of the image.
  * @returns {[HTMLImageElement, number, number]} - An array containing the scaled image element and its dimensions.
  */
-function setScaleWidthHeight(img, maxWidth, maxHeight) {
+function setScaleImgWidthHeight(img, maxWidth, maxHeight) {
   let scaledWidth, scaledHeight;
   if (img.naturalWidth > img.height) {
     scaledWidth = maxWidth;
@@ -278,11 +278,9 @@ function createLoadSound(path, volumeInitial) {
     const sound = new Sound(undefined, volumeInitial);
     sound.src = path;
     const checkIfLoaded = () => {
-      if (sound.readyState == 4) {
-        resolve(sound);
-      } else if (sound.error) {
-        reject(new Error(`Loading source '${sound.src}' for an Sound object failed.`));
-      } else requestAnimationFrame(checkIfLoaded);
+      if (sound.readyState == 4) resolve(sound);
+      else if (sound.error) reject(new Error(`Loading source '${sound.src}' for an Sound object failed.`));
+      else requestAnimationFrame(checkIfLoaded);
     };
     checkIfLoaded();
   });

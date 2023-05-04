@@ -52,11 +52,8 @@ h1 {
 
 .content {
   position: relative;
-
   border-radius: 16px;
-
   box-sizing: border-box;
-
   filter: drop-shadow(2px 4px 6px black);
   overflow: hidden;
   display: flex;
@@ -146,13 +143,9 @@ canvas {
   background-color: black;
   /* Necassary for responsive canvas. */
   display: block;
-
   height: 100%;
   width: inherit;
   object-fit: contain;
-
-  /*   width: 100%;
-  object-fit: contain; */
 }
 
 #infoBoxContainer {

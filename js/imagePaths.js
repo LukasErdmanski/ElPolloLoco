@@ -1,6 +1,6 @@
 /**
- * An array of image paths to create, load, render and save into 'imageCache' od 'DrawableObejct' class.
- * @type {Array.<string>}
+ * Paths to all game images which are created, loaded, rendered and saved into 'imageCache' of 'DrawableObejct' class.
+ * @type {string[]}
  */
 imagePaths = [
   // BAR_HEALTH

@@ -1,3 +1,35 @@
+/**
+ * @typedef {Object} Sound
+ * @type {string} path - The path to the sound file.
+ * @type {number} volumeInitial - The initial volume of the sound.
+ */
+
+/**
+ * @typedef {Object} SoundCategory
+ * @type {Sound} [bgMusic] - The background music for the game.
+ * @type {Sound} [endbossBgMusic] - The background music for the endboss level.
+ * @type {Sound} [over] - The sound played when the game is over.
+ * @type {Sound} [win] - The sound played when the game is won.
+ * @type {Sound} [collect] - The sound played when an item is collected.
+ * @type {Sound} [throw] - The sound played when an item is thrown.
+ * @type {Sound} [dead] - The sound played when a character dies.
+ * @type {Sound} [hurt] - The sound played when a character is hurt.
+ * @type {Sound} [jump] - The sound played when a character jumps.
+ * @type {Sound} [moveLeftOrRight] - The sound played when a character moves left or right.
+ * @type {Sound} [snooring] - The sound played when a character is snooring.
+ * @type {Sound} [noCoinNoBottle] - The sound played when a character has no coins or bottles.
+ * @type {Sound} [attack] - The sound played when the endboss attacks.
+ * @type {Sound} [characterDetected] - The sound played when the endboss detects the character.
+ * @type {Sound} [buyHealth] - The sound played when health is bought.
+ * @type {Sound} [buyBottle] - The sound played when a bottle is bought.
+ */
+
+/**
+ * @type {Object.<string, SoundCategory>}
+ * @description An object containing the sounds for the game, categorized by context. Each category
+ * (for example, 'game', 'bottle', 'coin', 'chicken', 'character', 'endboss') contains its own set
+ * of sounds, each represented by a `Sound` object with a `path` and `volumeInitial` property.
+ */
 sounds = {
   game: {
     bgMusic: {
@@ -27,8 +59,7 @@ sounds = {
       volumeInitial: 0.3,
     },
     dead: {
-      // path: 'audio/bottleHitOnGround.mp3',
-      path: 'audio/chickenHurt.mp3',
+      path: 'audio/bottleHitOnGround.mp3',
       volumeInitial: 0.2,
     },
   },

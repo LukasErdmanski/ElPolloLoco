@@ -1,13 +1,39 @@
+/**
+ * Represents a coin object.
+ * @class
+ * @extends MovableObject
+ */
 class Coin extends MovableObject {
   /**
    * Static property, the coin diameter of 100, accessed when setting the x and y coordinates in the {@link setXY}
    * method of Coin.
    * @static
+   * @type {number}
    */
   static diameter = 85;
+
+  /**
+   * The width of the coin.
+   * @type {number}
+   */
   width = Coin.diameter;
+
+  /**
+   * The height of the coin.
+   * @type {number}
+   */
   height = Coin.diameter;
+
+  /**
+   * The offset value for the coin.
+   * @type {number}
+   */
   offsetValue = 30;
+
+  /**
+   * The offset of the coin.
+   * @type {{top: number, left: number, right: number, bottom: number}}
+   */
   offset = {
     top: this.offsetValue,
     left: this.offsetValue,
@@ -15,16 +41,20 @@ class Coin extends MovableObject {
     bottom: this.offsetValue,
   };
 
+  /**
+   * Image paths for the coin animation.
+   * @type {string[]}
+   */
   IMAGES_PATHS = ['img/8_coin/coin_1.png', 'img/8_coin/coin_2.png'];
 
+  /**
+   * Creates a new instance of the Coin class.
+   * @constructor
+   * @param {Array} allCoinsArr - The array of all the coins that have been created.
+   */
   constructor(allCoinsArr) {
     super().loadImageFromImageCache(this.IMAGES_PATHS[0]);
     [this.x, this.y] = this.getXY(allCoinsArr);
-    this.setAnimateIntervalHandlers();
-  }
-
-  setAnimateIntervalHandlers() {
-    this.check_SetImages_Interval_Handler = this.changeImagesSetAndCurrentImg.bind(this, this.IMAGES_PATHS);
   }
 
   /**
@@ -66,7 +96,7 @@ class Coin extends MovableObject {
      */
     let [x, y, coinObjDiameter] = [500, 255, Coin.diameter];
     /**
-     * heck if is the iteration for the first of nine coins in a coin row (arc) und if is not the first coin row (arc).
+     * Check if is the iteration for the first of nine coins in a coin row (arc) und if is not the first coin row (arc).
      * Yes, set the x-coordinate of the first coin by 500 more than the last coin of the last coin row (arc).
      */
     if (i == 0 && lastCoinObj != undefined) x = lastCoinObj.x + 500;
@@ -77,5 +107,13 @@ class Coin extends MovableObject {
       y = lastCoinObj.y - plusOrMinusOne * (coinObjDiameter / 2);
     }
     return [x, y];
+  }
+
+  /**
+   * Checks the interval for setting images and updates the current image for coin animation.
+   * @method
+   */
+  checkSetImagesIntervalHandler() {
+    this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS);
   }
 }

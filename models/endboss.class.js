@@ -66,7 +66,6 @@ class Endboss extends MovableObject {
   constructor() {
     super().loadImageFromImageCache(this.IMAGES_PATHS_ALERT[0]);
     this.positionOnGround();
-    this.setAnimateIntervalHandlers();
   }
 
   setStartXAndSpeedX() {
@@ -74,11 +73,6 @@ class Endboss extends MovableObject {
     this.x = 1900;
     this.speedX = 4 + Math.random() * 0.25;
     this.speedXInitial = this.speedX;
-  }
-
-  setAnimateIntervalHandlers() {
-    this.check_MakeMovement_Interval_Handler = this.checkMakeMovement.bind(this);
-    this.check_SetImages_Interval_Handler = this.checkSetImages.bind(this);
   }
 
   animate2() {
@@ -90,11 +84,9 @@ class Endboss extends MovableObject {
        * the endboss width images of the 'IMAGES_WALKING' array will be showed. Otherwise the second animation of the
        * edboss width images of the 'IMAGES_ALERT' array will be showed.
        */
-      if (i < this.IMAGES_PATHS_WALKING.length) {
-        this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
-      } else {
-        this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
-      }
+      if (i < this.IMAGES_PATHS_WALKING.length) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
+      else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
+
       // Increasing the counter of played animation intervalls.
       i++;
 
@@ -121,7 +113,7 @@ class Endboss extends MovableObject {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  checkMakeMovement() {
+  checkMakeMovementIntervalHandler() {
     sounds.endboss.attack.pause();
     if (this.canMoveAsDead()) this.moveAsDead();
     else if (this.isCharacterAlive()) {
@@ -137,7 +129,7 @@ class Endboss extends MovableObject {
   canMoveAsDead() {
     return this.isDead();
   }
-  
+
   /**
    * Moves the endboss as dead.
    */
@@ -313,7 +305,7 @@ class Endboss extends MovableObject {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  checkSetImages() {
+  checkSetImagesIntervalHandler() {
     if (this.isCharacterAlive()) {
       if (!this.wasCharacterNearby()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
       else if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
