@@ -1,88 +1,81 @@
 class World {
-  // In der Klasse wird kein let, const, var für die Deklaration, Initialisierung ähnlich wie bei Fuktionen verwendet.
-  character = new Character();
-
   // Current set level (with its settings) for the game world.
   level = level1;
+
   canvas;
+
   // Tool box / framework to present things ('context') on canvas.
   ctx;
+
   drawingForbidden = false;
-  // Assigned keyboard instance.
-  keyboard;
+
   /**
    * Amount by which the image is moved during the character run.
    * --> The x-coordinate by which the canvas context will be translated bevor / after adding the objects to itself.
    * "The x-coordinate where the canvas BEGINS / ENDS to draw (place) objetcs."
    */
-
   camera_x_shift;
-
   camera_x_min;
   camera_x;
   camera_x_max;
 
-  // Initialize status bars of character's health, bottles, coins and endboss' health.
-  healthBar = new StatusBar(30, 0, IMAGES_PATHS_BAR_HEALTH, 100);
-  bootlesBar = new StatusBar(30, 50, IMAGES_PATHS_BAR_BOTTLES, 0);
-  coinsBar = new StatusBar(30, 100, IMAGES_PATHS_BAR_COINS, 0);
-  endbossBar = new StatusBar(730, 0, IMAGES_PATHS_BAR_ENDBOSS, 100);
-  // Array of the throwable objects in the world.
-  throwableObjects = [];
-  // Status if character or endboss is dead in the world.
-  characterOrEndboosDead = false;
   // Current degrees by which the image has already been rotated in the canvas.
   rotatedDegrees = 0;
 
-  endboss;
-
   endbossDead = false;
+
+  // Assigned keyboard instance.
+  keyboard;
 
   constructor(canvas, keyboard) {
     // Get the context (which should be presented on) for the canvas.
     this.ctx = canvas.getContext('2d');
     this.canvas = canvas;
     this.keyboard = keyboard;
-
-    this.camera_x_shift = 0;
-    this.camera_x_shift = 150;
-
-    this.camera_x_min = this.level.start_x;
-
-    this.camera_x = -this.character.x + this.camera_x_shift;
-
-    this.camera_x_max = this.level.end_x - canvas.width;
-
-    /**
-     * Um die Funktion explizit aus dieser Klasse zu verwenden, muss mit 'this' darauf zugegriffen werden,
-     * genauso wie beim Zugriff explizit auf Klassen Variablen.
-     */
-
-
-    // Execute a group of functions checking certain events in the world all the time.
+    this.setCharacter();
+    this.setEndboss();
+    this.setStatusBars();
+    this.setCameraX();
   }
 
-  /**
-   * Sets the reference of the movable object to the instance of the world class
-   * (by assinging the movable objects property named 'world' to 'this' (= the instance of THIS class)).
-   * In this way movable object knows/has access to the variable, methods of the instance of 'world' class like f.e. keyboard.
-   */
+  setCharacter() {
+    this.character = new Character();
+  }
+
+  setEndboss() {
+    this.endboss = this.getEndbossObjFromLevelEnemyArray();
+  }
+
+  getEndbossObjFromLevelEnemyArray() {
+    let endbossObjFromLevelEnemyArray = this.level.enemies.find((x) => x instanceof Endboss);
+    return endbossObjFromLevelEnemyArray;
+  }
+
+  setStatusBars() {
+    this.healthBar = new StatusBar(30, 0, IMAGES_PATHS_BAR_HEALTH, 100);
+    this.bootlesBar = new StatusBar(30, 50, IMAGES_PATHS_BAR_BOTTLES, 0);
+    this.coinsBar = new StatusBar(30, 100, IMAGES_PATHS_BAR_COINS, 0);
+    this.endbossBar = new StatusBar(730, 0, IMAGES_PATHS_BAR_ENDBOSS, 100);
+  }
+
+  setCameraX() {
+    this.camera_x_shift = 0;
+    this.camera_x_shift = 150;
+    this.camera_x_min = this.level.start_x;
+    this.camera_x = -this.character.x + this.camera_x_shift;
+    this.camera_x_max = this.level.end_x - this.canvas.width;
+  }
+
   setWorld() {
-    // this.character.world = this;
     this.character.world = worldSingletonInstance;
     this.character.level = worldSingletonInstance.level;
-    this.endboss = this.getEndbossObjFromLevelEnemyArray();
     this.endboss.world = worldSingletonInstance;
   }
 
-  /**
-   * Group of functions checking certain events in the world all the time.
-   */
-
-  runInterval;
   run() {
     this.setWorld();
-    this.applyGravityStartAnimations();
+    this.applyGravityForAllGameCharacters();
+    this.startAnimationsForAllGameCharacters();
     this.draw();
     setStoppableInterval(() => {
       if (!this.isCharacterOrEndbossRemoved()) {
@@ -94,161 +87,26 @@ class World {
     }, 50);
   }
 
-  applyGravityStartAnimations() {
+  applyGravityForAllGameCharacters() {
     this.character.applyGravity();
-    this.applyGravityForJumpableMovingObjects(this.level.enemies);
-    this.applyGravityForJumpableMovingObjects(this.level.coins);
-
-    this.character.animate();
-    this.startAnimations(this.level.coins, undefined, 3);
-    this.startAnimations(this.level.enemies);
+    this.applyGravityForJumpableLevelMovingObjects(this.level.enemies);
+    this.applyGravityForJumpableLevelMovingObjects(this.level.coins);
   }
 
-  applyGravityForJumpableMovingObjects(levelPropertyArray) {
+  applyGravityForJumpableLevelMovingObjects(levelPropertyArray) {
     levelPropertyArray.forEach((mo) => {
-      if (mo instanceof Character || mo instanceof ChickenSmall || mo instanceof Endboss) mo.applyGravity();
+      if (mo instanceof ChickenSmall || mo instanceof Endboss) mo.applyGravity();
     });
   }
 
-  startAnimations(levelPropertyArray, movementFrameRate, imgChangeFrameRate) {
+  startAnimationsForAllGameCharacters() {
+    this.character.animate();
+    this.startAnimationsForLevelMovingObjects(this.level.coins, undefined, 3);
+    this.startAnimationsForLevelMovingObjects(this.level.enemies);
+  }
+
+  startAnimationsForLevelMovingObjects(levelPropertyArray, movementFrameRate, imgChangeFrameRate) {
     levelPropertyArray.forEach((mo) => mo.animate(movementFrameRate, imgChangeFrameRate));
-  }
-
-  stopRun() {
-    playSoundsAtGameOver();
-    this.stopDrawing();
-    clearAllStoppableIntervals();
-    if (this.endboss) setScreenBtnsAsPerGameState('loss');
-    else setScreenBtnsAsPerGameState('win');
-  }
-
-  stopDrawing() {
-    this.drawingForbidden = true;
-  }
-
-  /**
-   * Check if the character is colliding with any of the enemies, if so, reduce the character's health
-   * and set the new percentage in the health status bar.
-   */
-  checkCollisions() {
-    // CHARACTER VS. BROWN CHICKEN
-    this.checkIf_Character_IsColliding(
-      'enemies',
-      'isCollidingOrPressingInJumpFallingDown',
-      'healthBar',
-      'healthPercentage'
-    );
-    this.checkIf_Character_IsColliding('coins', 'takeCoin', 'coinsBar', 'coinsPercentage');
-    this.checkIf_Character_IsColliding('bottlesInGround', 'takeBottle', 'bootlesBar', 'bottlesPercentage');
-
-    this.checkIf_BottleInLFlight_IsColliding();
-  }
-
-  checkIf_Character_IsColliding(levelArrayProperty, fnToExeAfterCollision, statusBarToSet, characterPropertyToSet) {
-    let array = this.level[levelArrayProperty];
-    array.forEach((element) => {
-      if (this.character.isColliding(element)) {
-        this.character[fnToExeAfterCollision](element);
-        this[statusBarToSet].setPercentage(this.character[characterPropertyToSet]);
-        return;
-      }
-    });
-  }
-
-  checkIf_BottleInLFlight_IsColliding() {
-    // THROWN BOTTLE VS. GROUND --> MIT BODEN KOOLISIONSPRÜFUNG UND SCHAUEN OB DIE KOLLISIONS DURCH WURLF / FLUG ENTSTANDEN IST
-    let arrayBottlesInFlight = this.level.bottlesInFlight;
-    let arrayLevelEnemies = this.level.enemies;
-
-    for (let i = 0; i < arrayBottlesInFlight.length; i++) {
-      const bottle = arrayBottlesInFlight[i];
-      //
-      if (!bottle.isDead()) {
-        for (let j = 0; j < arrayLevelEnemies.length; j++) {
-          const collisionEnemy = arrayLevelEnemies[j];
-          if (bottle.isColliding(collisionEnemy)) {
-            bottle.hit();
-            if (!collisionEnemy.isHurt()) collisionEnemy.hit();
-            if (collisionEnemy instanceof Endboss) this.endbossBar.setPercentage(collisionEnemy.healthPercentage);
-            break;
-          } else if (bottle.isOnGroundAfterFlight()) {
-            bottle.hit();
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  checkCharacterDeath() {
-    if (this.character.isDead()) hideControllerButtons();
-  }
-
-  checkEndbossDeath() {
-    if (!this.endbossDead) {
-      if (this.endboss.isDead()) {
-        this.endbossDead = true;
-        this.character.movementPossible = false;
-        hideControllerButtons();
-        this.killAllEnemiesExceptEndboss();
-      }
-    }
-  }
-
-  killAllEnemiesExceptEndboss() {
-    let array = this.level.enemies;
-    array.forEach((enemy) => {
-      if (!(enemy instanceof Endboss)) enemy.health = 0;
-    });
-  }
-
-  checkRemovals() {
-    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
-    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
-    this.checkIf_Character_CanBeRemoved_And_RemoveHim();
-    this.checkIf_Endboss_CanBeRemoved_And_RemoveHim();
-  }
-
-  checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(array) {
-    array.forEach((obj) => {
-      if (obj.canBeRemoved) this.removeFromLevel(obj, array);
-    });
-  }
-
-  checkIf_Character_CanBeRemoved_And_RemoveHim() {
-    // Check if character can be removed from the world and remove it if yes.
-    if (this.character.canBeRemoved) this.removeCharacter();
-  }
-
-  checkIf_Endboss_CanBeRemoved_And_RemoveHim() {
-    // Check if character can be removed from the world and remove it if yes.
-    if (this.endboss.canBeRemoved) this.removeEndboss();
-  }
-
-  removeFromLevel(objToRemove, arrOfObj) {
-    let index = arrOfObj.indexOf(objToRemove);
-    if (index !== -1) arrOfObj.splice(index, 1);
-  }
-
-  removeCharacter() {
-    this.character = null;
-  }
-
-  removeEndboss() {
-    this.endboss = null;
-  }
-
-  /**
-   * Gets if the character or endboss is removed.
-   */
-  isCharacterOrEndbossRemoved() {
-    // Prepare the local variable for endboss, if it still exists, and store it under the variable.
-    return !this.character || !this.endboss;
-  }
-
-  getEndbossObjFromLevelEnemyArray() {
-    let endbossObjFromLevelEnemyArray = this.level.enemies.find((x) => x instanceof Endboss);
-    return endbossObjFromLevelEnemyArray;
   }
 
   draw() {
@@ -317,14 +175,6 @@ class World {
     });
   }
 
-  updateCameraX() {
-    if (this.character) {
-      if (this.character.x >= this.camera_x_max + this.camera_x_shift) this.camera_x = -this.camera_x_max;
-      else if (this.character.x <= this.camera_x_min + this.camera_x_shift) this.camera_x = -this.camera_x_min;
-      else this.camera_x = -this.character.x + this.camera_x_shift;
-    }
-  }
-
   /**
    * Adds an array of objects to the map (canvas).
    * @param {Array} objects - An array of objects to add to the map.
@@ -352,6 +202,7 @@ class World {
 
       // Pasting the image to the canvas with the settings from before.
       mo.draw(this.ctx);
+
       // Draw rectangle around object to analyse collisions.
       if (inclImgFrame) mo.drawFrame(this.ctx);
 
@@ -430,5 +281,137 @@ class World {
   rotateImageBack() {
     // Restore the unrotated context
     this.ctx.restore();
+  }
+
+  updateCameraX() {
+    if (this.character) {
+      if (this.character.x >= this.camera_x_max + this.camera_x_shift) this.camera_x = -this.camera_x_max;
+      else if (this.character.x <= this.camera_x_min + this.camera_x_shift) this.camera_x = -this.camera_x_min;
+      else this.camera_x = -this.character.x + this.camera_x_shift;
+    }
+  }
+
+  /**
+   * Gets if the character or endboss is removed.
+   */
+  isCharacterOrEndbossRemoved() {
+    // Prepare the local variable for endboss, if it still exists, and store it under the variable.
+    return !this.character || !this.endboss;
+  }
+
+  checkCharacterDeath() {
+    if (this.character.isDead()) hideControllerButtons();
+  }
+
+  checkEndbossDeath() {
+    if (!this.endbossDead) {
+      if (this.endboss.isDead()) {
+        this.endbossDead = true;
+        this.character.movementPossible = false;
+        hideControllerButtons();
+        this.killAllEnemiesExceptEndboss();
+      }
+    }
+  }
+
+  killAllEnemiesExceptEndboss() {
+    let array = this.level.enemies;
+    array.forEach((enemy) => {
+      if (!(enemy instanceof Endboss)) enemy.health = 0;
+    });
+  }
+
+  checkCollisions() {
+    this.checkIf_Character_IsColliding(
+      'enemies',
+      'isCollidingOrPressingInJumpFallingDown',
+      'healthBar',
+      'healthPercentage'
+    );
+    this.checkIf_Character_IsColliding('coins', 'takeCoin', 'coinsBar', 'coinsPercentage');
+    this.checkIf_Character_IsColliding('bottlesInGround', 'takeBottle', 'bootlesBar', 'bottlesPercentage');
+    this.checkIf_BottleInLFlight_IsColliding();
+  }
+
+  checkIf_Character_IsColliding(levelArrayProperty, fnToExeAfterCollision, statusBarToSet, characterPropertyToSet) {
+    let array = this.level[levelArrayProperty];
+    array.forEach((element) => {
+      if (this.character.isColliding(element)) {
+        this.character[fnToExeAfterCollision](element);
+        this[statusBarToSet].setPercentage(this.character[characterPropertyToSet]);
+        return;
+      }
+    });
+  }
+
+  checkIf_BottleInLFlight_IsColliding() {
+    let arrayBottlesInFlight = this.level.bottlesInFlight;
+    let arrayLevelEnemies = this.level.enemies;
+    for (let i = 0; i < arrayBottlesInFlight.length; i++) {
+      const bottle = arrayBottlesInFlight[i];
+      //
+      if (!bottle.isDead()) {
+        for (let j = 0; j < arrayLevelEnemies.length; j++) {
+          const collisionEnemy = arrayLevelEnemies[j];
+          if (bottle.isColliding(collisionEnemy)) {
+            bottle.hit();
+            if (!collisionEnemy.isHurt()) collisionEnemy.hit();
+            if (collisionEnemy instanceof Endboss) this.endbossBar.setPercentage(collisionEnemy.healthPercentage);
+            break;
+          } else if (bottle.isOnGroundAfterFlight()) {
+            bottle.hit();
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  checkRemovals() {
+    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
+    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
+    this.checkIf_Character_CanBeRemoved_And_RemoveHim();
+    this.checkIf_Endboss_CanBeRemoved_And_RemoveHim();
+  }
+
+  checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(array) {
+    array.forEach((obj) => {
+      if (obj.canBeRemoved) this.removeFromLevel(obj, array);
+    });
+  }
+
+  checkIf_Character_CanBeRemoved_And_RemoveHim() {
+    // Check if character can be removed from the world and remove it if yes.
+    if (this.character.canBeRemoved) this.removeCharacter();
+  }
+
+  checkIf_Endboss_CanBeRemoved_And_RemoveHim() {
+    // Check if character can be removed from the world and remove it if yes.
+    if (this.endboss.canBeRemoved) this.removeEndboss();
+  }
+
+  removeFromLevel(objToRemove, arrOfObj) {
+    let index = arrOfObj.indexOf(objToRemove);
+    if (index !== -1) arrOfObj.splice(index, 1);
+  }
+
+  removeCharacter() {
+    this.character = null;
+  }
+
+  removeEndboss() {
+    this.endboss = null;
+  }
+
+  stopRun() {
+    playSoundsAtGameOver();
+    this.stopDrawing();
+    clearAllStoppableIntervals();
+    if (this.endboss) setScreenBtnsAsPerGameState('loss');
+    else setScreenBtnsAsPerGameState('win');
+  }
+
+  stopDrawing() {
+    this.drawingForbidden = true;
   }
 }
