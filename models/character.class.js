@@ -42,24 +42,19 @@ class Character extends MovableObject {
   speedX = 10;
 
   /**
-   * @type {number} Percentage of bottles collected by the character
+   * @type {boolean} Determines if the character can turn around
    */
-  bottlesPercentage = 0;
+  canTurnAround = true;
 
   /**
-   * @type {number} Percentage of coins collected by the character
+   * @type {boolean} Determines if the character's movement is possible
    */
-  coinsPercentage = 0;
+  movementPossible = true;
 
   /**
    * @type {number} Timestamp of the last movement made by the character
    */
   timeStempOflastMovement = new Date().getTime();
-
-  /**
-   * @type {boolean} Determines if the character can turn around
-   */
-  canTurnAround = true;
 
   /**
    * @type {number} Timestamp of the last bottle thrown by the character
@@ -82,14 +77,19 @@ class Character extends MovableObject {
   bottles = [];
 
   /**
+   * @type {number} Percentage of bottles collected by the character
+   */
+  bottlesPercentage = 0;
+
+  /**
    * @type {Array} Array of coins collected by the character
    */
   coins = [];
 
   /**
-   * @type {boolean} Determines if the character's movement is possible
+   * @type {number} Percentage of coins collected by the character
    */
-  movementPossible = true;
+  coinsPercentage = 0;
 
   /**
    * @type {Array.<string>} Array of image paths for the short idle state

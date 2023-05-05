@@ -12,3 +12,4 @@
 
 // TODO: Kommentare auf Detusch löschen
 
+// TODO: // let enemies = [endboss] löschen, in Level --> In Testphase nicht viele Enemies, nur Endboss.
