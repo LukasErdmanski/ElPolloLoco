@@ -278,11 +278,11 @@ class World {
    * such as enemies, coins, bottlesInGround, and bottlesInFlight.
    */
   addAllMovableObjetsToMap() {
-    this.addObjectsToMap(this.level.enemies);
-    this.addToMap(this.character);
     this.addObjectsToMap(this.level.coins);
     this.addObjectsToMap(this.level.bottlesInGround);
     this.addObjectsToMap(this.level.bottlesInFlight);
+    this.addObjectsToMap(this.level.enemies);
+    this.addToMap(this.character);
   }
 
   /**
