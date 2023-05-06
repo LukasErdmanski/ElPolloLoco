@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: models/keyboard.class.js</title>
+    <title>JSDoc: Source: models/drawableObject.class.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: models/keyboard.class.js</h1>
+    <h1 class="page-title">Source: models/drawableObject.class.js</h1>
 
     
 
@@ -27,64 +27,133 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Represents a keyboard object with key properties for left, up, right, A, S, and D keys.
- * @class
+ * DrawableObject class for handling the drawing of objects to the canvas.
+ * It also includes functionalities for drawing a frame around the object and
+ * placing the object on the ground level of the canvas.
  */
-class Keyboard {
+class DrawableObject {
   /**
-   * The left arrow key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * The x-coordinate of the top-left corner of the drawable object on the canvas.
+   * @type {number}
    */
-  LEFT = {
-    keyCode: 37,
-    isPressed: false,
-  };
+  x;
 
   /**
-   * The up arrow key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * The y-coordinate of the top-left corner of the drawable object on the canvas.
+   * @type {number}
    */
-  UP = {
-    keyCode: 38,
-    isPressed: false,
-  };
+  y;
 
   /**
-   * The right arrow key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * The width of the drawable object on the canvas.
+   * @type {number}
    */
-  RIGHT = {
-    keyCode: 39,
-    isPressed: false,
-  };
+  width;
 
   /**
-   * The "A" key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * The height of the drawable object on the canvas.
+   * @type {number}
    */
-  A = {
-    keyCode: 65,
-    isPressed: false,
-  };
+  height;
 
   /**
-   * The "S" key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * An object containing the offset distances of the drawable object.
+   * Expected keys are "top", "left", "right", "bottom".
+   * @type {Object}
    */
-  S = {
-    keyCode: 83,
-    isPressed: false,
-  };
+  offset = {};
 
   /**
-   * The "D" key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * Offset distance from the ground line.
+   * @type {number}
    */
-  D = {
-    keyCode: 68,
-    isPressed: false,
-  };
-}</code></pre>
+  yOffsetToGroundLevel = 40;
+
+  /**
+   * The y-coordinate of the ground line on the canvas.
+   * @type {number}
+   */
+  yOfGroundLevel = 480 - this.yOffsetToGroundLevel;
+
+  /**
+   * The current image of the drawable object.
+   * @type {HTMLImageElement}
+   */
+  img;
+
+  /**
+   * A static cache of images that have been loaded, for efficient re-use.
+   * The cache is a key-value store where the keys are image paths and the values are HTMLImageElement objects.
+   * @type {Object.&lt;string, HTMLImageElement>}
+   */
+  static imageCache = {};
+
+  /**
+   * Loads the image object from the static imageCache object.
+   * @param {string} path - The path of the image.
+   */
+  loadImageFromImageCache(path) {
+    // Assing the current image to the img from 'imageCache' saved under the given image path as the key.
+    this.img = DrawableObject.imageCache[path];
+  }
+
+  /**
+   * Loads the image object from the static imageCache object.
+   * @param {string} path - The path of the image.
+   */
+  draw(ctx) {
+    /**
+     * This function is executed many times per second for many drawable objects.
+     * To avoid the following error 'Uncaught propertyError: Failed to execute 'drawImage' on 'CanvasRenderingContext2D'',
+     * to catch the error caused by the specific image file and has the possibility to get this error at the set break
+     * point in the error handling, this function is to execute in the try-catch-block.
+     */
+    try {
+      ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+    } catch (error) {
+      debugger;
+      console.error('Error loading image', error);
+      console.log('Could not load image', this.img.src);
+    }
+  }
+
+  /**
+   * Draws a frame around the object on the given canvas context.
+   * @param {object} ctx - The canvas context where the object will be drawn.
+   */
+  drawFrame(ctx) {
+    ctx.beginPath();
+    ctx.lineWidth = '5';
+    ctx.strokeStyle = 'blue';
+    ctx.rect(this.x, this.y, this.width, this.height);
+    ctx.stroke();
+  }
+
+  /**
+   * Draws a frame around the object reduced by its offset distances on the given canvas context.
+   * @param {object} ctx - The canvas context where the object will be drawn.
+   */
+  draw_Offset_Frame(ctx) {
+    ctx.beginPath();
+    ctx.lineWidth = '1';
+    ctx.strokeStyle = 'yellow';
+    ctx.rect(
+      this.x + this.offset.left,
+      this.y + this.offset.top,
+      this.width - this.offset.left - this.offset.right,
+      this.height - this.offset.top - this.offset.bottom
+    );
+    ctx.stroke();
+  }
+
+  /**
+   * Positions the object on the ground level of the canvas.
+   */
+  positionOnGround() {
+    this.y = 480 - (this.height - this.offset.bottom) - this.yOffsetToGroundLevel;
+  }
+}
+</code></pre>
         </article>
     </section>
 

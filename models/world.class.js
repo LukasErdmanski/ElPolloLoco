@@ -542,11 +542,11 @@ class World {
 
   /**
    * Checks if objects in the given array can be removed and removes them if necessary.
-   * @param {Array} array - The array of objects to check for removal.
+   * @param {Array} levelObjectsArray - The array of objects to check for removal.
    */
-  checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(array) {
-    array.forEach((obj) => {
-      if (obj.canBeRemoved) this.removeFromLevel(obj, array);
+  checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(levelObjectsArray) {
+    levelObjectsArray.forEach((obj) => {
+      if (obj.canBeRemoved) this.removeFromLevel(obj, levelObjectsArray);
     });
   }
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: models/keyboard.class.js</title>
+    <title>JSDoc: Source: models/backgroundObject.class.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: models/keyboard.class.js</h1>
+    <h1 class="page-title">Source: models/backgroundObject.class.js</h1>
 
     
 
@@ -27,63 +27,44 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Represents a keyboard object with key properties for left, up, right, A, S, and D keys.
+ * Represents a movable background object.
  * @class
+ * @extends MovableObject
  */
-class Keyboard {
+class BackgroundObject extends MovableObject {
   /**
-   * The left arrow key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * The width of the background object.
+   * @type {number}
    */
-  LEFT = {
-    keyCode: 37,
-    isPressed: false,
-  };
+  width = 720;
 
   /**
-   * The up arrow key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * The height of the background object.
+   * @type {number}
    */
-  UP = {
-    keyCode: 38,
-    isPressed: false,
-  };
+  height = 480;
 
   /**
-   * The right arrow key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
+   * Creates a new BackgroundObject.
+   * @constructor
+   * @param {string} imagePath - The path to the image file of the background object.
+   * @param {number} x - The x-coordinate of the background object.
    */
-  RIGHT = {
-    keyCode: 39,
-    isPressed: false,
-  };
+  constructor(imagePath, x) {
+    super().loadImageFromImageCache(imagePath);
 
-  /**
-   * The "A" key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
-   */
-  A = {
-    keyCode: 65,
-    isPressed: false,
-  };
+    /**
+     * The x-coordinate of the background object.
+     * @type {number}
+     */
+    this.x = x;
 
-  /**
-   * The "S" key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
-   */
-  S = {
-    keyCode: 83,
-    isPressed: false,
-  };
-
-  /**
-   * The "D" key with its keyCode and isPressed status.
-   * @type {{keyCode: number, isPressed: boolean}}
-   */
-  D = {
-    keyCode: 68,
-    isPressed: false,
-  };
+    /**
+     * The y-coordinate of the background object. It is set based on the height of the canvas and the height of the object.
+     * @type {number}
+     */
+    this.y = 480 - this.height;
+  }
 }</code></pre>
         </article>
     </section>
