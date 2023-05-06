@@ -6,9 +6,5 @@
 // TODO: 16.5  Die IfAbfrage kann auch auf eine Zeile ohne {} Klammern verkürzt werden, wenn nur ein Statement im IfAbfrageBlock vorhanden ist.
 // TODO: 17.. FINACL CHECK / ES SOLL "PERFEKT": PORTFOLIO-READY SEIN!f
 
-// TODO: console.log (DRAWN!) bei requestFrame in draw() methode am Ende löschen in
-
-// TODO: // let enemies = [endboss] löschen, in Level --> In Testphase nicht viele Enemies, nur Endboss.
-
 // TODO: @link tag für abstrac method machen
 // TODO: @link tag für worldSingleton machen

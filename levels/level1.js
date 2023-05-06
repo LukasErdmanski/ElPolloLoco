@@ -72,6 +72,5 @@ function initSoManyEnemies(amount) {
   let endboss = new Endboss();
   // Concatenate all enemy arrays
   let enemies = normalChickens.concat(smallChcickens, endboss);
-  // let enemies = [endboss]
   return enemies;
 }

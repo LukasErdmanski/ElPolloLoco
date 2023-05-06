@@ -230,7 +230,6 @@ class World {
         self.updateCameraX();
         self.draw();
       }
-      // console.log('DRWAN');
     });
   }
 
