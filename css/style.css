@@ -7,6 +7,19 @@
   font-family: 'Zabars', Arial, Helvetica, sans-serif; /* Fall-back fonts in this order, if one of them not exists at the client device. */
 }
 
+/* Hide scrollbar for Chrome,Safari and Opera  */
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+html {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -123,6 +136,10 @@ button {
   background-color: #ffc800;
   font-size: 24px;
   transition: all 225ms ease-in-out;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 .btnHoverEffect:hover {
