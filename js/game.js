@@ -48,16 +48,16 @@ let soundsMuted = false;
  */
 async function init() {
   // try {
-    canvas = getElem('canvas');
-    let preloadImagesSoundsPromise = preloadImagesSounds(imagePaths, sounds);
-    await preloadImagesSoundsPromise;
-    resetLevelAndWorldSingleton();
-    applyOnClickEventListenerToAllButtons();
-    applyMouseTouchUpDownEventListeners();
-    checkOrientationSetContentElements();
-    setScreenBtnsAsPerGameState('start');
-    hideLoadingScreen();
-/*   } catch (error) {
+  canvas = getElem('canvas');
+  checkOrientationSetContentElements();
+  let preloadImagesSoundsPromise = preloadImagesSounds(imagePaths, sounds);
+  await preloadImagesSoundsPromise;
+  resetLevelAndWorldSingleton();
+  applyOnClickEventListenerToAllButtons();
+  applyMouseTouchUpDownEventListeners();
+  setScreenBtnsAsPerGameState('start');
+  hideLoadingScreen();
+  /*   } catch (error) {
     giveInitErrorReloadApp(error);
   } */
 }
@@ -105,7 +105,7 @@ async function startGame() {
   clearAllStoppableIntervals();
   pause = false;
   resetPausePlayBtn();
-  resetCreateCanvasElement();
+  // resetCreateCanvasElement();
   resetAllSound();
   resetLevelAndWorldSingleton();
   setScreenBtnsAsPerGameState('running');

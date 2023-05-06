@@ -127,7 +127,7 @@ sounds = {
       volumeInitial: 0.2,
     },
     hurt: {
-      path: 'audio/endbossHURT.mp3',
+      path: 'audio/endbossHurt.mp3',
       volumeInitial: 0.1,
     },
   },

@@ -25,7 +25,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  max-width: 100%;
   height: 100vh;
+  overflow: hidden;
   margin: 0;
   background-image: url('../img/5_background/app_background.jpg');
   background-position: center;
@@ -163,6 +165,18 @@ canvas {
   height: 100%;
   width: inherit;
   object-fit: contain;
+}
+
+#tempCanvasesContainer {
+  height: 100vh;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+#tempCanvasesContainer canvas {
+  height: 100vh;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 #infoBoxContainer {
