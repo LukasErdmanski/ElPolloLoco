@@ -5,7 +5,7 @@
  */
 class Coin extends MovableObject {
   /**
-   * Static property, the coin diameter of 100, accessed when setting the x and y coordinates in the {@link setXY}
+   * Static property, the coin diameter of 100, accessed when setting the x and y coordinates in the {@link Coin#setXY}
    * method of Coin.
    * @static
    * @type {number}
@@ -111,7 +111,7 @@ class Coin extends MovableObject {
 
   /**
    * Checks the interval for setting images and updates the current image for coin animation.
-   * @method
+   * @override
    */
   checkSetImagesIntervalHandler() {
     this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS);

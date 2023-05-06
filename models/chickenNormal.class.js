@@ -78,7 +78,6 @@ class ChickenNormal extends MovableObject {
   /**
    * Checks which movement the normal chicken can do and make it if valid.
    * @override
-   * @see {@link MovableObject.checkMakeMovementIntervalHandler} for the default implementation in the parent class.
    */
   checkMakeMovementIntervalHandler() {
     if (this.isDead()) {
@@ -91,7 +90,6 @@ class ChickenNormal extends MovableObject {
   /**
    * Checks in which state is the normal chicken and sets the images for the chicken state.
    * @override
-   * @see {@link MovableObject.checkSetImagesIntervalHandler} for the default implementation in the parent class.
    */
   checkSetImagesIntervalHandler() {
     if (this.isDead()) {

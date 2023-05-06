@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/bottle.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/bottle.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Class representing a throwable bottle object in the game.
+ * @extends MovableObject
+ */
+class Bottle extends MovableObject {
+  /**
+   * The height of the bottle object on the canvas.
+   * @type {number}
+   */
+  height = 80;
+
+  /**
+   * The width of the bottle object on the canvas.
+   * @type {number}
+   */
+  width = 70;
+
+  /**
+   * The offset for the bottle image's actual content inside its png file.
+   * @type {Object}
+   */
+  offset = {
+    top: 15,
+    left: 23,
+    right: 15,
+    bottom: 10,
+  };
+
+  /**
+   * The height of the bottle object on the canvas.
+   * @type {number}
+   */
+  height = 80;
+
+  /**
+   * The width of the bottle object on the canvas.
+   * @type {number}
+   */
+  width = 70;
+
+  /**
+   * The index of this bottle in the group of bottles it belongs to.
+   * @type {number}
+   */
+  idxInBottlesGroup = 0;
+
+  /**
+   * The total number of bottles in the group this bottle belongs to.
+   * @type {number}
+   */
+  amountInBottlesInGroup;
+
+  /**
+   * The health of this bottle. It is used to check if this bottle is dead.
+   * @type {number}
+   */
+  health = 1;
+
+  /**
+   * A flag to check if this bottle has been thrown.
+   * @type {boolean}
+   */
+  isThrown = false;
+
+  /**
+   * Array of paths for the bottle images when it is on the ground.
+   * @type {string[]}
+   */
+  IMAGES_PATHS_ON_GROUND = [
+    'img/6_salsa_bottle/1_salsa_bottle_on_ground.png',
+    'img/6_salsa_bottle/2_salsa_bottle_on_ground.png',
+  ];
+
+  /**
+   * Array of paths for the bottle images during its rotation (in flight).
+   * @type {string[]}
+   */
+  IMAGES_PATHS_ROTATION = [
+    'img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
+    'img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
+    'img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png',
+    'img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png',
+  ];
+
+  /**
+   * Array of paths for the bottle images during its splash (on impact).
+   * @type {string[]}
+   */
+  IMAGES_PATHS_SPLASH = [
+    'img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png',
+    'img/6_salsa_bottle/bottle_rotation/bottle_splash/2_bottle_splash.png',
+    'img/6_salsa_bottle/bottle_rotation/bottle_splash/3_bottle_splash.png',
+    'img/6_salsa_bottle/bottle_rotation/bottle_splash/4_bottle_splash.png',
+    'img/6_salsa_bottle/bottle_rotation/bottle_splash/5_bottle_splash.png',
+    'img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png',
+  ];
+
+  /**
+   * Array of paths for the bottle images when it is being destroyed.
+   * @type {string[]}
+   */
+  IMAGES_PATHS_DESTROYING = this.IMAGES_PATHS_SPLASH;
+
+  /**
+   * Creates a new Bottle object and initializes its position and properties.
+   * @param {Bottle[]} allBottlesArr - An array containing all the bottle objects.
+   * @param {number} x - The initial x position of the bottle.
+   * @param {number} y - The initial y position of the bottle.
+   */
+  constructor(allBottlesArr, x, y) {
+    let randomIdxInImagesPaths = Math.round(Math.random());
+    super().loadImageFromImageCache(this.IMAGES_PATHS_ON_GROUND[randomIdxInImagesPaths]);
+    this.setXY(allBottlesArr, x, y);
+  }
+
+  /**
+   * Sets the x and y positions of the bottle object.
+   * @param {Bottle[]} allBottlesArr - An array containing all the bottle objects.
+   * @param {number} x - The initial x position of the bottle.
+   * @param {number} y - The initial y position of the bottle.
+   */
+  setXY(allBottlesArr, x, y) {
+    if (allBottlesArr) {
+      this.x = this.getX(allBottlesArr);
+      this.positionOnGround();
+    } else {
+      this.x = x;
+      this.y = y;
+    }
+  }
+
+  /**
+   * Calculates the x-position for the bottle.
+   * @param {Bottle[]} allBottlesArr - An array containing all the bottle objects.
+   * @returns {number} The calculated x position.
+   */
+  getX(allBottlesArr) {
+    let maxAmoutInBottlesGroup = 5;
+    let lastBottleObj = allBottlesArr[allBottlesArr.length - 1];
+    if (lastBottleObj == undefined || lastBottleObj.idxInBottlesGroup == lastBottleObj.amountInBottlesInGroup) {
+      this.idxInBottlesGroup = 0;
+      this.amountInBottlesInGroup = Math.ceil(Math.random() * (maxAmoutInBottlesGroup - 1));
+    } else {
+      this.idxInBottlesGroup = (lastBottleObj.idxInBottlesGroup + 1) % (lastBottleObj.amountInBottlesInGroup + 1);
+      this.amountInBottlesInGroup = lastBottleObj.amountInBottlesInGroup;
+    }
+    return this.setX(lastBottleObj);
+  }
+
+  /**
+   * Sets the x-position for the bottle.
+   * @param {Bottle} lastBottleObj - The last Bottle object in the allBottlesArr array.
+   * @returns {number} The calculated x position.
+   */
+  setX(lastBottleObj) {
+    let [x, distanceToNextBottle] = [500, 35];
+    if (lastBottleObj != undefined &amp;&amp; this.idxInBottlesGroup == 0) x = lastBottleObj.x + 300;
+    else if (lastBottleObj != undefined) x = lastBottleObj.x + distanceToNextBottle;
+    return x;
+  }
+
+  /**
+   * Checks if the bottle has landed on the ground after being thrown.
+   * @returns {boolean} True if the bottle has landed, false otherwise.
+   */
+  isOnGroundAfterFlight() {
+    return !this.isAboveGround();
+  }
+
+  /**
+   * Checks the state of the bottle and performs appropriate actions.
+   * If the bottle has been thrown, it makes it fall down.
+   * If the bottle is moving, it continues its movement to the left or right.
+   * If the bottle is dead, it stops its flight.
+   * @override
+   */
+  checkMakeMovementIntervalHandler() {
+    if (this.isThrown) this.fallDown();
+    if (this.speedX > 0 &amp;&amp; this.otherDirection) this.moveLeft();
+    if (this.speedX > 0 &amp;&amp; !this.otherDirection) this.moveRight();
+    if (this.isDead()) this.stopFlight();
+  }
+
+  /**
+   * Makes the bottle fall down by setting its thrown status to false and adjusting its speed.
+   */
+  fallDown() {
+    this.isThrown = false;
+    this.speedX = 9 + Math.random() * 4;
+    this.accelerationX = 0.1;
+    this.speedY = 10;
+  }
+
+  /**
+   * Makes the bottle move to the right by calling the superclass's moveRight method and decreasing the speed.
+   */
+  moveLeft() {
+    super.moveLeft();
+    this.speedX -= this.accelerationX;
+  }
+
+  /**
+   * Makes the bottle move to the right by calling the superclass's moveRight method and decreasing the speed.
+   */
+  moveRight() {
+    super.moveRight();
+    this.speedX -= this.accelerationX;
+  }
+
+  /**
+   * Stops the bottle's flight by setting the deadAnimation_Part_MakeMovement_IsOver property to true.
+   */
+  stopFlight() {
+    this.deadAnimation_Part_MakeMovement_IsOver = true;
+  }
+
+  /**
+   * Checks the bottle's status and changes its image set accordingly.
+   * If the bottle is dead, it changes to the splash images.
+   * If the bottle is above ground (in flight), it changes to the rotation images.
+   * @override
+   */
+  checkSetImagesIntervalHandler() {
+    if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_SPLASH);
+    else if (this.isAboveGround()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ROTATION);
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="Character.html">Character</a></li><li><a href="ChickenNormal.html">ChickenNormal</a></li><li><a href="ChickenSmall.html">ChickenSmall</a></li><li><a href="Cloud.html">Cloud</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="global.html#Sound">Sound</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="World.html">World</a></li><li><a href="WorldSingleton.html">WorldSingleton</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addBtnHighlight">addBtnHighlight</a></li><li><a href="global.html#adjustWidthHeightOfScreensButtonLayer">adjustWidthHeightOfScreensButtonLayer</a></li><li><a href="global.html#allIntervals">allIntervals</a></li><li><a href="global.html#applyEventListenerToAllControllerButtons">applyEventListenerToAllControllerButtons</a></li><li><a href="global.html#applyMouseTouchUpDownEventListeners">applyMouseTouchUpDownEventListeners</a></li><li><a href="global.html#applyOnClickEventListenerToAllButtons">applyOnClickEventListenerToAllButtons</a></li><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#changeBgMusic">changeBgMusic</a></li><li><a href="global.html#changeBtnIcon">changeBtnIcon</a></li><li><a href="global.html#checkIfAddOrRemoveBtnHighlightAddDoIt">checkIfAddOrRemoveBtnHighlightAddDoIt</a></li><li><a href="global.html#checkOrientationSetContentElements">checkOrientationSetContentElements</a></li><li><a href="global.html#clearAllStoppableIntervals">clearAllStoppableIntervals</a></li><li><a href="global.html#createLoadImg">createLoadImg</a></li><li><a href="global.html#createLoadRenderSaveImages">createLoadRenderSaveImages</a></li><li><a href="global.html#createLoadRenderSaveImg">createLoadRenderSaveImg</a></li><li><a href="global.html#createLoadSaveSound">createLoadSaveSound</a></li><li><a href="global.html#createLoadSaveSounds">createLoadSaveSounds</a></li><li><a href="global.html#createLoadSound">createLoadSound</a></li><li><a href="global.html#createScaleImgWithScaledWidthHeight">createScaleImgWithScaledWidthHeight</a></li><li><a href="global.html#createTempCanvasesContainer">createTempCanvasesContainer</a></li><li><a href="global.html#detectIfBrowserIsOperaAndSetCanvasHeightIfYes">detectIfBrowserIsOperaAndSetCanvasHeightIfYes</a></li><li><a href="global.html#enterFullscreen">enterFullscreen</a></li><li><a href="global.html#exeFnChangeOnclickAndBtnSrc">exeFnChangeOnclickAndBtnSrc</a></li><li><a href="global.html#exitFullscreen">exitFullscreen</a></li><li><a href="global.html#gameOver">gameOver</a></li><li><a href="global.html#getAllSoundPathsTheirPositions">getAllSoundPathsTheirPositions</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getIfCanvasTakeFullDeviceDimensions">getIfCanvasTakeFullDeviceDimensions</a></li><li><a href="global.html#getIfDeviceIsMobileOrTablet">getIfDeviceIsMobileOrTablet</a></li><li><a href="global.html#getIfOrientationLandscape">getIfOrientationLandscape</a></li><li><a href="global.html#getIfRotateDveiceInfoVisible">getIfRotateDveiceInfoVisible</a></li><li><a href="global.html#getMaxWidthHeigtMainCanvas">getMaxWidthHeigtMainCanvas</a></li><li><a href="global.html#getOrCreateTempCanvas">getOrCreateTempCanvas</a></li><li><a href="global.html#giveInitErrorReloadApp">giveInitErrorReloadApp</a></li><li><a href="global.html#hideControllerButtons">hideControllerButtons</a></li><li><a href="global.html#hideLoadingScreen">hideLoadingScreen</a></li><li><a href="global.html#hideTitle">hideTitle</a></li><li><a href="global.html#highlightBtn">highlightBtn</a></li><li><a href="global.html#imagePaths">imagePaths</a></li><li><a href="global.html#IMAGES_PATHS_BAR_BOTTLES">IMAGES_PATHS_BAR_BOTTLES</a></li><li><a href="global.html#IMAGES_PATHS_BAR_COINS">IMAGES_PATHS_BAR_COINS</a></li><li><a href="global.html#IMAGES_PATHS_BAR_ENDBOSS">IMAGES_PATHS_BAR_ENDBOSS</a></li><li><a href="global.html#IMAGES_PATHS_BAR_HEALTH">IMAGES_PATHS_BAR_HEALTH</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel">initLevel</a></li><li><a href="global.html#initSoManyBackgroundObjectsGroups">initSoManyBackgroundObjectsGroups</a></li><li><a href="global.html#initSoManyEnemies">initSoManyEnemies</a></li><li><a href="global.html#initSoManyLevelObjects">initSoManyLevelObjects</a></li><li><a href="global.html#keyboard">keyboard</a></li><li><a href="global.html#level1">level1</a></li><li><a href="global.html#musicMuted">musicMuted</a></li><li><a href="global.html#pause">pause</a></li><li><a href="global.html#pauseAllSounds">pauseAllSounds</a></li><li><a href="global.html#pausePlayGame">pausePlayGame</a></li><li><a href="global.html#playBgMusic">playBgMusic</a></li><li><a href="global.html#playSoundsAtGameOver">playSoundsAtGameOver</a></li><li><a href="global.html#preloadImagesSounds">preloadImagesSounds</a></li><li><a href="global.html#removeBtnHighlight">removeBtnHighlight</a></li><li><a href="global.html#resetAllSound">resetAllSound</a></li><li><a href="global.html#resetCreateCanvasElement">resetCreateCanvasElement</a></li><li><a href="global.html#resetLevelAndWorldSingleton">resetLevelAndWorldSingleton</a></li><li><a href="global.html#resetPausePlayBtn">resetPausePlayBtn</a></li><li><a href="global.html#setAllSoundPathsTheirPositionsInArray">setAllSoundPathsTheirPositionsInArray</a></li><li><a href="global.html#setBtnsAsPerGameState">setBtnsAsPerGameState</a></li><li><a href="global.html#setCanvasHeightForOperaAsLandscape">setCanvasHeightForOperaAsLandscape</a></li><li><a href="global.html#setControlInfoBox">setControlInfoBox</a></li><li><a href="global.html#setKeyObjIsPressedProperty">setKeyObjIsPressedProperty</a></li><li><a href="global.html#setScaleImgWidthHeight">setScaleImgWidthHeight</a></li><li><a href="global.html#setScreenAsPerGameState">setScreenAsPerGameState</a></li><li><a href="global.html#setScreenBtnsAsPerGameState">setScreenBtnsAsPerGameState</a></li><li><a href="global.html#setStoppableInterval">setStoppableInterval</a></li><li><a href="global.html#setTempCanvasWithContext">setTempCanvasWithContext</a></li><li><a href="global.html#setVisibilityFullscreenBtn">setVisibilityFullscreenBtn</a></li><li><a href="global.html#sounds">sounds</a></li><li><a href="global.html#soundsMuted">soundsMuted</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#switchContentVisibilityAsPerOrientation">switchContentVisibilityAsPerOrientation</a></li><li><a href="global.html#switchControlInfoBox">switchControlInfoBox</a></li><li><a href="global.html#switchGameInfoBox">switchGameInfoBox</a></li><li><a href="global.html#switchInfoBox">switchInfoBox</a></li><li><a href="global.html#turnMusicOff">turnMusicOff</a></li><li><a href="global.html#turnMusicOn">turnMusicOn</a></li><li><a href="global.html#turnOnOffHoverEffectForBtns">turnOnOffHoverEffectForBtns</a></li><li><a href="global.html#turnSoundsOff">turnSoundsOff</a></li><li><a href="global.html#turnSoundsOn">turnSoundsOn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat May 06 2023 09:29:13 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

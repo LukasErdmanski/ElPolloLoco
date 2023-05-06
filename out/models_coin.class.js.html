@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/coin.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/coin.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Represents a coin object.
+ * @class
+ * @extends MovableObject
+ */
+class Coin extends MovableObject {
+  /**
+   * Static property, the coin diameter of 100, accessed when setting the x and y coordinates in the {@link Coin#setXY}
+   * method of Coin.
+   * @static
+   * @type {number}
+   */
+  static diameter = 85;
+
+  /**
+   * The width of the coin.
+   * @type {number}
+   */
+  width = Coin.diameter;
+
+  /**
+   * The height of the coin.
+   * @type {number}
+   */
+  height = Coin.diameter;
+
+  /**
+   * The offset value for the coin.
+   * @type {number}
+   */
+  offsetValue = 30;
+
+  /**
+   * The offset of the coin.
+   * @type {{top: number, left: number, right: number, bottom: number}}
+   */
+  offset = {
+    top: this.offsetValue,
+    left: this.offsetValue,
+    right: this.offsetValue,
+    bottom: this.offsetValue,
+  };
+
+  /**
+   * Image paths for the coin animation.
+   * @type {string[]}
+   */
+  IMAGES_PATHS = ['img/8_coin/coin_1.png', 'img/8_coin/coin_2.png'];
+
+  /**
+   * Creates a new instance of the Coin class.
+   * @constructor
+   * @param {Array} allCoinsArr - The array of all the coins that have been created.
+   */
+  constructor(allCoinsArr) {
+    super().loadImageFromImageCache(this.IMAGES_PATHS[0]);
+    [this.x, this.y] = this.getXY(allCoinsArr);
+  }
+
+  /**
+   * Returns an array with x and y coordinates for the next coin in a coin arc.
+   * @param {Array} allCoinsArr - The array of all the coins that have been created.
+   * @returns {number[]} The array with the x and y coordinates of the next coin in the coin arc.
+   */
+  getXY(allCoinsArr) {
+    // Interator between 0 - 8
+    let i = allCoinsArr.length % 9;
+    /**
+     * Initialize the direction memory (can be +1 or -1) to set the y-coordinate of the coins. For the first 5 coins in
+     * the row of nine it is +1, for the last four it is -1.
+     */
+    let plusOrMinusOne = 1;
+    /**
+     * Check if five iteration has already beed done. Yes, change direction for setting the y-coordinate of the next
+     * coins after the fourth of nine coins in a coin row (arc).
+     */
+    if (i >= 5) plusOrMinusOne = -1;
+    // Save the last coin object from the coin array.
+    let lastCoinObj = allCoinsArr[allCoinsArr.length - 1];
+    // Set x and y coordinates for the next coin in a coin arc.
+    return this.setXY(i, plusOrMinusOne, lastCoinObj);
+  }
+
+  /**
+   * Sets the x and y coordinates for the next coin in a coin arc.
+   * @param {number} i - The index of the coin in the array.
+   * @param {number} plusOrMinusOne - The direction memory (can be +1 or -1) to set the y-coordinate of the coins.
+   * For the first 5 coins in the row of nine it is +1, for the last four it is -1.
+   * @param {Coin} lastCoinObj - The last coin object in the array.
+   * @returns The array with the x and y coordinates of the next coin in the coin arc.
+   */
+  setXY(i, plusOrMinusOne, lastCoinObj) {
+    /**
+     * Initialize x-coordinate for the very first coin, y-coordinate for the first one in every row (arc) of nine coins
+     * and the diameter value of a coin.
+     */
+    let [x, y, coinObjDiameter] = [500, 255, Coin.diameter];
+    /**
+     * Check if is the iteration for the first of nine coins in a coin row (arc) und if is not the first coin row (arc).
+     * Yes, set the x-coordinate of the first coin by 500 more than the last coin of the last coin row (arc).
+     */
+    if (i == 0 &amp;&amp; lastCoinObj != undefined) x = lastCoinObj.x + 500;
+    // Otherwise check if there is a coin object in the array.
+    else if (lastCoinObj != undefined) {
+      // Set x and y coordinates for the next coin in a coin arc.
+      x = lastCoinObj.x + coinObjDiameter / 1.1;
+      y = lastCoinObj.y - plusOrMinusOne * (coinObjDiameter / 2);
+    }
+    return [x, y];
+  }
+
+  /**
+   * Checks the interval for setting images and updates the current image for coin animation.
+   * @override
+   */
+  checkSetImagesIntervalHandler() {
+    this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS);
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="Character.html">Character</a></li><li><a href="ChickenNormal.html">ChickenNormal</a></li><li><a href="ChickenSmall.html">ChickenSmall</a></li><li><a href="Cloud.html">Cloud</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="global.html#Sound">Sound</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="World.html">World</a></li><li><a href="WorldSingleton.html">WorldSingleton</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addBtnHighlight">addBtnHighlight</a></li><li><a href="global.html#adjustWidthHeightOfScreensButtonLayer">adjustWidthHeightOfScreensButtonLayer</a></li><li><a href="global.html#allIntervals">allIntervals</a></li><li><a href="global.html#applyEventListenerToAllControllerButtons">applyEventListenerToAllControllerButtons</a></li><li><a href="global.html#applyMouseTouchUpDownEventListeners">applyMouseTouchUpDownEventListeners</a></li><li><a href="global.html#applyOnClickEventListenerToAllButtons">applyOnClickEventListenerToAllButtons</a></li><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#changeBgMusic">changeBgMusic</a></li><li><a href="global.html#changeBtnIcon">changeBtnIcon</a></li><li><a href="global.html#checkIfAddOrRemoveBtnHighlightAddDoIt">checkIfAddOrRemoveBtnHighlightAddDoIt</a></li><li><a href="global.html#checkOrientationSetContentElements">checkOrientationSetContentElements</a></li><li><a href="global.html#clearAllStoppableIntervals">clearAllStoppableIntervals</a></li><li><a href="global.html#createLoadImg">createLoadImg</a></li><li><a href="global.html#createLoadRenderSaveImages">createLoadRenderSaveImages</a></li><li><a href="global.html#createLoadRenderSaveImg">createLoadRenderSaveImg</a></li><li><a href="global.html#createLoadSaveSound">createLoadSaveSound</a></li><li><a href="global.html#createLoadSaveSounds">createLoadSaveSounds</a></li><li><a href="global.html#createLoadSound">createLoadSound</a></li><li><a href="global.html#createScaleImgWithScaledWidthHeight">createScaleImgWithScaledWidthHeight</a></li><li><a href="global.html#createTempCanvasesContainer">createTempCanvasesContainer</a></li><li><a href="global.html#detectIfBrowserIsOperaAndSetCanvasHeightIfYes">detectIfBrowserIsOperaAndSetCanvasHeightIfYes</a></li><li><a href="global.html#enterFullscreen">enterFullscreen</a></li><li><a href="global.html#exeFnChangeOnclickAndBtnSrc">exeFnChangeOnclickAndBtnSrc</a></li><li><a href="global.html#exitFullscreen">exitFullscreen</a></li><li><a href="global.html#gameOver">gameOver</a></li><li><a href="global.html#getAllSoundPathsTheirPositions">getAllSoundPathsTheirPositions</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getIfCanvasTakeFullDeviceDimensions">getIfCanvasTakeFullDeviceDimensions</a></li><li><a href="global.html#getIfDeviceIsMobileOrTablet">getIfDeviceIsMobileOrTablet</a></li><li><a href="global.html#getIfOrientationLandscape">getIfOrientationLandscape</a></li><li><a href="global.html#getIfRotateDveiceInfoVisible">getIfRotateDveiceInfoVisible</a></li><li><a href="global.html#getMaxWidthHeigtMainCanvas">getMaxWidthHeigtMainCanvas</a></li><li><a href="global.html#getOrCreateTempCanvas">getOrCreateTempCanvas</a></li><li><a href="global.html#giveInitErrorReloadApp">giveInitErrorReloadApp</a></li><li><a href="global.html#hideControllerButtons">hideControllerButtons</a></li><li><a href="global.html#hideLoadingScreen">hideLoadingScreen</a></li><li><a href="global.html#hideTitle">hideTitle</a></li><li><a href="global.html#highlightBtn">highlightBtn</a></li><li><a href="global.html#imagePaths">imagePaths</a></li><li><a href="global.html#IMAGES_PATHS_BAR_BOTTLES">IMAGES_PATHS_BAR_BOTTLES</a></li><li><a href="global.html#IMAGES_PATHS_BAR_COINS">IMAGES_PATHS_BAR_COINS</a></li><li><a href="global.html#IMAGES_PATHS_BAR_ENDBOSS">IMAGES_PATHS_BAR_ENDBOSS</a></li><li><a href="global.html#IMAGES_PATHS_BAR_HEALTH">IMAGES_PATHS_BAR_HEALTH</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel">initLevel</a></li><li><a href="global.html#initSoManyBackgroundObjectsGroups">initSoManyBackgroundObjectsGroups</a></li><li><a href="global.html#initSoManyEnemies">initSoManyEnemies</a></li><li><a href="global.html#initSoManyLevelObjects">initSoManyLevelObjects</a></li><li><a href="global.html#keyboard">keyboard</a></li><li><a href="global.html#level1">level1</a></li><li><a href="global.html#musicMuted">musicMuted</a></li><li><a href="global.html#pause">pause</a></li><li><a href="global.html#pauseAllSounds">pauseAllSounds</a></li><li><a href="global.html#pausePlayGame">pausePlayGame</a></li><li><a href="global.html#playBgMusic">playBgMusic</a></li><li><a href="global.html#playSoundsAtGameOver">playSoundsAtGameOver</a></li><li><a href="global.html#preloadImagesSounds">preloadImagesSounds</a></li><li><a href="global.html#removeBtnHighlight">removeBtnHighlight</a></li><li><a href="global.html#resetAllSound">resetAllSound</a></li><li><a href="global.html#resetCreateCanvasElement">resetCreateCanvasElement</a></li><li><a href="global.html#resetLevelAndWorldSingleton">resetLevelAndWorldSingleton</a></li><li><a href="global.html#resetPausePlayBtn">resetPausePlayBtn</a></li><li><a href="global.html#setAllSoundPathsTheirPositionsInArray">setAllSoundPathsTheirPositionsInArray</a></li><li><a href="global.html#setBtnsAsPerGameState">setBtnsAsPerGameState</a></li><li><a href="global.html#setCanvasHeightForOperaAsLandscape">setCanvasHeightForOperaAsLandscape</a></li><li><a href="global.html#setControlInfoBox">setControlInfoBox</a></li><li><a href="global.html#setKeyObjIsPressedProperty">setKeyObjIsPressedProperty</a></li><li><a href="global.html#setScaleImgWidthHeight">setScaleImgWidthHeight</a></li><li><a href="global.html#setScreenAsPerGameState">setScreenAsPerGameState</a></li><li><a href="global.html#setScreenBtnsAsPerGameState">setScreenBtnsAsPerGameState</a></li><li><a href="global.html#setStoppableInterval">setStoppableInterval</a></li><li><a href="global.html#setTempCanvasWithContext">setTempCanvasWithContext</a></li><li><a href="global.html#setVisibilityFullscreenBtn">setVisibilityFullscreenBtn</a></li><li><a href="global.html#sounds">sounds</a></li><li><a href="global.html#soundsMuted">soundsMuted</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#switchContentVisibilityAsPerOrientation">switchContentVisibilityAsPerOrientation</a></li><li><a href="global.html#switchControlInfoBox">switchControlInfoBox</a></li><li><a href="global.html#switchGameInfoBox">switchGameInfoBox</a></li><li><a href="global.html#switchInfoBox">switchInfoBox</a></li><li><a href="global.html#turnMusicOff">turnMusicOff</a></li><li><a href="global.html#turnMusicOn">turnMusicOn</a></li><li><a href="global.html#turnOnOffHoverEffectForBtns">turnOnOffHoverEffectForBtns</a></li><li><a href="global.html#turnSoundsOff">turnSoundsOff</a></li><li><a href="global.html#turnSoundsOn">turnSoundsOn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat May 06 2023 09:29:13 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

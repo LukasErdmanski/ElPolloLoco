@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/statusBar.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/statusBar.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Represents a status bar.
+ * @extends DrawableObject
+ */
+class StatusBar extends DrawableObject {
+  /**
+   * The array of paths of status bar images.
+   * @type {string[]}
+   */
+  IMAGES_PATHS_BAR = [];
+
+  /**
+   * The current percentage of the status bar.
+   * @type {number}
+   */
+  percentage;
+
+  /**
+   * Creates a new StatusBar object.
+   * @param {number} x - The x coordinate of the status bar.
+   * @param {number} y - The y coordinate of the status bar.
+   * @param {string[]} imagePathsArr - The array of status bar image paths.
+   * @param {number} percentage - The initial percentage of the status bar to be presented.
+   */
+  constructor(x, y, imagePathsArr, percentage) {
+    super();
+
+    /**
+     * The x coordinate of the status bar.
+     * @type {number}
+     */
+    this.x = x;
+
+    /**
+     * The y coordinate of the status bar.
+     * @type {number}
+     */
+    this.y = y;
+
+    /**
+     * The width of the status bar.
+     * @type {number}
+     */
+    this.width = 200;
+
+    /**
+     * The height of the status bar.
+     * @type {number}
+     */
+    this.height = 60;
+
+    /**
+     * The array of status bar image paths.
+     * @type {string[]}
+     */
+    this.IMAGES_PATHS_BAR = imagePathsArr;
+
+    // Set the initial percentage of the status bar.
+    this.setPercentage(percentage);
+  }
+
+  /**
+   * Sets the percentage of the status bar and the image that corresponds to the percentage.
+   * @param {number} percentage - The percentage of the status bar.
+   */
+  setPercentage(percentage) {
+    /**
+     * The percentage of the status bar.
+     * @type {number}
+     */
+    this.percentage = percentage;
+
+    // Set the local 'path' variable with the image file path from 'IMAGES_PATHS_BAR' array with resolved index.
+    let path = this.IMAGES_PATHS_BAR[this.resolveImageIndex()];
+
+    // Set the 'img' property with the image object from 'imageCache' array with the key 'path'.
+    this.img = DrawableObject.imageCache[path];
+  }
+
+  /**
+   * Returns the index of the status bar image that should be displayed.
+   * @returns {number} The index of the status bar image to be displayed.
+   */
+  resolveImageIndex() {
+    /**
+     * Calculate and return only the integer part of the division 100 / 20, i.e. 5, 4, 3, 2, 1, 0, one of the possible
+     * six indices 'IMAGES' array.
+     * @type {number}
+     */
+    return Math.ceil(this.percentage / 20);
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="Character.html">Character</a></li><li><a href="ChickenNormal.html">ChickenNormal</a></li><li><a href="ChickenSmall.html">ChickenSmall</a></li><li><a href="Cloud.html">Cloud</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="global.html#Sound">Sound</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="World.html">World</a></li><li><a href="WorldSingleton.html">WorldSingleton</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addBtnHighlight">addBtnHighlight</a></li><li><a href="global.html#adjustWidthHeightOfScreensButtonLayer">adjustWidthHeightOfScreensButtonLayer</a></li><li><a href="global.html#allIntervals">allIntervals</a></li><li><a href="global.html#applyEventListenerToAllControllerButtons">applyEventListenerToAllControllerButtons</a></li><li><a href="global.html#applyMouseTouchUpDownEventListeners">applyMouseTouchUpDownEventListeners</a></li><li><a href="global.html#applyOnClickEventListenerToAllButtons">applyOnClickEventListenerToAllButtons</a></li><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#changeBgMusic">changeBgMusic</a></li><li><a href="global.html#changeBtnIcon">changeBtnIcon</a></li><li><a href="global.html#checkIfAddOrRemoveBtnHighlightAddDoIt">checkIfAddOrRemoveBtnHighlightAddDoIt</a></li><li><a href="global.html#checkOrientationSetContentElements">checkOrientationSetContentElements</a></li><li><a href="global.html#clearAllStoppableIntervals">clearAllStoppableIntervals</a></li><li><a href="global.html#createLoadImg">createLoadImg</a></li><li><a href="global.html#createLoadRenderSaveImages">createLoadRenderSaveImages</a></li><li><a href="global.html#createLoadRenderSaveImg">createLoadRenderSaveImg</a></li><li><a href="global.html#createLoadSaveSound">createLoadSaveSound</a></li><li><a href="global.html#createLoadSaveSounds">createLoadSaveSounds</a></li><li><a href="global.html#createLoadSound">createLoadSound</a></li><li><a href="global.html#createScaleImgWithScaledWidthHeight">createScaleImgWithScaledWidthHeight</a></li><li><a href="global.html#createTempCanvasesContainer">createTempCanvasesContainer</a></li><li><a href="global.html#detectIfBrowserIsOperaAndSetCanvasHeightIfYes">detectIfBrowserIsOperaAndSetCanvasHeightIfYes</a></li><li><a href="global.html#enterFullscreen">enterFullscreen</a></li><li><a href="global.html#exeFnChangeOnclickAndBtnSrc">exeFnChangeOnclickAndBtnSrc</a></li><li><a href="global.html#exitFullscreen">exitFullscreen</a></li><li><a href="global.html#gameOver">gameOver</a></li><li><a href="global.html#getAllSoundPathsTheirPositions">getAllSoundPathsTheirPositions</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getIfCanvasTakeFullDeviceDimensions">getIfCanvasTakeFullDeviceDimensions</a></li><li><a href="global.html#getIfDeviceIsMobileOrTablet">getIfDeviceIsMobileOrTablet</a></li><li><a href="global.html#getIfOrientationLandscape">getIfOrientationLandscape</a></li><li><a href="global.html#getIfRotateDveiceInfoVisible">getIfRotateDveiceInfoVisible</a></li><li><a href="global.html#getMaxWidthHeigtMainCanvas">getMaxWidthHeigtMainCanvas</a></li><li><a href="global.html#getOrCreateTempCanvas">getOrCreateTempCanvas</a></li><li><a href="global.html#giveInitErrorReloadApp">giveInitErrorReloadApp</a></li><li><a href="global.html#hideControllerButtons">hideControllerButtons</a></li><li><a href="global.html#hideLoadingScreen">hideLoadingScreen</a></li><li><a href="global.html#hideTitle">hideTitle</a></li><li><a href="global.html#highlightBtn">highlightBtn</a></li><li><a href="global.html#imagePaths">imagePaths</a></li><li><a href="global.html#IMAGES_PATHS_BAR_BOTTLES">IMAGES_PATHS_BAR_BOTTLES</a></li><li><a href="global.html#IMAGES_PATHS_BAR_COINS">IMAGES_PATHS_BAR_COINS</a></li><li><a href="global.html#IMAGES_PATHS_BAR_ENDBOSS">IMAGES_PATHS_BAR_ENDBOSS</a></li><li><a href="global.html#IMAGES_PATHS_BAR_HEALTH">IMAGES_PATHS_BAR_HEALTH</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel">initLevel</a></li><li><a href="global.html#initSoManyBackgroundObjectsGroups">initSoManyBackgroundObjectsGroups</a></li><li><a href="global.html#initSoManyEnemies">initSoManyEnemies</a></li><li><a href="global.html#initSoManyLevelObjects">initSoManyLevelObjects</a></li><li><a href="global.html#keyboard">keyboard</a></li><li><a href="global.html#level1">level1</a></li><li><a href="global.html#musicMuted">musicMuted</a></li><li><a href="global.html#pause">pause</a></li><li><a href="global.html#pauseAllSounds">pauseAllSounds</a></li><li><a href="global.html#pausePlayGame">pausePlayGame</a></li><li><a href="global.html#playBgMusic">playBgMusic</a></li><li><a href="global.html#playSoundsAtGameOver">playSoundsAtGameOver</a></li><li><a href="global.html#preloadImagesSounds">preloadImagesSounds</a></li><li><a href="global.html#removeBtnHighlight">removeBtnHighlight</a></li><li><a href="global.html#resetAllSound">resetAllSound</a></li><li><a href="global.html#resetCreateCanvasElement">resetCreateCanvasElement</a></li><li><a href="global.html#resetLevelAndWorldSingleton">resetLevelAndWorldSingleton</a></li><li><a href="global.html#resetPausePlayBtn">resetPausePlayBtn</a></li><li><a href="global.html#setAllSoundPathsTheirPositionsInArray">setAllSoundPathsTheirPositionsInArray</a></li><li><a href="global.html#setBtnsAsPerGameState">setBtnsAsPerGameState</a></li><li><a href="global.html#setCanvasHeightForOperaAsLandscape">setCanvasHeightForOperaAsLandscape</a></li><li><a href="global.html#setControlInfoBox">setControlInfoBox</a></li><li><a href="global.html#setKeyObjIsPressedProperty">setKeyObjIsPressedProperty</a></li><li><a href="global.html#setScaleImgWidthHeight">setScaleImgWidthHeight</a></li><li><a href="global.html#setScreenAsPerGameState">setScreenAsPerGameState</a></li><li><a href="global.html#setScreenBtnsAsPerGameState">setScreenBtnsAsPerGameState</a></li><li><a href="global.html#setStoppableInterval">setStoppableInterval</a></li><li><a href="global.html#setTempCanvasWithContext">setTempCanvasWithContext</a></li><li><a href="global.html#setVisibilityFullscreenBtn">setVisibilityFullscreenBtn</a></li><li><a href="global.html#sounds">sounds</a></li><li><a href="global.html#soundsMuted">soundsMuted</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#switchContentVisibilityAsPerOrientation">switchContentVisibilityAsPerOrientation</a></li><li><a href="global.html#switchControlInfoBox">switchControlInfoBox</a></li><li><a href="global.html#switchGameInfoBox">switchGameInfoBox</a></li><li><a href="global.html#switchInfoBox">switchInfoBox</a></li><li><a href="global.html#turnMusicOff">turnMusicOff</a></li><li><a href="global.html#turnMusicOn">turnMusicOn</a></li><li><a href="global.html#turnOnOffHoverEffectForBtns">turnOnOffHoverEffectForBtns</a></li><li><a href="global.html#turnSoundsOff">turnSoundsOff</a></li><li><a href="global.html#turnSoundsOn">turnSoundsOn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat May 06 2023 09:29:13 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

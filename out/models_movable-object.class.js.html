@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/movable-object.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/movable-object.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * An abstract class representing a movable object. Subclasses can provide their own implementations for the
  * '{@link MovableObject#checkMakeMovementIntervalHandler}' and '{@link MovableObject#checkMakeMovementIntervalHandler}' methods.
  * @abstract
@@ -44,7 +72,7 @@ class MovableObject extends DrawableObject {
 
   /**
    * The current set of images used for animation.
-   * @type {Array<Image>}
+   * @type {Array&lt;Image>}
    */
   currentImagesSet;
 
@@ -136,8 +164,8 @@ class MovableObject extends DrawableObject {
        * jump / throw before reaching the highest point / falling down).
        */
       if (
-        (this.health > 0 && (this.isAboveGround() || this.speedY > 0)) ||
-        ((this instanceof Character || this instanceof Endboss) && this.isDead())
+        (this.health > 0 &amp;&amp; (this.isAboveGround() || this.speedY > 0)) ||
+        ((this instanceof Character || this instanceof Endboss) &amp;&amp; this.isDead())
       ) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
@@ -150,7 +178,7 @@ class MovableObject extends DrawableObject {
    * @returns {boolean} - True if the object is above the ground, false otherwise.
    */
   isAboveGround() {
-    return this.y + this.height < this.yOfGroundLevel;
+    return this.y + this.height &lt; this.yOfGroundLevel;
   }
 
   /**
@@ -168,7 +196,7 @@ class MovableObject extends DrawableObject {
   isHurt() {
     let timePassed = new Date().getTime() - this.lastHit; // Difference in ms.
     timePassed = timePassed / 1000; // Difference in s.
-    return timePassed < 1;
+    return timePassed &lt; 1;
   }
 
   /**
@@ -178,12 +206,12 @@ class MovableObject extends DrawableObject {
    */
   isColliding(obj) {
     return (
-      !this.isDead() &&
-      !obj.isDead() &&
-      this.x + this.width - this.offset.right >= obj.x + obj.offset.left && // R -> L. Compare the right character side width left object side considering the offset distances.
-      this.y + this.height - this.offset.bottom >= obj.y + obj.offset.top && // T -> B. Compare the bottom character side width top object side considering the offset distances.
-      this.x + this.offset.left <= obj.x + obj.width - obj.offset.right && // L -> R. Compare the left character side width right object side considering the offset distances.
-      this.y + this.offset.top <= obj.y + obj.height - obj.offset.bottom // B -> T. Compare the top character side width bottom object side considering the offset distances.
+      !this.isDead() &amp;&amp;
+      !obj.isDead() &amp;&amp;
+      this.x + this.width - this.offset.right >= obj.x + obj.offset.left &amp;&amp; // R -> L. Compare the right character side width left object side considering the offset distances.
+      this.y + this.height - this.offset.bottom >= obj.y + obj.offset.top &amp;&amp; // T -> B. Compare the bottom character side width top object side considering the offset distances.
+      this.x + this.offset.left &lt;= obj.x + obj.width - obj.offset.right &amp;&amp; // L -> R. Compare the left character side width right object side considering the offset distances.
+      this.y + this.offset.top &lt;= obj.y + obj.height - obj.offset.bottom // B -> T. Compare the top character side width bottom object side considering the offset distances.
     );
   }
 
@@ -192,10 +220,10 @@ class MovableObject extends DrawableObject {
    */
   hit() {
     let soundType = this.getSoundTypeWhileHitting();
-    if (soundType && !(this instanceof Bottle)) this.playHurtSoundWhileHitting(soundType);
+    if (soundType &amp;&amp; !(this instanceof Bottle)) this.playHurtSoundWhileHitting(soundType);
     this.health--;
     // Check if the health is zero or negative.
-    if (this.health <= 0) {
+    if (this.health &lt;= 0) {
       // Yes, set it minimally to zero.
       this.health = 0;
       if (soundType) this.playDeadSoundWhileHitting(soundType);
@@ -335,7 +363,7 @@ class MovableObject extends DrawableObject {
     if (this.are_BothCheckAnimationPart_Interval_Handler_Implemented()) {
       let checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id = setStoppableInterval(() => {
         if (
-          this.animationInterval_Part_MakeMovement_IsOver == true &&
+          this.animationInterval_Part_MakeMovement_IsOver == true &amp;&amp;
           this.animationInverval_Part_ChangingImg_IsOver == true
         ) {
           this.canBeRemoved = true;
@@ -367,7 +395,7 @@ class MovableObject extends DrawableObject {
    */
   are_BothCheckAnimationPart_Interval_Handler_Implemented() {
     return (
-      this.is_Check_MakeMovement_Interval_Handler_Implemented() &&
+      this.is_Check_MakeMovement_Interval_Handler_Implemented() &amp;&amp;
       this.is_Check_SetImages_Interval_Handler_Implemented()
     );
   }
@@ -378,7 +406,7 @@ class MovableObject extends DrawableObject {
    */
   moveRight() {
     if (this.canTurnAround) {
-      if (this.x + this.width < this.level.end_x) this.x += this.speedX;
+      if (this.x + this.width &lt; this.level.end_x) this.x += this.speedX;
       else this.otherDirection = !this.otherDirection;
     } else this.x += this.speedX;
   }
@@ -462,7 +490,7 @@ class MovableObject extends DrawableObject {
    * @returns {boolean} - Returns true if the top image contour is visible.
    */
   isTopImgContourVisible() {
-    return this.y < 480;
+    return this.y &lt; 480;
   }
 
   /**
@@ -507,3 +535,26 @@ class MovableObject extends DrawableObject {
     } else this.currentImgIdx++;
   }
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="Character.html">Character</a></li><li><a href="ChickenNormal.html">ChickenNormal</a></li><li><a href="ChickenSmall.html">ChickenSmall</a></li><li><a href="Cloud.html">Cloud</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="global.html#Sound">Sound</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="World.html">World</a></li><li><a href="WorldSingleton.html">WorldSingleton</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addBtnHighlight">addBtnHighlight</a></li><li><a href="global.html#adjustWidthHeightOfScreensButtonLayer">adjustWidthHeightOfScreensButtonLayer</a></li><li><a href="global.html#allIntervals">allIntervals</a></li><li><a href="global.html#applyEventListenerToAllControllerButtons">applyEventListenerToAllControllerButtons</a></li><li><a href="global.html#applyMouseTouchUpDownEventListeners">applyMouseTouchUpDownEventListeners</a></li><li><a href="global.html#applyOnClickEventListenerToAllButtons">applyOnClickEventListenerToAllButtons</a></li><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#changeBgMusic">changeBgMusic</a></li><li><a href="global.html#changeBtnIcon">changeBtnIcon</a></li><li><a href="global.html#checkIfAddOrRemoveBtnHighlightAddDoIt">checkIfAddOrRemoveBtnHighlightAddDoIt</a></li><li><a href="global.html#checkOrientationSetContentElements">checkOrientationSetContentElements</a></li><li><a href="global.html#clearAllStoppableIntervals">clearAllStoppableIntervals</a></li><li><a href="global.html#createLoadImg">createLoadImg</a></li><li><a href="global.html#createLoadRenderSaveImages">createLoadRenderSaveImages</a></li><li><a href="global.html#createLoadRenderSaveImg">createLoadRenderSaveImg</a></li><li><a href="global.html#createLoadSaveSound">createLoadSaveSound</a></li><li><a href="global.html#createLoadSaveSounds">createLoadSaveSounds</a></li><li><a href="global.html#createLoadSound">createLoadSound</a></li><li><a href="global.html#createScaleImgWithScaledWidthHeight">createScaleImgWithScaledWidthHeight</a></li><li><a href="global.html#createTempCanvasesContainer">createTempCanvasesContainer</a></li><li><a href="global.html#detectIfBrowserIsOperaAndSetCanvasHeightIfYes">detectIfBrowserIsOperaAndSetCanvasHeightIfYes</a></li><li><a href="global.html#enterFullscreen">enterFullscreen</a></li><li><a href="global.html#exeFnChangeOnclickAndBtnSrc">exeFnChangeOnclickAndBtnSrc</a></li><li><a href="global.html#exitFullscreen">exitFullscreen</a></li><li><a href="global.html#gameOver">gameOver</a></li><li><a href="global.html#getAllSoundPathsTheirPositions">getAllSoundPathsTheirPositions</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getIfCanvasTakeFullDeviceDimensions">getIfCanvasTakeFullDeviceDimensions</a></li><li><a href="global.html#getIfDeviceIsMobileOrTablet">getIfDeviceIsMobileOrTablet</a></li><li><a href="global.html#getIfOrientationLandscape">getIfOrientationLandscape</a></li><li><a href="global.html#getIfRotateDveiceInfoVisible">getIfRotateDveiceInfoVisible</a></li><li><a href="global.html#getMaxWidthHeigtMainCanvas">getMaxWidthHeigtMainCanvas</a></li><li><a href="global.html#getOrCreateTempCanvas">getOrCreateTempCanvas</a></li><li><a href="global.html#giveInitErrorReloadApp">giveInitErrorReloadApp</a></li><li><a href="global.html#hideControllerButtons">hideControllerButtons</a></li><li><a href="global.html#hideLoadingScreen">hideLoadingScreen</a></li><li><a href="global.html#hideTitle">hideTitle</a></li><li><a href="global.html#highlightBtn">highlightBtn</a></li><li><a href="global.html#imagePaths">imagePaths</a></li><li><a href="global.html#IMAGES_PATHS_BAR_BOTTLES">IMAGES_PATHS_BAR_BOTTLES</a></li><li><a href="global.html#IMAGES_PATHS_BAR_COINS">IMAGES_PATHS_BAR_COINS</a></li><li><a href="global.html#IMAGES_PATHS_BAR_ENDBOSS">IMAGES_PATHS_BAR_ENDBOSS</a></li><li><a href="global.html#IMAGES_PATHS_BAR_HEALTH">IMAGES_PATHS_BAR_HEALTH</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel">initLevel</a></li><li><a href="global.html#initSoManyBackgroundObjectsGroups">initSoManyBackgroundObjectsGroups</a></li><li><a href="global.html#initSoManyEnemies">initSoManyEnemies</a></li><li><a href="global.html#initSoManyLevelObjects">initSoManyLevelObjects</a></li><li><a href="global.html#keyboard">keyboard</a></li><li><a href="global.html#level1">level1</a></li><li><a href="global.html#musicMuted">musicMuted</a></li><li><a href="global.html#pause">pause</a></li><li><a href="global.html#pauseAllSounds">pauseAllSounds</a></li><li><a href="global.html#pausePlayGame">pausePlayGame</a></li><li><a href="global.html#playBgMusic">playBgMusic</a></li><li><a href="global.html#playSoundsAtGameOver">playSoundsAtGameOver</a></li><li><a href="global.html#preloadImagesSounds">preloadImagesSounds</a></li><li><a href="global.html#removeBtnHighlight">removeBtnHighlight</a></li><li><a href="global.html#resetAllSound">resetAllSound</a></li><li><a href="global.html#resetCreateCanvasElement">resetCreateCanvasElement</a></li><li><a href="global.html#resetLevelAndWorldSingleton">resetLevelAndWorldSingleton</a></li><li><a href="global.html#resetPausePlayBtn">resetPausePlayBtn</a></li><li><a href="global.html#setAllSoundPathsTheirPositionsInArray">setAllSoundPathsTheirPositionsInArray</a></li><li><a href="global.html#setBtnsAsPerGameState">setBtnsAsPerGameState</a></li><li><a href="global.html#setCanvasHeightForOperaAsLandscape">setCanvasHeightForOperaAsLandscape</a></li><li><a href="global.html#setControlInfoBox">setControlInfoBox</a></li><li><a href="global.html#setKeyObjIsPressedProperty">setKeyObjIsPressedProperty</a></li><li><a href="global.html#setScaleImgWidthHeight">setScaleImgWidthHeight</a></li><li><a href="global.html#setScreenAsPerGameState">setScreenAsPerGameState</a></li><li><a href="global.html#setScreenBtnsAsPerGameState">setScreenBtnsAsPerGameState</a></li><li><a href="global.html#setStoppableInterval">setStoppableInterval</a></li><li><a href="global.html#setTempCanvasWithContext">setTempCanvasWithContext</a></li><li><a href="global.html#setVisibilityFullscreenBtn">setVisibilityFullscreenBtn</a></li><li><a href="global.html#sounds">sounds</a></li><li><a href="global.html#soundsMuted">soundsMuted</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#switchContentVisibilityAsPerOrientation">switchContentVisibilityAsPerOrientation</a></li><li><a href="global.html#switchControlInfoBox">switchControlInfoBox</a></li><li><a href="global.html#switchGameInfoBox">switchGameInfoBox</a></li><li><a href="global.html#switchInfoBox">switchInfoBox</a></li><li><a href="global.html#turnMusicOff">turnMusicOff</a></li><li><a href="global.html#turnMusicOn">turnMusicOn</a></li><li><a href="global.html#turnOnOffHoverEffectForBtns">turnOnOffHoverEffectForBtns</a></li><li><a href="global.html#turnSoundsOff">turnSoundsOff</a></li><li><a href="global.html#turnSoundsOn">turnSoundsOn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat May 06 2023 09:29:13 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

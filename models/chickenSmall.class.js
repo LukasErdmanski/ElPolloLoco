@@ -81,7 +81,6 @@ class ChickenSmall extends MovableObject {
   /**
    * Checks which movement the small chicken can do and make it if valid.
    * @override
-   * @see {@link MovableObject.checkMakeMovementIntervalHandler} for the default implementation in the parent class.
    */
   checkMakeMovementIntervalHandler() {
     if (this.isDead()) this.deadAnimation_Part_MakeMovement_IsOver = true;
@@ -113,7 +112,6 @@ class ChickenSmall extends MovableObject {
   /**
    * Checks in which state is the small chicken and sets the images for the chicken state.
    * @override
-   * @see {@link MovableObject.checkSetImagesIntervalHandler} for the default implementation in the parent class.
    */
   checkSetImagesIntervalHandler() {
     if (this.isDead()) {

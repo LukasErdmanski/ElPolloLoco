@@ -48,7 +48,6 @@ class Cloud extends MovableObject {
   /**
    * Handles the movement of the cloud object based on its current state.
    * @override
-   * @see {@link MovableObject.checkMakeMovementIntervalHandler} for the default implementation in the parent class.
    */
   checkMakeMovementIntervalHandler() {
     if (this.isDead()) {

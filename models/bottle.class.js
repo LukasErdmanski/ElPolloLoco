@@ -172,6 +172,7 @@ class Bottle extends MovableObject {
    * If the bottle has been thrown, it makes it fall down.
    * If the bottle is moving, it continues its movement to the left or right.
    * If the bottle is dead, it stops its flight.
+   * @override
    */
   checkMakeMovementIntervalHandler() {
     if (this.isThrown) this.fallDown();
@@ -217,6 +218,7 @@ class Bottle extends MovableObject {
    * Checks the bottle's status and changes its image set accordingly.
    * If the bottle is dead, it changes to the splash images.
    * If the bottle is above ground (in flight), it changes to the rotation images.
+   * @override
    */
   checkSetImagesIntervalHandler() {
     if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_SPLASH);

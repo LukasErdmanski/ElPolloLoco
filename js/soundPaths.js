@@ -1,27 +1,27 @@
 /**
  * @typedef {Object} Sound
- * @type {string} path - The path to the sound file.
- * @type {number} volumeInitial - The initial volume of the sound.
+ * @property {string} path - The path to the sound file.
+ * @property {number} volumeInitial - The initial volume of the sound.
  */
 
 /**
  * @typedef {Object} SoundCategory
- * @type {Sound} [bgMusic] - The background music for the game.
- * @type {Sound} [endbossBgMusic] - The background music for the endboss level.
- * @type {Sound} [over] - The sound played when the game is over.
- * @type {Sound} [win] - The sound played when the game is won.
- * @type {Sound} [collect] - The sound played when an item is collected.
- * @type {Sound} [throw] - The sound played when an item is thrown.
- * @type {Sound} [dead] - The sound played when a character dies.
- * @type {Sound} [hurt] - The sound played when a character is hurt.
- * @type {Sound} [jump] - The sound played when a character jumps.
- * @type {Sound} [moveLeftOrRight] - The sound played when a character moves left or right.
- * @type {Sound} [snooring] - The sound played when a character is snooring.
- * @type {Sound} [noCoinNoBottle] - The sound played when a character has no coins or bottles.
- * @type {Sound} [attack] - The sound played when the endboss attacks.
- * @type {Sound} [characterDetected] - The sound played when the endboss detects the character.
- * @type {Sound} [buyHealth] - The sound played when health is bought.
- * @type {Sound} [buyBottle] - The sound played when a bottle is bought.
+ * @property {Sound} [bgMusic] - The background music for the game.
+ * @property {Sound} [endbossBgMusic] - The background music for the endboss level.
+ * @property {Sound} [over] - The sound played when the game is over.
+ * @property {Sound} [win] - The sound played when the game is won.
+ * @property {Sound} [collect] - The sound played when an item is collected.
+ * @property {Sound} [throw] - The sound played when an item is thrown.
+ * @property {Sound} [dead] - The sound played when a character dies.
+ * @property {Sound} [hurt] - The sound played when a character is hurt.
+ * @property {Sound} [jump] - The sound played when a character jumps.
+ * @property {Sound} [moveLeftOrRight] - The sound played when a character moves left or right.
+ * @property {Sound} [snooring] - The sound played when a character is snooring.
+ * @property {Sound} [noCoinNoBottle] - The sound played when a character has no coins or bottles.
+ * @property {Sound} [attack] - The sound played when the endboss attacks.
+ * @property {Sound} [characterDetected] - The sound played when the endboss detects the character.
+ * @property {Sound} [buyHealth] - The sound played when health is bought.
+ * @property {Sound} [buyBottle] - The sound played when a bottle is bought.
  */
 
 /**
