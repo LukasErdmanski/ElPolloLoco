@@ -4,16 +4,12 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="img/11_favicon/favicon.png" type="image/x-icon">
-  
-
-
+    <link rel="shortcut icon" href="img/11_favicon/favicon.png" type="image/x-icon"> 
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/loader.css" />
     <script src="js/imagePaths.js"></script>
     <script src="js/soundPaths.js"></script>
     <script src="js/preload.js"></script>
-
     <title>El pollo loco by Lukas Erdmanski</title>
   </head>
 
@@ -25,7 +21,7 @@
         <img class="loadingScreenloaderContentImgZIndex" src="img/11_favicon/favicon.png" alt="logo-icon">
       </div>
     </div>
-    
+   
     <!-- GAME -->
     <h1 id="title" class="dNone">El pollo loco</h1>
     <div id="rotateDeviceInfo" class="dNone">
@@ -33,9 +29,6 @@
       <button><img src="img/10_buttons/restart.png" alt="rotate-icon"></button>
     </div>
     <div id="content" class="content dNone">
-      <!-- Das Canvas Element sollte nicht direkt in Fullscreen Modus aufgerufen werden, da alle Overlays, Buttons etc. sonst 'zerschossen' werden. 
-      Deshalb im Fullscreen Modus soll ein HTML element aufgerufen werden, welches Canvas, Overlays, Button etc. beinhalter aufgerufen werden.
-      -->
       <!-- Canvas -->
       <canvas id="canvas" width="960" height="480"></canvas>    
       <!-- Screens & buttons layer container -->
@@ -124,14 +117,9 @@
           </div>
         </div>
       </div>
-
-
-
-
     </div>
 
-    </div>
-
+    <!-- SCRIPTS -->
     <script src="models/drawable-object.class.js"></script>
     <script src="models/movable-object.class.js"></script>
     <script src="models/character.class.js"></script>
@@ -156,7 +144,5 @@
     <script src="js/screenButtonsFunctions.js"></script>
     <script src="js/soundFunctions.js"></script>
     <script src="js/game.js"></script>
-  </body>
-  </body>
   </body>
 </html>

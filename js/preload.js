@@ -104,13 +104,13 @@ function createLoadRenderSaveImg(path, tempCanvasSettings) {
  * @param {string} path - The path of the image to be loaded.
  * @param {number} maxWidth - The maximum width of the scaled image.
  * @param {number} maxHeight - The maximum height of the scaled image.
- * @returns {Promise<{canvas: HTMLCanvasElement, width: number, height: number}>} A promise that resolves with an object
- * containing the scaled image, its width, and its height.
+ * @returns {Array<{scaleImg: HTMLImageElement, width: number, height: number}>} An array containing the scaled image,
+ * its width, and its height.
  */
 async function createScaleImgWithScaledWidthHeight(path, maxWidth, maxHeight) {
   const img = await createLoadImg(path);
   const [scaleImg, scaledWidth, scaledHeight] = setScaleImgWidthHeight(img, maxWidth, maxHeight);
-  return { canvas: scaleImg, width: scaledWidth, height: scaledHeight };
+  return [scaleImg, scaledWidth, scaledHeight];
 }
 
 /**
@@ -120,7 +120,7 @@ async function createScaleImgWithScaledWidthHeight(path, maxWidth, maxHeight) {
  * @param {number} maxHeight - The maximum height of the temporary canvas.
  * @param {HTMLDivElement} tempCanvasesContainer - The container element for temporary canvases.
  * @param {Array<HTMLCanvasElement>} freeTempCanvases - An array of free temporary canvases.
- * @returns {{canvas: HTMLCanvasElement, context: CanvasRenderingContext2D}} An object containing the temporary canvas
+ * @returns {{canvas: HTMLCanvasElement, context: CanvasRenderingContext2D}} An array containing the temporary canvas
  * and its 2D context.
  */
 function setTempCanvasWithContext(maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases) {
@@ -128,7 +128,7 @@ function setTempCanvasWithContext(maxWidth, maxHeight, tempCanvasesContainer, fr
   const tempCanvas = getOrCreateTempCanvas(maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases);
   // Get the 2D rendering context for the temporary canvas.
   const tempCanvasCtx = tempCanvas.getContext('2d');
-  return { canvas: tempCanvas, context: tempCanvasCtx };
+  return [tempCanvas, tempCanvasCtx];
 }
 
 /**
