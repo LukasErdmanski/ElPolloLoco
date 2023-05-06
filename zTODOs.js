@@ -8,10 +8,7 @@
 
 // TODO: console.log (DRAWN!) bei requestFrame in draw() methode am Ende löschen in
 
-// TODO: dopplete Funktion löschen
-
-// TODO: Kommentare auf Detusch löschen
-
 // TODO: // let enemies = [endboss] löschen, in Level --> In Testphase nicht viele Enemies, nur Endboss.
 
 // TODO: @link tag für abstrac method machen
+// TODO: @link tag für worldSingleton machen
