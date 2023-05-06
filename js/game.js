@@ -47,19 +47,21 @@ let soundsMuted = false;
  * @function
  */
 async function init() {
-  // try {
-  canvas = getElem('canvas');
-  checkOrientationSetContentElements();
-  let preloadImagesSoundsPromise = preloadImagesSounds(imagePaths, sounds);
-  await preloadImagesSoundsPromise;
-  resetLevelAndWorldSingleton();
-  applyOnClickEventListenerToAllButtons();
-  applyMouseTouchUpDownEventListeners();
-  setScreenBtnsAsPerGameState('start');
-  hideLoadingScreen();
-  /*   } catch (error) {
+  try {
+    canvas = getElem('canvas');
+    checkOrientationSetContentElements();
+    // alert("START PRELOAD!")
+    let preloadImagesSoundsPromise = preloadImagesSounds(imagePaths, sounds);
+    await preloadImagesSoundsPromise;
+    // alert("PRELOADED READY! You can start the game :)!")
+    resetLevelAndWorldSingleton();
+    applyOnClickEventListenerToAllButtons();
+    applyMouseTouchUpDownEventListeners();
+    setScreenBtnsAsPerGameState('start');
+    hideLoadingScreen();
+  } catch (error) {
     giveInitErrorReloadApp(error);
-  } */
+  }
 }
 
 /**
