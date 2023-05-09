@@ -12,3 +12,7 @@
 // TODO: hideLoadingScreen(); in init() in game.js einkommentieren
 
 // TODO: JSDoc final generieren
+
+// TODO: Zoomen bei Schnell / Doppelklick auf Iphone bei Button auschalten
+
+// TODO: Markieren des IMG auf Iphone, wo Popup Fenster kommt zum Teile, Sichern bei ausschalten.
