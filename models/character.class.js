@@ -365,9 +365,9 @@ class Character extends MovableObject {
   }
 
   /**
-   * Adds the given bottle object to the player's collection of bottles and updates the percentage of bottles
-   * that the player has collected so far.
-   * @param {Object} bottleObj - The bottle object to add to the player's collection.
+   * Adds the given bottle object to the character's collection of bottles and updates the percentage of bottles
+   * that the character has collected so far.
+   * @param {Object} bottleObj - The bottle object to add to the character's collection.
    */
   takeBottle(bottleObj) {
     sounds.bottle.collect.currentTime = 0;
@@ -380,92 +380,110 @@ class Character extends MovableObject {
   }
 
   /**
-   * Updates the percentage of bottles that the player has collected so far.
+   * Updates the percentage of bottles that the character has collected so far.
    */
   updateBottlesPercentage() {
     this.bottlesPercentage = (this.bottles.length / this.world.level.amountOfAllBottles) * 100;
   }
 
   /**
-   * Throws the last bottle in the player's collection and updates the percentage of bottles
-   * that the player has collected so far.
+   * Throws the last bottle in the character's collection and updates the percentage of bottles
+   * that the character has collected so far.
    */
   throwBottle() {
     this.lastThrow = new Date().getTime();
     let bottle = this.bottles[this.bottles.length - 1];
-    if (bottle != undefined) {
-      sounds.character.noCoinNoBottle.pause();
-      sounds.character.noCoinNoBottle.currentTime = 0;
-      sounds.bottle.throw.currentTime = 0;
-      sounds.bottle.throw.play();
-
-      bottle.otherDirection = this.otherDirection;
-      bottle.x = this.x + this.width - this.offset.right;
-      if (bottle.otherDirection) bottle.x = this.x + this.offset.right;
-      bottle.y = this.y + 100;
-
-      this.world.level.bottlesInFlight.push(bottle);
-      bottle.isThrown = true;
-      bottle.applyGravity();
-      bottle.animate();
-
-      this.bottles.pop();
-
-      this.updateBottlesPercentage();
-      this.world.bootlesBar.setPercentage(this.bottlesPercentage);
-    } else sounds.character.noCoinNoBottle.play();
+    if (bottle != undefined) this.throwBottleIfBottleAvailable(bottle);
+    else sounds.character.noCoinNoBottle.play();
   }
 
   /**
-   * Buys a bottle and adds it to the player's collection of bottles, and updates the percentage of bottles
-   * that the player has collected so far.
+   * Throws the given bottle if it is available, updating the bottle's position, applying gravity, animating it,
+   * and updating the bottles percentage.
+   * @param {Object} bottle - The bottle object to be thrown.
+   */
+  throwBottleIfBottleAvailable(bottle) {
+    this.playSoundWhileThrowingOrBuying(sounds.bottle.throw);
+    bottle.otherDirection = this.otherDirection;
+    bottle.x = this.x + this.width - this.offset.right;
+    if (bottle.otherDirection) bottle.x = this.x + this.offset.right;
+    bottle.y = this.y + 100;
+    this.world.level.bottlesInFlight.push(bottle);
+    bottle.isThrown = true;
+    bottle.applyGravity();
+    bottle.animate();
+    this.bottles.pop();
+    this.updateBottlesPercentage();
+    this.world.bootlesBar.setPercentage(this.bottlesPercentage);
+  }
+
+  /**
+   * Buys a bottle and adds it to the character's collection of bottles, and updates the percentage of bottles
+   * that the character has collected so far.
    */
   buyBottle() {
     this.lastBuyingBottle = new Date().getTime();
     let coinForPayment = this.coins[this.coins.length - 1];
-    if (coinForPayment != undefined && this.bottles.length < this.world.level.amountOfAllBottles) {
-      sounds.character.noCoinNoBottle.pause();
-      sounds.character.noCoinNoBottle.currentTime = 0;
-      sounds.coin.buyBottle.currentTime = 0;
-      sounds.coin.buyBottle.play();
-
-      this.coins.pop();
-      this.updateCoinsPercentage();
-      this.world.coinsBar.setPercentage(this.coinsPercentage);
-
-      let x = this.x;
-      let y = this.y;
-      let boughtBottle = new Bottle(undefined, x, y);
-      this.bottles.push(boughtBottle);
-
-      this.updateBottlesPercentage();
-      this.world.bootlesBar.setPercentage(this.bottlesPercentage);
-    } else sounds.character.noCoinNoBottle.play();
+    if (coinForPayment != undefined && this.bottles.length < this.world.level.amountOfAllBottles)
+      this.buyBottleIfCoinAvailable();
+    else sounds.character.noCoinNoBottle.play();
   }
 
   /**
-   * Buys health for the player and updates the percentage of health that the player has left.
+   * Buys a bottle if a coin is available, removing a coin from the character's collection, updating the coins
+   * percentage, and adding the bought bottle to the character's collection of bottles.
+   */
+  buyBottleIfCoinAvailable() {
+    this.playSoundWhileThrowingOrBuying(sounds.coin.buyBottle);
+    this.coins.pop();
+    this.updateCoinsPercentage();
+    this.world.coinsBar.setPercentage(this.coinsPercentage);
+    let x = this.x;
+    let y = this.y;
+    let boughtBottle = new Bottle(undefined, x, y);
+    this.bottles.push(boughtBottle);
+    this.updateBottlesPercentage();
+    this.world.bootlesBar.setPercentage(this.bottlesPercentage);
+  }
+
+  /**
+   * Buys health for the character and updates the percentage of health that the character has left.
    */
   buyHealth() {
     this.lastBuyingHealth = new Date().getTime();
     let coinForPayment = this.coins[this.coins.length - 1];
-    if (coinForPayment != undefined && this.health < this.healthInitial) {
-      sounds.character.noCoinNoBottle.pause();
-      sounds.character.noCoinNoBottle.currentTime = 0;
-      sounds.coin.buyHealth.currentTime = 0;
-      sounds.coin.buyHealth.play();
-      this.coins.pop();
-      this.updateCoinsPercentage();
-      this.world.coinsBar.setPercentage(this.coinsPercentage);
-      this.health++;
-      this.updateHealthPercentage();
-      this.world.healthBar.setPercentage(this.healthPercentage);
-    } else sounds.character.noCoinNoBottle.play();
+    if (coinForPayment != undefined && this.health < this.healthInitial) this.buyHealthIfCoinAvailable();
+    else sounds.character.noCoinNoBottle.play();
   }
 
   /**
-   * Handler function for the interval that checks whether the player is in any state that updates
-   * the last time stamp of the player's last movement, and updates the player's image set and current image accordingly.
+   * Buys health for the character if a coin is available, removing a coin from the character's collection,
+   * updating the coins percentage, and increasing the character's health.
+   */
+  buyHealthIfCoinAvailable() {
+    this.playSoundWhileThrowingOrBuying(sounds.coin.buyHealth);
+    this.coins.pop();
+    this.updateCoinsPercentage();
+    this.world.coinsBar.setPercentage(this.coinsPercentage);
+    this.health++;
+    this.updateHealthPercentage();
+    this.world.healthBar.setPercentage(this.healthPercentage);
+  }
+
+  /**
+   * Plays the given sound while throwing / buying bottle or health..
+   * @param {Object} sound - The sound object to be played.
+   */
+  playSoundWhileThrowingOrBuying(sound) {
+    sounds.character.noCoinNoBottle.pause();
+    sounds.character.noCoinNoBottle.currentTime = 0;
+    sound.currentTime = 0;
+    sound.play();
+  }
+
+  /**
+   * Handler function for the interval that checks whether the character is in any state that updates
+   * the last time stamp of the character's last movement, and updates the character's image set and current image accordingly.
    * @override
    */
   checkSetImagesIntervalHandler() {
@@ -478,8 +496,8 @@ class Character extends MovableObject {
   }
 
   /**
-   * Handler function for the interval that checks whether the player is in any state that updates
-   * the last time stamp of the player's last movement, and updates the player's image set and current image accordingly.
+   * Handler function for the interval that checks whether the character is in any state that updates
+   * the last time stamp of the character's last movement, and updates the character's image set and current image accordingly.
    */
   isInAnyStateUpdatingLastTimeStempOfLastMovement() {
     if (this.isHurt()) {
@@ -500,7 +518,7 @@ class Character extends MovableObject {
   }
 
   /**
-   * Updates the time stamp of the player's last movement to the current time stamp.
+   * Updates the time stamp of the character's last movement to the current time stamp.
    * @returns {boolean} - Always returns true.
    */
   updateTimeStempOfLastMovement() {

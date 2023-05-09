@@ -9,7 +9,7 @@
  * @returns {Promise<void>} A promise that resolves once all images and sounds have been preloaded.
  */
 async function preloadImagesSounds(imagePaths, soundsObj) {
-  return await Promise.all([createLoadRenderSaveImages(imagePaths) /* , createLoadSaveSounds(soundsObj) */]);
+  return await Promise.all([createLoadRenderSaveImages(imagePaths) , createLoadSaveSounds(soundsObj)]);
 }
 //#endregion preloadImagesSounds =================================================================================
 

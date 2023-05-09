@@ -1,4 +1,3 @@
-// TODO: Buy Health, Bottle etc Funktionen bei Character verkürzen auf 14, 15 Zeilen
 // TODO: Alert für Preload start und Preload end löschen
 // TODO: Try catch in init in game js aktivieren
 // TODO: Methoden, Funktionen welche checkIf_check..._ solche Singatur haben, sollen in Camelcase geschrieben werden.
