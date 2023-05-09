@@ -30,7 +30,7 @@
  * (for example, 'game', 'bottle', 'coin', 'chicken', 'character', 'endboss') contains its own set
  * of sounds, each represented by a `Sound` object with a `path` and `volumeInitial` property.
  */
-sounds = {
+let sounds = {
   game: {
     bgMusic: {
       path: 'audio/bgMusic.mp3',

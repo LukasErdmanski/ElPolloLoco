@@ -133,11 +133,12 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 32px;
-  width: 32px;
+  height: 64px;
+  width: 64px;
   background-color: #ffc800;
   font-size: 24px;
   transition: all 225ms ease-in-out;
+  padding: 8px;
 }
 
 button:hover {
@@ -151,6 +152,8 @@ button:hover {
 
 button img {
   width: 100%;
+  height: 100%;
+  object-fit: scale-down;
 }
 
 .clickBtn {
@@ -215,6 +218,11 @@ canvas {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+#gameInfo {
+  font-size: 18px;
+  overflow: auto;
 }
 
 .controlInfoButtons {

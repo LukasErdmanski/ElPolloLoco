@@ -9,7 +9,7 @@
  * @returns {Promise<void>} A promise that resolves once all images and sounds have been preloaded.
  */
 async function preloadImagesSounds(imagePaths, soundsObj) {
-  return await Promise.all([createLoadRenderSaveImages(imagePaths), createLoadSaveSounds(soundsObj)]);
+  return await Promise.all([createLoadRenderSaveImages(imagePaths) /* , createLoadSaveSounds(soundsObj) */]);
 }
 //#endregion preloadImagesSounds =================================================================================
 
@@ -139,6 +139,13 @@ function setTempCanvasWithContext(maxWidth, maxHeight, tempCanvasesContainer, fr
  */
 function createLoadImg(imgPath) {
   return new Promise((resolve, reject) => {
+    // ChatGPT Solution for Iphone preloading issue.
+    /*     const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = imgPath; */
+
+    // My solution
     const img = new Image();
     img.src = imgPath;
     const checkIfLoaded = () => {
