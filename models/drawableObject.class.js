@@ -105,7 +105,7 @@ class DrawableObject {
    * Draws a frame around the object reduced by its offset distances on the given canvas context.
    * @param {object} ctx - The canvas context where the object will be drawn.
    */
-  draw_Offset_Frame(ctx) {
+  drawOffsetFrame(ctx) {
     ctx.beginPath();
     ctx.lineWidth = '1';
     ctx.strokeStyle = 'yellow';

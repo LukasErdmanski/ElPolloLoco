@@ -74,7 +74,7 @@ class ChickenSmall extends MovableObject {
    * Sets the starting x position and speed of the small chicken.
    */
   setStartXAndSpeedX() {
-    this.x = this.level.end_x * 0.15 + Math.random() * this.level.end_x * 0.5;
+    this.x = this.level.endX * 0.15 + Math.random() * this.level.endX * 0.5;
     this.speedX = 0.5 + Math.random() * 0.25;
   }
 
@@ -83,7 +83,7 @@ class ChickenSmall extends MovableObject {
    * @override
    */
   checkMakeMovementIntervalHandler() {
-    if (this.isDead()) this.deadAnimation_Part_MakeMovement_IsOver = true;
+    if (this.isDead()) this.deadAnimationPartMakeMovementIsOver = true;
     else if (this.hasDesireToJump() && !this.isAboveGround()) this.jump();
     else this.moveInXDirection();
   }
@@ -116,7 +116,7 @@ class ChickenSmall extends MovableObject {
   checkSetImagesIntervalHandler() {
     if (this.isDead()) {
       this.changeImagesSetAndCurrentImg(this.IMG_PATH_DEAD);
-      this.deadAnimation_Part_SetLastImg_IsOver = true;
+      this.deadAnimationPartSetLastImgIsOver = true;
     } else if (this.isHurt()) {
       this.changeImagesSetAndCurrentImg(this.IMG_PATH_DEAD);
     } else {

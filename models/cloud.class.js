@@ -42,7 +42,7 @@ class Cloud extends MovableObject {
    * @override
    */
   setStartX() {
-    this.x = 0 + Math.random() * this.level.end_x;
+    this.x = 0 + Math.random() * this.level.endX;
   }
 
   /**
@@ -51,7 +51,7 @@ class Cloud extends MovableObject {
    */
   checkMakeMovementIntervalHandler() {
     if (this.isDead()) {
-      this.deadAnimation_Part_MakeMovement_IsOver = true;
+      this.deadAnimationPartMakeMovementIsOver = true;
     } else if (this.isBeyondLevelStartX()) {
       this.moveToLevelEndX();
     } else {
@@ -64,13 +64,13 @@ class Cloud extends MovableObject {
    * @returns {boolean} True if the cloud object is beyond the start position of the level, otherwise false.
    */
   isBeyondLevelStartX() {
-    return this.x + this.width <= this.level.start_x;
+    return this.x + this.width <= this.level.startX;
   }
 
   /**
    * Moves the cloud object to the end position of the level.
    */
   moveToLevelEndX() {
-    this.x = this.level.end_x;
+    this.x = this.level.endX;
   }
 }

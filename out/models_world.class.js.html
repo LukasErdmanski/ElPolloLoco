@@ -59,28 +59,28 @@ class World {
    * Amount by which the image is moved during the character run.
    * @type {number}
    */
-  camera_x_shift;
+  cameraXShift;
 
   /**
-   * Minimal value of camera_x.
+   * Minimal value of cameraX.
    * @type {number}
    */
-  camera_x_min;
+  cameraXMin;
 
   /**
-   * Current value of camera_x.
+   * Current value of cameraX.
    * Amount by which the image is moved during the character run.
    * --> The x-coordinate by which the canvas context will be translated bevor / after adding the objects to itself.
    * "The x-coordinate where the canvas BEGINS / ENDS to draw (place) objetcs."
    * @type {number}
    */
-  camera_x;
+  cameraX;
 
   /**
-   * Maximal value of camera_x.
+   * Maximal value of cameraX.
    * @type {number}
    */
-  camera_x_max;
+  cameraXMax;
 
   /**
    * Current degrees by which the image has already been rotated in the canvas.
@@ -151,14 +151,14 @@ class World {
   }
 
   /**
-   * Sets the camera_x related properties based on the current level and character position.
+   * Sets the cameraX related properties based on the current level and character position.
    */
   setCameraX() {
-    this.camera_x_shift = 0;
-    this.camera_x_shift = 150;
-    this.camera_x_min = this.level.start_x;
-    this.camera_x = -this.character.x + this.camera_x_shift;
-    this.camera_x_max = this.level.end_x - this.canvas.width;
+    this.cameraXShift = 0;
+    this.cameraXShift = 150;
+    this.cameraXMin = this.level.startX;
+    this.cameraX = -this.character.x + this.cameraXShift;
+    this.cameraXMax = this.level.endX - this.canvas.width;
   }
 
   /**
@@ -263,23 +263,23 @@ class World {
 
   /**
    * Adds all objects to the map (canvas) by first clearing the canvas and then translating
-   * the canvas context according to camera_x before adding fixed and movable objects.
+   * the canvas context according to cameraX before adding fixed and movable objects.
    */
   addAllObjectToMap() {
     // Clears canvas before new drawing.
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    // Move the whole canvas context by camera_x amount to left before placing the objects.
-    this.ctx.translate(this.camera_x, 0);
+    // Move the whole canvas context by cameraX amount to left before placing the objects.
+    this.ctx.translate(this.cameraX, 0);
     this.addAllFixedObjetsToMap();
     this.addAllMovableObjetsToMap();
-    // Move the whole canvas context back to the right by camera_x amount after placing the objects.
-    this.ctx.translate(-this.camera_x, 0);
+    // Move the whole canvas context back to the right by cameraX amount after placing the objects.
+    this.ctx.translate(-this.cameraX, 0);
   }
 
   /**
    * Adds all fixed objects to the map (canvas) by first translating the canvas context back
-   * by camera_x, then adding objects like healthBar, bootlesBar, coinsBar, and endbossBar,
-   * and finally translating the canvas context forward by camera_x.
+   * by cameraX, then adding objects like healthBar, bootlesBar, coinsBar, and endbossBar,
+   * and finally translating the canvas context forward by cameraX.
    */
   addAllFixedObjetsToMap() {
     // The objects are layered on top of each other on the canvas in this order.
@@ -287,18 +287,18 @@ class World {
     this.addObjectsToMap(this.level.clouds);
     /**
      * In order for the status bars (as a non-movable / fixed object) to be displayed parallel to the current
-     * position of the character, the canvas context must first be moved by camera_x before it is displayed.
-     * Then the canvas context has to be moved back by camera_x in order to set the movable objects correctly, moved
+     * position of the character, the canvas context must first be moved by cameraX before it is displayed.
+     * Then the canvas context has to be moved back by cameraX in order to set the movable objects correctly, moved
      * according to the character's run.
      */
-    this.ctx.translate(-this.camera_x, 0); // Back
+    this.ctx.translate(-this.cameraX, 0); // Back
     //#region ================== Space for fixed objects (between translating operations) ===================
     this.addToMap(this.healthBar);
     this.addToMap(this.bootlesBar);
     this.addToMap(this.coinsBar);
     this.addToMap(this.endbossBar);
     //#endregion =============== Space for fixed objects (between translating operations) ===================
-    this.ctx.translate(this.camera_x, 0); // Forwards
+    this.ctx.translate(this.cameraX, 0); // Forwards
   }
 
   /**
@@ -341,7 +341,7 @@ class World {
       // Draw rectangle around object to analyse collisions.
       if (inclImgFrame) mo.drawFrame(this.ctx);
       // Draw rectangle around object reduced by its offset distances to analyse collisions.
-      if (inclImgOffsetFrame) mo.draw_Offset_Frame(this.ctx);
+      if (inclImgOffsetFrame) mo.drawOffsetFrame(this.ctx);
       // Check if the image has beed already mirroed (equal to the check if the movable object has other direction). If yes, flip the movable object image back.
       if (mo.otherDirection) this.flipImageBack(mo);
       // Check if the movable object can be rotated. If yes, rotate the movable object image back.
@@ -440,9 +440,9 @@ class World {
    */
   updateCameraX() {
     if (this.character) {
-      if (this.character.x >= this.camera_x_max + this.camera_x_shift) this.camera_x = -this.camera_x_max;
-      else if (this.character.x &lt;= this.camera_x_min + this.camera_x_shift) this.camera_x = -this.camera_x_min;
-      else this.camera_x = -this.character.x + this.camera_x_shift;
+      if (this.character.x >= this.cameraXMax + this.cameraXShift) this.cameraX = -this.cameraXMax;
+      else if (this.character.x &lt;= this.cameraXMin + this.cameraXShift) this.cameraX = -this.cameraXMin;
+      else this.cameraX = -this.character.x + this.cameraXShift;
     }
   }
 
@@ -493,15 +493,15 @@ class World {
    * such as enemies, coins, and bottles.
    */
   checkCollisions() {
-    this.checkIf_Character_IsColliding(
+    this.checkIfCharacterIsColliding(
       'enemies',
       'isCollidingOrPressingInJumpFallingDown',
       'healthBar',
       'healthPercentage'
     );
-    this.checkIf_Character_IsColliding('coins', 'takeCoin', 'coinsBar', 'coinsPercentage');
-    this.checkIf_Character_IsColliding('bottlesInGround', 'takeBottle', 'bootlesBar', 'bottlesPercentage');
-    this.checkIf_All_BottlesInLFlight_IsColliding();
+    this.checkIfCharacterIsColliding('coins', 'takeCoin', 'coinsBar', 'coinsPercentage');
+    this.checkIfCharacterIsColliding('bottlesInGround', 'takeBottle', 'bootlesBar', 'bottlesPercentage');
+    this.checkIfAllBottlesInFlightAreColliding();
   }
 
   /**
@@ -512,7 +512,7 @@ class World {
    * @param {string} statusBarToSet - Property name of the status bar to set the percentage.
    * @param {string} characterPropertyToSet - Property name of the character to set the percentage.
    */
-  checkIf_Character_IsColliding(levelArrayProperty, fnToExeAfterCollision, statusBarToSet, characterPropertyToSet) {
+  checkIfCharacterIsColliding(levelArrayProperty, fnToExeAfterCollision, statusBarToSet, characterPropertyToSet) {
     let array = this.level[levelArrayProperty];
     array.forEach((element) => {
       if (this.character.isColliding(element)) {
@@ -526,7 +526,7 @@ class World {
   /**
    * Checks if all bottles in flight are colliding with enemies in the level.
    */
-  checkIf_All_BottlesInLFlight_IsColliding() {
+  checkIfAllBottlesInFlightAreColliding() {
     let arrayBottlesInFlight = this.level.bottlesInFlight;
     let arrayLevelEnemies = this.level.enemies;
     for (let i = 0; i &lt; arrayBottlesInFlight.length; i++) {
@@ -534,7 +534,7 @@ class World {
       if (!bottle.isDead()) {
         for (let j = 0; j &lt; arrayLevelEnemies.length; j++) {
           const collisionEnemy = arrayLevelEnemies[j];
-          this.checkIf_Bottle_InLFlight_IsColliding(bottle, collisionEnemy);
+          this.checkIfBottleInFlightIsColliding(bottle, collisionEnemy);
         }
       }
     }
@@ -547,7 +547,7 @@ class World {
    * @param {object} bottle - The bottle object in flight.
    * @param {object} collisionEnemy - The enemy object to check for collision.
    */
-  checkIf_Bottle_InLFlight_IsColliding(bottle, collisionEnemy) {
+  checkIfBottleInFlightIsColliding(bottle, collisionEnemy) {
     if (bottle.isColliding(collisionEnemy)) {
       bottle.hit();
       if (!collisionEnemy.isHurt()) collisionEnemy.hit();
@@ -562,17 +562,17 @@ class World {
    * can be removed and removes them if necessary.
    */
   checkRemovals() {
-    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.enemies);
-    this.checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(this.level.bottlesInFlight);
-    this.checkIf_Character_CanBeRemoved_And_RemoveHim();
-    this.checkIf_Endboss_CanBeRemoved_And_RemoveHim();
+    this.checkIfObjectsFromLevelCanBeRemovedAndRemoveThem(this.level.enemies);
+    this.checkIfObjectsFromLevelCanBeRemovedAndRemoveThem(this.level.bottlesInFlight);
+    this.checkIfCharacterCanBeRemovedAndRemoveHim();
+    this.checkIfEndbossCanBeRemovedAndRemoveHim();
   }
 
   /**
    * Checks if objects in the given array can be removed and removes them if necessary.
    * @param {Array} levelObjectsArray - The array of objects to check for removal.
    */
-  checkIf_ObjectsFromLevel_CanBeRemoved_And_RemoveThem(levelObjectsArray) {
+  checkIfObjectsFromLevelCanBeRemovedAndRemoveThem(levelObjectsArray) {
     levelObjectsArray.forEach((obj) => {
       if (obj.canBeRemoved) this.removeFromLevel(obj, levelObjectsArray);
     });
@@ -581,14 +581,14 @@ class World {
   /**
    * Checks if the character can be removed from the game and removes it if necessary.
    */
-  checkIf_Character_CanBeRemoved_And_RemoveHim() {
+  checkIfCharacterCanBeRemovedAndRemoveHim() {
     if (this.character.canBeRemoved) this.removeCharacter();
   }
 
   /**
    * Checks if the endboss can be removed from the game and removes it if necessary.
    */
-  checkIf_Endboss_CanBeRemoved_And_RemoveHim() {
+  checkIfEndbossCanBeRemovedAndRemoveHim() {
     if (this.endboss.canBeRemoved) this.removeEndboss();
   }
 
@@ -635,7 +635,8 @@ class World {
   stopDrawing() {
     this.drawingForbidden = true;
   }
-}</code></pre>
+}
+</code></pre>
         </article>
     </section>
 
@@ -651,7 +652,7 @@ class World {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat May 06 2023 11:56:58 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue May 09 2023 08:46:30 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

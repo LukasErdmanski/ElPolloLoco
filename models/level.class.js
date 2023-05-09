@@ -61,13 +61,13 @@ class Level {
    * The start x-coordinate of the world level.
    * @type {number}
    */
-  start_x;
+  startX;
 
   /**
    * The end x-coordinate of the world level.
    * @type {number}
    */
-  end_x;
+  endX;
 
   /**
    * Creates a new instance of Level.
@@ -89,8 +89,8 @@ class Level {
     this.bottlesInFlight = bottlesInFlight;
     this.amountOfAllCoins = this.coins.length;
     this.amountOfAllBottles = this.bottlesInGround.length;
-    this.start_x = this.getLevelStartX();
-    this.end_x = this.getLevelEndX();
+    this.startX = this.getLevelStartX();
+    this.endX = this.getLevelEndX();
     this.setLevel();
   }
 
@@ -100,8 +100,8 @@ class Level {
    * @returns {number} The start x-coordinate of the level.
    */
   getLevelStartX() {
-    let level_start_x = this.backgroundObjects[0].x;
-    return level_start_x;
+    let levelStartX = this.backgroundObjects[0].x;
+    return levelStartX;
   }
 
   /**
@@ -111,9 +111,9 @@ class Level {
    */
   getLevelEndX() {
     let lastBGOInLevelArray = this.backgroundObjects[this.backgroundObjects.length - 1];
-    let lastBG_start_x = lastBGOInLevelArray.x;
-    let end_x = lastBG_start_x + lastBGOInLevelArray.width;
-    return end_x;
+    let lastBGStartX = lastBGOInLevelArray.x;
+    let endX = lastBGStartX + lastBGOInLevelArray.width;
+    return endX;
   }
 
   /**

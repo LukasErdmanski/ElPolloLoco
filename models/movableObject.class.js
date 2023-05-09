@@ -76,25 +76,25 @@ class MovableObject extends DrawableObject {
    * The ID for the animation interval part related to the checkMakeMovementIntervalHandler() function.
    * @type {number}
    */
-  animationInterval_Part_Check_MakeMovement_Id;
+  animationIntervalPartCheckMakeMovementId;
 
   /**
    * The ID for the animation interval part related to the checkSetImagesIntervalHandler() function.
    * @type {number}
    */
-  animationInverval_Part_ChecK_ChangingImg_Id;
+  animationInvervalPartCheckChangingImgId;
 
   /**
    * Indicates if the animation interval part related to make movement is over.
    * @type {boolean}
    */
-  animationInterval_Part_MakeMovement_IsOver = false;
+  animationIntervalPartMakeMovementIsOver = false;
 
   /**
    * Indicates if the animation interval part related to changing images is over.
    * @type {boolean}
    */
-  animationInverval_Part_ChangingImg_IsOver = false;
+  animationInvervalPartChangingImgIsOver = false;
 
   /**
    * Indicates if the movement as dead has started.
@@ -106,13 +106,13 @@ class MovableObject extends DrawableObject {
    * Indicates if the dead animation part related to setting the last image is over.
    * @type {boolean}
    */
-  deadAnimation_Part_SetLastImg_IsOver = false;
+  deadAnimationPartSetLastImgIsOver = false;
 
   /**
    * Indicates if the dead animation part related to making movement is over.
    * @type {boolean}
    */
-  deadAnimation_Part_MakeMovement_IsOver = false;
+  deadAnimationPartMakeMovementIsOver = false;
 
   /**
    * Indicates if the object can be removed from the game world.
@@ -246,7 +246,7 @@ class MovableObject extends DrawableObject {
    * Subclasses can provide their own implementation of this method if they do
    * not want the default implementation provided by this class.
    * This is one of two possible partial animation interval handler executed in {@link MovableObject#animate} method
-   * by this method {@link MovableObject#checkIf_Check_MakeMovement_Invervall_Exist_AndSetIt} .
+   * by this method {@link MovableObject#checkIfCheckMakeMovementInvervallExistAndSetIt} .
    * @abstract
    */
   checkMakeMovementIntervalHandler() {
@@ -258,7 +258,7 @@ class MovableObject extends DrawableObject {
    * Subclasses can provide their own implementation of this method if they do
    * not want the default implementation provided by this class.
    * This is one of two possible partial animation interval handler executed in {@link MovableObject#animate} method
-   * by this method {@link MovableObject#checkIf_Check_SetImages_Interval_Exist_AndSetIt} .
+   * by this method {@link MovableObject#checkIfCheckSetImagesIntervalExistAndSetIt} .
    * @abstract
    */
   checkSetImagesIntervalHandler() {
@@ -276,8 +276,8 @@ class MovableObject extends DrawableObject {
     // Calculate time intervals for movement and changing images
     let movementTimeout = 1000 / movementFrameRate;
     let imgChangeTimeout = 1000 / imgChangeFrameRate;
-    this.checkIf_Check_MakeMovement_Invervall_Exist_AndSetIt(movementTimeout);
-    this.checkIf_Check_SetImages_Interval_Exist_AndSetIt(imgChangeTimeout);
+    this.checkIfCheckMakeMovementInvervallExistAndSetIt(movementTimeout);
+    this.checkIfCheckSetImagesIntervalExistAndSetIt(imgChangeTimeout);
     this.checkInLoopIfBothAnimationPartInvervalAreOver();
   }
 
@@ -285,20 +285,20 @@ class MovableObject extends DrawableObject {
    * Checks if the `checkMakeMovementIntervalHandler` method is implemented in the subclass and sets the movement interval accordingly.
    * @param {number} movementTimeout - The movement timeout calculated based on the movement frame rate.
    */
-  checkIf_Check_MakeMovement_Invervall_Exist_AndSetIt(movementTimeout) {
+  checkIfCheckMakeMovementInvervallExistAndSetIt(movementTimeout) {
     // Check if `checkMakeMovementIntervalHandler` is implemented in the subclass before setting interval.
-    if (this.is_Check_MakeMovement_Interval_Handler_Implemented()) {
-      // Yes, set animation part interval and save its id to 'animationInterval_Part_MakeMovement_Id'.
-      this.animationInterval_Part_Check_MakeMovement_Id = setStoppableInterval(() => {
-        // Check if the dead animation part interval = the last possible animation part interval, is not over, for the part 'Check_MakeMovement'.
-        if (!this.deadAnimation_Part_MakeMovement_IsOver) {
-          // Execute the animation part interval handler for part 'Check_MakeMovement'.
+    if (this.isCheckMakeMovementIntervalHandlerImplemented()) {
+      // Yes, set animation part interval and save its id to 'animationIntervalPartCheckMakeMovementId'.
+      this.animationIntervalPartCheckMakeMovementId = setStoppableInterval(() => {
+        // Check if the dead animation part interval = the last possible animation part interval.
+        if (!this.deadAnimationPartMakeMovementIsOver) {
+          // Execute the animation part interval handler.
           this.checkMakeMovementIntervalHandler();
         } else {
-          // Clear the animation part interval for part 'Check_MakeMovement'.
-          clearInterval(this.animationInterval_Part_Check_MakeMovement_Id);
-          // Set the storage that animation part interval for part 'Check_MakeMovement' is over.
-          this.animationInterval_Part_MakeMovement_IsOver = true;
+          // Clear the animation part interval.
+          clearInterval(this.animationIntervalPartCheckMakeMovementId);
+          // Set the storage that animation part interval is over.
+          this.animationIntervalPartMakeMovementIsOver = true;
         }
       }, movementTimeout);
     }
@@ -308,20 +308,20 @@ class MovableObject extends DrawableObject {
    * Checks if the `checkSetImagesIntervalHandler` method is implemented in the subclass and sets the movement interval accordingly.
    * @param {number} movementTimeout - The movement timeout calculated based on the movement frame rate.
    */
-  checkIf_Check_SetImages_Interval_Exist_AndSetIt(imgChangeTimeout) {
+  checkIfCheckSetImagesIntervalExistAndSetIt(imgChangeTimeout) {
     // Check if `checkSetImagesIntervalHandler` is implemented in the subclass before setting interval.
-    if (this.is_Check_SetImages_Interval_Handler_Implemented()) {
-      // Yes, set animation part interval and save its id to 'animationInverval_Part_ChecK_ChangingImg_Id'.
-      this.animationInverval_Part_ChecK_ChangingImg_Id = setStoppableInterval(() => {
-        // Check if the dead animation part interval = the last possible animation part interval, is not over, for the part 'Check_SetImages'.
-        if (!this.deadAnimation_Part_SetLastImg_IsOver) {
-          // Execute the animation part interval handler for part 'Check_SetImages'.
+    if (this.isCheckSetImagesIntervalHandlerImplemented()) {
+      // Yes, set animation part interval and save its id to 'animationInvervalPartCheckChangingImgId'.
+      this.animationInvervalPartCheckChangingImgId = setStoppableInterval(() => {
+        // Check if the dead animation part interval = the last possible animation part interval, is not over.
+        if (!this.deadAnimationPartSetLastImgIsOver) {
+          // Execute the animation part interval handler.
           this.checkSetImagesIntervalHandler();
         } else {
-          // Clear the animation part interval for part 'Check_SetImages'.
-          clearInterval(this.animationInverval_Part_ChecK_ChangingImg_Id);
-          // Set the storage that animation part interval for part 'Check_SetImages' is over.
-          this.animationInverval_Part_ChangingImg_IsOver = true;
+          // Clear the animation part interval.
+          clearInterval(this.animationInvervalPartCheckChangingImgId);
+          // Set the storage that animation part interval is over.
+          this.animationInvervalPartChangingImgIsOver = true;
         }
       }, imgChangeTimeout);
     }
@@ -332,14 +332,14 @@ class MovableObject extends DrawableObject {
    * If both intervals are over, the object can be removed.
    */
   checkInLoopIfBothAnimationPartInvervalAreOver() {
-    if (this.are_BothCheckAnimationPart_Interval_Handler_Implemented()) {
-      let checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id = setStoppableInterval(() => {
+    if (this.areBothCheckAnimationPartIntervalHandlersImplemented()) {
+      let checkInLoopIfBothDeadAnimationPartsAreOverInvervalId = setStoppableInterval(() => {
         if (
-          this.animationInterval_Part_MakeMovement_IsOver == true &&
-          this.animationInverval_Part_ChangingImg_IsOver == true
+          this.animationIntervalPartMakeMovementIsOver == true &&
+          this.animationInvervalPartChangingImgIsOver == true
         ) {
           this.canBeRemoved = true;
-          clearInterval(checkInLoopIfBothDeadAnimationPartsAreOver_Inverval_Id);
+          clearInterval(checkInLoopIfBothDeadAnimationPartsAreOverInvervalId);
         }
       }, 1000 / 60);
     }
@@ -349,7 +349,7 @@ class MovableObject extends DrawableObject {
    * Checks if the checkSetImagesIntervalHandler is implemented in the subclass.
    * @returns {boolean} - True if the checkSetImagesIntervalHandler is implemented, false otherwise.
    */
-  is_Check_MakeMovement_Interval_Handler_Implemented() {
+  isCheckMakeMovementIntervalHandlerImplemented() {
     return typeof this.checkMakeMovementIntervalHandler === 'function';
   }
 
@@ -357,7 +357,7 @@ class MovableObject extends DrawableObject {
    * Checks if the checkSetImagesIntervalHandler is implemented in the subclass.
    * @returns {boolean} - True if the checkSetImagesIntervalHandler is implemented, false otherwise.
    */
-  is_Check_SetImages_Interval_Handler_Implemented() {
+  isCheckSetImagesIntervalHandlerImplemented() {
     return typeof this.checkSetImagesIntervalHandler === 'function';
   }
 
@@ -365,11 +365,8 @@ class MovableObject extends DrawableObject {
    * Checks if both checkMakeMovementIntervalHandler and checkSetImagesIntervalHandler are implemented in the subclass.
    * @returns {boolean} - True if both handlers are implemented, false otherwise.
    */
-  are_BothCheckAnimationPart_Interval_Handler_Implemented() {
-    return (
-      this.is_Check_MakeMovement_Interval_Handler_Implemented() &&
-      this.is_Check_SetImages_Interval_Handler_Implemented()
-    );
+  areBothCheckAnimationPartIntervalHandlersImplemented() {
+    return this.isCheckMakeMovementIntervalHandlerImplemented() && this.isCheckSetImagesIntervalHandlerImplemented();
   }
 
   /**
@@ -378,7 +375,7 @@ class MovableObject extends DrawableObject {
    */
   moveRight() {
     if (this.canTurnAround) {
-      if (this.x + this.width < this.level.end_x) this.x += this.speedX;
+      if (this.x + this.width < this.level.endX) this.x += this.speedX;
       else this.otherDirection = !this.otherDirection;
     } else this.x += this.speedX;
   }
@@ -389,7 +386,7 @@ class MovableObject extends DrawableObject {
    */
   moveLeft() {
     if (this.canTurnAround) {
-      if (this.x > this.level.start_x) this.x -= this.speedX;
+      if (this.x > this.level.startX) this.x -= this.speedX;
       else this.otherDirection = !this.otherDirection;
     } else this.x -= this.speedX;
   }
@@ -408,7 +405,7 @@ class MovableObject extends DrawableObject {
   moveAsDead() {
     if (this.hasMoveAsDeadNotStarted()) this.startMoveAsDead();
     else if (this.isMovingDead()) this.moveInXDirection();
-    else this.deadAnimation_Part_MakeMovement_IsOver = true;
+    else this.deadAnimationPartMakeMovementIsOver = true;
   }
 
   /**
@@ -444,7 +441,7 @@ class MovableObject extends DrawableObject {
    * @returns {string} - Returns 'left' or 'right' depending on the position of the object.
    */
   checkIfOnLeftOrRightCanvasHalf() {
-    let xCanvasCenter = -this.world.camera_x + this.world.canvas.width / 2;
+    let xCanvasCenter = -this.world.cameraX + this.world.canvas.width / 2;
     let xMOCenter = this.x + this.width / 2;
     return xMOCenter > xCanvasCenter;
   }
@@ -503,7 +500,7 @@ class MovableObject extends DrawableObject {
     // Increase the iteration counter by one.
     if (this.currentImgIdx == this.currentImagesSet.length - 1) {
       if (!this.isDead()) this.currentImgIdx = 0;
-      else this.deadAnimation_Part_SetLastImg_IsOver = true;
+      else this.deadAnimationPartSetLastImgIsOver = true;
     } else this.currentImgIdx++;
   }
 }

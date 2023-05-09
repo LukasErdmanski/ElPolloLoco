@@ -172,7 +172,7 @@ class Endboss extends MovableObject {
    * Set the initial x position and speed for the end boss.
    */
   setStartXAndSpeedX() {
-    this.x = this.level.end_x - this.xDistanceEndbossToLevelEnd;
+    this.x = this.level.endX - this.xDistanceEndbossToLevelEnd;
     this.speedX = 4 + Math.random() * 0.25;
     this.speedXInitial = this.speedX;
   }
@@ -396,7 +396,7 @@ class Endboss extends MovableObject {
     let maxXDistanceOfRunBack;
     let canvasWidth = this.world.canvas.width;
     let xCharacter = this.world.character.x;
-    let xCanvasLeftBorder = -this.world.camera_x;
+    let xCanvasLeftBorder = -this.world.cameraX;
     let xDistanceToCanvasLeftBorder = xCharacter - xCanvasLeftBorder;
     let endbossWidth = this.width;
     let xEndboss = this.x;

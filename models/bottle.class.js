@@ -208,10 +208,10 @@ class Bottle extends MovableObject {
   }
 
   /**
-   * Stops the bottle's flight by setting the deadAnimation_Part_MakeMovement_IsOver property to true.
+   * Stops the bottle's flight by setting the deadAnimationPartMakeMovementIsOver property to true.
    */
   stopFlight() {
-    this.deadAnimation_Part_MakeMovement_IsOver = true;
+    this.deadAnimationPartMakeMovementIsOver = true;
   }
 
   /**

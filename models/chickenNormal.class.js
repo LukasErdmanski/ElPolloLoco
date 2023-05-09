@@ -70,7 +70,7 @@ class ChickenNormal extends MovableObject {
    * Sets the starting x position and speed of the chicken.
    */
   setStartXAndSpeedX() {
-    this.x = this.level.end_x * 0.15 + Math.random() * this.level.end_x * 0.5;
+    this.x = this.level.endX * 0.15 + Math.random() * this.level.endX * 0.5;
     // Set random motion speed for instance of chicken class after the initialization.
     this.speedX = 0.15 + Math.random() * 0.25;
   }
@@ -81,7 +81,7 @@ class ChickenNormal extends MovableObject {
    */
   checkMakeMovementIntervalHandler() {
     if (this.isDead()) {
-      this.deadAnimation_Part_MakeMovement_IsOver = true;
+      this.deadAnimationPartMakeMovementIsOver = true;
     } else {
       this.moveInXDirection();
     }
@@ -94,7 +94,7 @@ class ChickenNormal extends MovableObject {
   checkSetImagesIntervalHandler() {
     if (this.isDead()) {
       this.changeImagesSetAndCurrentImg(this.IMG_PATH_DEAD);
-      this.deadAnimation_Part_SetLastImg_IsOver = true;
+      this.deadAnimationPartSetLastImgIsOver = true;
     } else if (this.isHurt()) {
       this.changeImagesSetAndCurrentImg(this.IMG_PATH_DEAD);
     } else {
