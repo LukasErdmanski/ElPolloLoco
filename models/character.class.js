@@ -216,19 +216,11 @@ class Character extends MovableObject {
 
     if (this.canMoveAsDead()) this.moveAsDead();
     else if (this.canStillMove()) {
-      // Check if the character can move right. If yes, the character moves right.
       if (this.canMoveRight()) this.moveRight();
-
-      // Check if the character can move left. If yes, the character moves left.
       if (this.canMoveLeft()) this.moveLeft();
-
-      // Check if the character can jump. If yes, the character jumps.
       if (this.canJump()) this.jump(20), sounds.character.jump.play();
-
       if (this.canThrowBottle()) this.throwBottle();
-
       if (this.canBuyHealth()) this.buyHealth();
-
       if (this.canBuyBottle()) this.buyBottle();
     }
   }
