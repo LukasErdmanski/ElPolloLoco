@@ -18,12 +18,12 @@
 
   <body onload="init()">
     <!-- LOADING SCREEN -->
-    <div id="loadingScreen" class="loadingScreen">
+<!--     <div id="loadingScreen" class="loadingScreen">
       <div class="loaderContent">
         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
         <img class="loadingScreenloaderContentImgZIndex" src="img/11_favicon/favicon.png" alt="logo-icon">
       </div>
-    </div>
+    </div> -->
    
     <!-- GAME -->
     <h1 id="title" class="dNone">El pollo loco</h1>
@@ -45,7 +45,7 @@
          <!-- Buttons layer -->
         <div id="buttonsLayer" class="buttonsLayer">
           <div class="buttonsRowTop">
-            <button onclick="switchGameInfoBox()">i</button>
+            <button id="switchGameInfoBoxBtn" onclick="switchGameInfoBox()">i</button>
             <button onclick="switchControlInfoBox()"><img src="img/10_buttons/gamepad-solid.svg" alt="gamepad-icon"></button>
             <button id="turnOnOfMusicBtn" class="btnHover" onclick="exeFnChangeOnclickAndBtnSrc('turnMusicOff', 'turnMusicOn', this, 'img/10_buttons/bgMusicOff.png')"><img src="img/10_buttons/bgMusicOn.png" alt="bgMusic-icon"></button>
             <button id="turnOnOfSoundsBtn" onclick="exeFnChangeOnclickAndBtnSrc('turnSoundsOff', 'turnSoundsOn', this, 'img/10_buttons/sound-off-icon.svg')"><img src="img/10_buttons/sound-on-icon.svg" alt="bgMusic-icon"></button>

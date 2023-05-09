@@ -58,7 +58,7 @@ async function init() {
     applyOnClickEventListenerToAllButtons();
     applyMouseTouchUpDownEventListeners();
     setScreenBtnsAsPerGameState('start');
-    hideLoadingScreen();
+    // hideLoadingScreen();
   } catch (error) {
     giveInitErrorReloadApp(error);
   }
