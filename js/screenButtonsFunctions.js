@@ -55,7 +55,10 @@ function setScreenAsPerGameState(idOfVisibleScreen) {
  * Hides the loading screen and shows the start screen of the game.
  */
 function hideLoadingScreen() {
-  getElem('loadingScreen').classList.add('translateLoadingScreen');
+  getElem('loadingScreen').classList.add('fadeOutLoadingScreen');
+  setTimeout(() => {
+    getElem('loadingScreen').remove();
+  }, 1340);
 }
 
 /**

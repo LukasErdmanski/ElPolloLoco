@@ -8,19 +8,17 @@
   width: 100%;
   position: absolute;
   border-bottom: 2px solid gray;
-  transform: translateY(0%);
   opacity: 1;
-  transition: all 1.3s ease-in-out;
+  transition: opacity 1.3s ease-in-out;
 }
 
 .loadingScreenloaderContentImgZIndex {
   z-index: 3;
 }
 
-.translateLoadingScreen {
-  border-bottom: 2px solid whitesmoke;
-  transform: translateY(-100%);
-  opacity: 0.8;
+.fadeOutLoadingScreen {
+  opacity: 0;
+  background-color: rgb(255, 253, 144);
 }
 
 /* ----------------------------------

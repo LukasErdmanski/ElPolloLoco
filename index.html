@@ -1,15 +1,18 @@
-<!DOCTYPE html>
 <!-- Disable automatic translating in chrome. -->
 <html lang="en" translate="no">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- the property viewport-fit-cover has to be added to the viewport attributes in order the env(safe.are.inset-*) works -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <!-- Disable automatic translating in chrome. -->
-    <meta name="google" content="notranslate">
-    <link rel="shortcut icon" href="img/11_favicon/favicon.png" type="image/x-icon"> 
+    <meta name="google" content="notranslate" />
+    <link rel="shortcut icon" href="img/11_favicon/favicon.png" type="image/x-icon" />
+    <link rel=" stylesheet" href="css/safeArea.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/loader.css" />
+    <!-- safe-area css -->
+
     <script src="js/soundPaths.js"></script>
     <script src="js/imagePaths.js"></script>
     <script src="js/preload.js"></script>
@@ -17,110 +20,133 @@
   </head>
 
   <body onload="init()">
-    <!-- LOADING SCREEN -->
-<!--     <div id="loadingScreen" class="loadingScreen">
-      <div class="loaderContent">
-        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-        <img class="loadingScreenloaderContentImgZIndex" src="img/11_favicon/favicon.png" alt="logo-icon">
-      </div>
-    </div> -->
+    <!-- <div id="unsafeArea"></div> -->
+
+    <!-- safe area = the area that will not be cut by the search bar in the Safari browser after the loading of the page. 
+        After scrolling up / srolling away the search bar the height of safe area / app window 
+        will automaticly increase to the full height of the device WITHOUT JS / CSS ONLY!!
+        (rules for that in safe-area.css file).  -->
+    <div id="safeArea">
+        <!-- LOADING SCREEN -->
+<!--         <div id="loadingScreen" class="loadingScreen">
+            <div class="loaderContent">
+                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <img class="loadingScreenloaderContentImgZIndex" src="img/11_favicon/favicon.png" alt="logo-icon">
+            </div>
+        </div>  -->
    
-    <!-- GAME -->
-    <h1 id="title" class="dNone">El pollo loco</h1>
-    <div id="rotateDeviceInfo" class="dNone">
-      <span>Please rotate<br>your device.</span>
-      <button><img src="img/10_buttons/restart.png" alt="rotate-icon"></button>
-    </div>
-    <div id="content" class="content dNone">
-      <!-- Canvas -->
-      <canvas id="canvas" width="960" height="480"></canvas>    
-      <!-- Screens & buttons layer container -->
-      <div id="screensButtonsLayerContainer" class="">
-        <!-- Screens layer -->
-        <div id="screensLayer">
-          <img id="startScreen" class="screen" src="img/9_intro_outro_screens/start/startscreen_2.png" alt="startScreen"></img>
-          <img id="lossScreen" class="screen dNone" src="img/9_intro_outro_screens/game_over/you lost.png" alt="lossScreen"></img>
-          <img id="winScreen" class="screen dNone" src="img/9_intro_outro_screens/game_over/game over.png" alt="winScreen"></img>
+        <!-- GAME -->
+        <h1 id="title" class="dNone">El pollo loco</h1>
+
+        <div id="rotateDeviceInfo" class="dNone">
+        <span>Please rotate<br>your device.</span>
+        <button><img src="img/10_buttons/restart.png" alt="rotate-icon"></button>
         </div>
-         <!-- Buttons layer -->
-        <div id="buttonsLayer" class="buttonsLayer">
-          <div class="buttonsRowTop">
-            <button id="switchGameInfoBoxBtn" onclick="switchGameInfoBox()">i</button>
-            <button onclick="switchControlInfoBox()"><img src="img/10_buttons/gamepad-solid.svg" alt="gamepad-icon"></button>
-            <button id="turnOnOfMusicBtn" class="btnHover" onclick="exeFnChangeOnclickAndBtnSrc('turnMusicOff', 'turnMusicOn', this, 'img/10_buttons/bgMusicOff.png')"><img src="img/10_buttons/bgMusicOn.png" alt="bgMusic-icon"></button>
-            <button id="turnOnOfSoundsBtn" onclick="exeFnChangeOnclickAndBtnSrc('turnSoundsOff', 'turnSoundsOn', this, 'img/10_buttons/sound-off-icon.svg')"><img src="img/10_buttons/sound-on-icon.svg" alt="bgMusic-icon"></button>
-            <button id="enterExitFullScreenBtn" onclick="exeFnChangeOnclickAndBtnSrc('enterFullscreen', 'exitFullscreen', this, 'img/10_buttons/fullscreen-exit-128.png')"><img src="img/10_buttons/fullscreen-enter-128.png" alt="expand-icon"></button>
-          </div>
-  
-          <div id="buttonsRowBottom" class="buttonsRowBottom">
-            <div class="buttonsGroup">
-              <button id="LEFT"><img src="img/10_buttons/arrow-left.png" alt="arrow-left-icon"></button>
-              <button id="RIGHT"><img src="img/10_buttons/arrow-right.png" alt="arrow-right-icon"></button>
+        
+        <div id="content" class="content dNone">
+        <!-- Canvas -->
+        <canvas id="canvas" width="960" height="480"></canvas>    
+        <!-- Screens & buttons layer container -->
+        <div id="screensButtonsLayerContainer" class="">
+            <!-- Screens layer -->
+            <div id="screensLayer">
+            <img id="startScreen" class="screen" src="img/9_intro_outro_screens/start/startscreen_2.png" alt="startScreen"></img>
+            <img id="lossScreen" class="screen dNone" src="img/9_intro_outro_screens/game_over/you lost.png" alt="lossScreen"></img>
+            <img id="winScreen" class="screen dNone" src="img/9_intro_outro_screens/game_over/game over.png" alt="winScreen"></img>
+            </div>
+            <!-- Buttons layer -->
+            <div id="buttonsLayer" class="buttonsLayer">
+            <div class="buttonsRowTop">
+                <button id="switchGameInfoBoxBtn" onclick="switchGameInfoBox()">i</button>
+                <button onclick="switchControlInfoBox()"><img src="img/10_buttons/gamepad-solid.svg" alt="gamepad-icon"></button>
+                <button id="turnOnOfMusicBtn" class="btnHover" onclick="exeFnChangeOnclickAndBtnSrc('turnMusicOff', 'turnMusicOn', this, 'img/10_buttons/bgMusicOff.png')"><img src="img/10_buttons/bgMusicOn.png" alt="bgMusic-icon"></button>
+                <button id="turnOnOfSoundsBtn" onclick="exeFnChangeOnclickAndBtnSrc('turnSoundsOff', 'turnSoundsOn', this, 'img/10_buttons/sound-off-icon.svg')"><img src="img/10_buttons/sound-on-icon.svg" alt="bgMusic-icon"></button>
+                <button id="enterExitFullScreenBtn" onclick="exeFnChangeOnclickAndBtnSrc('enterFullscreen', 'exitFullscreen', this, 'img/10_buttons/fullscreen-exit-128.png')"><img src="img/10_buttons/fullscreen-enter-128.png" alt="expand-icon"></button>
             </div>
     
-            <div id="buttonsRowBottomButtonsGroupCenter" class="buttonsGroup">
-              <button id="startBtn" onclick="startGame()"><img src="img/10_buttons/start.png" alt="start-button-icon"></button>
-              <button id="resetBtn" onclick="startGame()" class="dNone"><img src="img/10_buttons/restart.png" alt="reset-button-icon"></button>
-              <button id="pausePlayBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', this, 'img/10_buttons/play-button.png')"><img src="img/10_buttons/pause-128.png" alt="pause-play-button-icon"></button>
+            <div id="buttonsRowBottom" class="buttonsRowBottom">
+                <div class="buttonsGroup">
+                <button id="LEFT"><img src="img/10_buttons/arrow-left.png" alt="arrow-left-icon"></button>
+                <button id="RIGHT"><img src="img/10_buttons/arrow-right.png" alt="arrow-right-icon"></button>
+                </div>
+        
+                <div id="buttonsRowBottomButtonsGroupCenter" class="buttonsGroup">
+                <button id="startBtn" onclick="startGame()"><img src="img/10_buttons/start.png" alt="start-button-icon"></button>
+                <button id="resetBtn" onclick="startGame()" class="dNone"><img src="img/10_buttons/restart.png" alt="reset-button-icon"></button>
+                <button id="pausePlayBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', this, 'img/10_buttons/play-button.png')"><img src="img/10_buttons/pause-128.png" alt="pause-play-button-icon"></button>
+                </div>
+        
+                <div class="buttonsGroup buttonsGroupColumn">
+                <button id="A"><img src="img/10_buttons/heart.png" alt="heart-icon"></button>
+                <button id="S"><img src="img/10_buttons/beer-bottle-128.png" alt="bottle-icon"></button>
+                <button id="D"><img src="img/10_buttons/throw.png" alt="throw-icon"></button>
+                <button id="UP"><img src="img/10_buttons/arrow-up.png" alt="arrow-up-icon"></button>
+                </div>
             </div>
-    
-            <div class="buttonsGroup buttonsGroupColumn">
-              <button id="A"><img src="img/10_buttons/heart.png" alt="heart-icon"></button>
-              <button id="S"><img src="img/10_buttons/beer-bottle-128.png" alt="bottle-icon"></button>
-              <button id="D"><img src="img/10_buttons/throw.png" alt="throw-icon"></button>
-              <button id="UP"><img src="img/10_buttons/arrow-up.png" alt="arrow-up-icon"></button>
             </div>
-          </div>
         </div>
-      </div>
-      <!-- Info box -->
-      <div id="infoBoxContainer" class="dNone">
-        <div id="infoBox">
-          <!-- Game info -->
-          <div id="gameInfo" class="dNone">
-            <h2>El pollo loco</h2>
-            Win the game by surviving and fighting the end boss from the end of the game level.
-            Along the way you can collect coins and bottles. For the collected coins you can either buy some health, if you have already lost some, or more bottles. All enemies met on the way can be fought either with targeted bottle throw. All enemies except endboss can be additionally fought by targeted jump on them as well.
-            The game is over when either the character or endboss survives.
-          </div>
-          <!-- Control info -->
-          <div id="controlInfo" class="dNone">
-            <h2>Control information</h2>
-            <div id="mobileOrTabletButtons" class="controlInfoButtons dNone">
-              <span>
-                <span><button><img src="img/10_buttons/arrow-left.png" alt="arrow-left-icon"></button>Move left</span>
-                <span><button><img src="img/10_buttons/arrow-right.png" alt="arrow-right-icon"></button>Move right</span>
-              </span>
-              <span>
-                <span><button><img src="img/10_buttons/arrow-up.png" alt="arrow-up-icon"></button>Jump</span>
-              <span><button><img src="img/10_buttons/throw.png" alt="throw-icon"></button>Throw bottle</span>
-              </span>
-              <span>
-                <span><button><img src="img/10_buttons/heart.png" alt="coin-icon"></button>Buy health</span>
-                <span><button><img src="img/10_buttons/beer-bottle-128.png" alt="bottle-icon"></button>Buy bottle</span>
-              </span>
+        <!-- Info box -->
+        <div id="infoBoxContainer" class="dNone">
+            <div id="infoBox">
+            <!-- Game info -->
+            <div id="gameInfo" class="dNone">
+                <h2>El pollo loco</h2>
+                Win the game by surviving and fighting the end boss from the end of the game level.
+                Along the way you can collect coins and bottles. For the collected coins you can either buy some health, if you have already lost some, or more bottles. All enemies met on the way can be fought either with targeted bottle throw. All enemies except endboss can be additionally fought by targeted jump on them as well.
+                The game is over when either the character or endboss survives.
             </div>
-            <div id="keyboardButtons" class="controlInfoButtons dNone">
-              <span>
-                <span><button><img src="img/10_buttons/leftKey.png" alt="arrow-left-icon"></button>Move left</span>
-                <span><button><img src="img/10_buttons/rightKey.png" alt="arrow-right-icon"></button>Move right</span>
-              </span>
-              <span>
-                <span><button><img src="img/10_buttons/upKey.png" alt="arrow-up-icon"></button>Jump</span>
-                <span><button><img src="img/10_buttons/dKey.png" alt="throw-icon"></button>Throw bottle</span>
-              </span>
-              <span>
-                <span><button><img src="img/10_buttons/aKey.png" alt="coin-icon"></button>Buy health</span>
-                <span><button><img src="img/10_buttons/sKey.png" alt="bottle-icon"></button>Buy bottle</span>
-              </span>
+            <!-- Control info -->
+            <div id="controlInfo" class="dNone">
+                <h2>Control information</h2>
+                <div id="mobileOrTabletButtons" class="controlInfoButtons dNone">
+                <span>
+                    <span><button><img src="img/10_buttons/arrow-left.png" alt="arrow-left-icon"></button>Move left</span>
+                    <span><button><img src="img/10_buttons/arrow-right.png" alt="arrow-right-icon"></button>Move right</span>
+                </span>
+                <span>
+                    <span><button><img src="img/10_buttons/arrow-up.png" alt="arrow-up-icon"></button>Jump</span>
+                <span><button><img src="img/10_buttons/throw.png" alt="throw-icon"></button>Throw bottle</span>
+                </span>
+                <span>
+                    <span><button><img src="img/10_buttons/heart.png" alt="coin-icon"></button>Buy health</span>
+                    <span><button><img src="img/10_buttons/beer-bottle-128.png" alt="bottle-icon"></button>Buy bottle</span>
+                </span>
+                </div>
+                <div id="keyboardButtons" class="controlInfoButtons dNone">
+                <span>
+                    <span><button><img src="img/10_buttons/leftKey.png" alt="arrow-left-icon"></button>Move left</span>
+                    <span><button><img src="img/10_buttons/rightKey.png" alt="arrow-right-icon"></button>Move right</span>
+                </span>
+                <span>
+                    <span><button><img src="img/10_buttons/upKey.png" alt="arrow-up-icon"></button>Jump</span>
+                    <span><button><img src="img/10_buttons/dKey.png" alt="throw-icon"></button>Throw bottle</span>
+                </span>
+                <span>
+                    <span><button><img src="img/10_buttons/aKey.png" alt="coin-icon"></button>Buy health</span>
+                    <span><button><img src="img/10_buttons/sKey.png" alt="bottle-icon"></button>Buy bottle</span>
+                </span>
+                </div>
             </div>
-          </div>
-          <div class="closeButtonContainer">
-            <button onclick="switchInfoBox()"><img src="img/10_buttons/close.svg" alt="close-window-icon"></button>
-          </div>
+            <div class="closeButtonContainer">
+                <button onclick="switchInfoBox()"><img src="img/10_buttons/close.svg" alt="close-window-icon"></button>
+            </div>
+            </div>
         </div>
-      </div>
+        </div>
     </div>
+
+    <!-- <div id="leftInsetIndicator" class="horizontalInsetIndicator">
+        <div class="midline"></div>
+        <div class="indicatorLabel">env(safe-area-inset-left)</div>
+    </div>
+    <div id="rightInsetIndicator" class="horizontalInsetIndicator">
+        <div class="midline"></div>
+        <div class="indicatorLabel">env(safe-area-inset-right)</div>
+    </div>
+    <div id="bottomInsetIndicator" class="verticalInsetIndicator">
+        <div class="midline"></div>
+        <div class="indicatorLabel">env(safe-area-inset-bottom)</div>
+    </div> -->
 
     <!-- SCRIPTS -->
     <script src="models/drawableObject.class.js"></script>
