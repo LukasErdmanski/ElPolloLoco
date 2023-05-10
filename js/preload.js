@@ -9,7 +9,7 @@
  * @returns {Promise<void>} A promise that resolves once all images and sounds have been preloaded.
  */
 async function preloadImagesSounds(imagePaths, soundsObj) {
-  return await Promise.all([createLoadRenderSaveImages(imagePaths)/* , createLoadSaveSounds(soundsObj) */]);
+  return await Promise.all([createLoadRenderSaveImages(imagePaths), createLoadSaveSounds(soundsObj)]);
 }
 //#endregion preloadImagesSounds =================================================================================
 
@@ -280,6 +280,7 @@ async function createLoadSaveSound(soundsObj, path, i, allPathPositionsInSoundsO
       const [categoryKey, soundKey] = allPathPositionsInSoundsObj[i];
       const volumeInitial = soundsObj[categoryKey][soundKey].volumeInitial;
       const sound = await createLoadSound(path, volumeInitial);
+      // debugger
       soundsObj[categoryKey][soundKey] = sound;
       resolve(sound);
     } catch (error) {
@@ -289,23 +290,33 @@ async function createLoadSaveSound(soundsObj, path, i, allPathPositionsInSoundsO
 }
 
 /**
- * Creates a promise to create, load a sound and checks if it can be played through. The promise resolves when the
- * sound has been created, loaded and can be played through.
+ * Creates a promise that loads an audio file and resolves when it is loaded and can be played through.
  * @function
- * @param {number} volumeInitial - The initial volume of the sound file to be created.
- * @param {string} path - The path of the sound file to be loaded.
- * @returns {Promise} - A promise that resolves when the sound has been created, loaded and can be played through.
+ * @param {string} path - The path of the audio file to be loaded.
+ * @param {number} [volumeInitial=1] - The initial volume of the audio file to be loaded. Defaults to 1.
+ * @returns {Promise} - A promise that resolves when the audio file is loaded and can be played through.
  */
 function createLoadSound(path, volumeInitial) {
   return new Promise((resolve, reject) => {
-    const sound = new Sound(undefined, volumeInitial);
-    sound.src = path;
-    const checkIfLoaded = () => {
-      if (sound.readyState == 4) resolve(sound);
-      else if (sound.error) reject(new Error(`Loading source '${sound.src}' for an Sound object failed.`));
-      else requestAnimationFrame(checkIfLoaded);
-    };
-    checkIfLoaded();
+    const sound = new Sound(path, volumeInitial);
+    checkIfLoaded(sound, resolve, reject);
   });
+}
+
+/**
+ * Creates a looped function that checks if the audio file is loaded and resolves the promise if it is.
+ * @function
+ * @param {Object} sound - The sound object being loaded.
+ * @param {Function} resolve - The function to call if the sound is successfully loaded.
+ * @param {Function} reject - The function to call if there is an error loading the sound.
+ */
+function checkIfLoaded(sound, resolve, reject) {
+  if (sound.state() === 'loaded') {
+    resolve(sound);
+  } else if (sound.state() === 'loaderror') {
+    reject(new Error(`Loading source '${sound.src}' for a Sound object failed.`));
+  } else {
+    requestAnimationFrame(() => checkIfLoaded(sound, resolve, reject));
+  }
 }
 //#endregion createLoadSaveSounds =====================================================================================

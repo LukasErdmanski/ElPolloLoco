@@ -50,15 +50,13 @@ async function init() {
   try {
     canvas = getElem('canvas');
     checkOrientationSetContentElements();
-    // alert("START PRELOAD!")
     let preloadImagesSoundsPromise = preloadImagesSounds(imagePaths, sounds);
     await preloadImagesSoundsPromise;
-    // alert("PRELOADED READY! You can start the game :)!")
     resetLevelAndWorldSingleton();
     applyOnClickEventListenerToAllButtons();
     applyMouseTouchUpDownEventListeners();
     setScreenBtnsAsPerGameState('start');
-    // hideLoadingScreen();
+    hideLoadingScreen();
   } catch (error) {
     giveInitErrorReloadApp(error);
   }

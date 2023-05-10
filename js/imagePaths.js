@@ -2,7 +2,7 @@
  * Paths to all game images which are created, loaded, rendered and saved into 'imageCache' of 'DrawableObejct' class.
  * @type {string[]}
  */
-imagePaths = [
+let imagePaths = [
   // BAR_HEALTH
   'img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png',
   'img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png',

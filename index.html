@@ -12,13 +12,14 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/loader.css" />
     <!-- safe-area css -->
-
+    <!-- safe-area css -->
+    <script src="node_modules/howler/dist/howler.min.js"></script>
+    <script src="models/sound.class.js"></script>
     <script src="js/soundPaths.js"></script>
     <script src="js/imagePaths.js"></script>
     <script src="js/preload.js"></script>
     <title>El pollo loco by Lukas Erdmanski</title>
   </head>
-
   <body onload="init()">
     <!-- <div id="unsafeArea"></div> -->
 
@@ -28,12 +29,12 @@
         (rules for that in safe-area.css file).  -->
     <div id="safeArea">
         <!-- LOADING SCREEN -->
-<!--         <div id="loadingScreen" class="loadingScreen">
+       <div id="loadingScreen" class="loadingScreen">
             <div class="loaderContent">
                 <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 <img class="loadingScreenloaderContentImgZIndex" src="img/11_favicon/favicon.png" alt="logo-icon">
             </div>
-        </div>  -->
+        </div>  
    
         <!-- GAME -->
         <h1 id="title" class="dNone">El pollo loco</h1>
@@ -157,7 +158,6 @@
     <script src="models/cloud.class.js"></script>
     <script src="models/backgroundObject.class.js"></script>
     <script src="models/statusBar.class.js"></script>
-    <script src="models/sound.class.js"></script>
     <script src="models/worldSingleton.class.js"></script>
     <script src="models/world.class.js"></script>
     <script src="models/keyboard.class.js"></script>

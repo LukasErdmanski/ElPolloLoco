@@ -4,10 +4,9 @@
 .loadingScreen {
   z-index: 2;
   background-color: rgb(36, 36, 36);
-  height: 100vh;
-  width: 100%;
+  height: calc(100vh + 100vw);
+  width: calc(100vh + 100vw);
   position: absolute;
-  border-bottom: 2px solid gray;
   opacity: 1;
   transition: opacity 1.3s ease-in-out;
 }

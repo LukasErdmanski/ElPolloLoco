@@ -221,7 +221,7 @@ class MovableObject extends DrawableObject {
    * @param {string} soundType - The sound type based on the instance of the movable object.
    */
   playHurtSoundWhileHitting(soundType) {
-    sounds[soundType].hurt.currentTime = 0;
+    sounds[soundType].hurt.stop();
     sounds[soundType].hurt.play();
   }
 
@@ -230,7 +230,7 @@ class MovableObject extends DrawableObject {
    * @param {string} soundType - The sound type based on the instance of the movable object.
    */
   playDeadSoundWhileHitting(soundType) {
-    sounds[soundType].dead.currentTime = 0;
+    sounds[soundType].dead.stop();
     sounds[soundType].dead.play();
   }
 

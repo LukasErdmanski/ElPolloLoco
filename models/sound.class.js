@@ -1,8 +1,8 @@
 /**
- * Represents a sound object, extends the native Audio class.
- * @extends Audio
+ * Represents a sound object, extends the Howl class.
+ * @extends Howl
  */
-class Sound extends Audio {
+class Sound extends Howl {
   /**
    * The array of all sound instances created in the game.
    * @type {Sound[]}
@@ -22,51 +22,26 @@ class Sound extends Audio {
    * @param {number} volume - The initial volume of the audio.
    */
   constructor(src, volume) {
-    super(src);
-    this.setInitialSoundSettings(volume);
+    super(Sound.setInitialSoundOptions(src, volume));
     Sound.allSoundInstances.push(this);
   }
 
   /**
-   * Sets the initial sound settings such as volume, mute, autoplay and loop.
+   * Sets the initial sound options such as preload src, volume, mute, autoplay and loop.
+   * Sats the initial sound volume.
+   * @param {string} src - The audio source URL.
    * @param {number} volume - The initial volume of the audio.
+   * @static
    */
-  setInitialSoundSettings(volume) {
-    if (volume) {
-      this.volumeInitial = volume;
-      this.volume = this.volumeInitial;
-    }
-    this.muted = false;
-    this.autoplay = false;
-    this.loop = false;
-  }
-
-  /**
-   * Plays the audio if not already playing.
-   */
-  play() {
-    if (Sound.allSoundInstancesMuted) {
-      this.volume = 0;
-      this.muted = true;
-    } else {
-      this.volume = this.volumeInitial;
-      this.muted = false;
-    }
-    if (!this.isPlaying()) super.play();
-  }
-
-  /**
-   * Pauses the audio if playing.
-   */
-  pause() {
-    if (this.isPlaying()) super.pause();
-  }
-
-  /**
-   * Checks if the audio is currently playing.
-   * @returns {boolean} - True if the audio is playing, false otherwise.
-   */
-  isPlaying() {
-    return this.currentTime > 0 && !this.paused && !this.ended && this.readyState > this.HAVE_CURRENT_DATA;
+  static setInitialSoundOptions(src, volume) {
+    this.volumeInitial = volume;
+    return {
+      preload: true,
+      src: [src],
+      volume: this.volumeInitial,
+      mute: Sound.allSoundInstancesMuted,
+      loop: false,
+      autoplay: false,
+    };
   }
 }

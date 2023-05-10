@@ -350,7 +350,7 @@ class Character extends MovableObject {
    * @param {Coin} coinObj - The coin object to take.
    */
   takeCoin(coinObj) {
-    sounds.coin.collect.currentTime = 0;
+    sounds.coin.collect.stop();
     sounds.coin.collect.play();
     this.world.level.coins = this.world.level.coins.filter((filteredElem) => filteredElem !== coinObj);
     this.coins.push(coinObj);
@@ -370,7 +370,7 @@ class Character extends MovableObject {
    * @param {Object} bottleObj - The bottle object to add to the character's collection.
    */
   takeBottle(bottleObj) {
-    sounds.bottle.collect.currentTime = 0;
+    sounds.bottle.collect.stop();
     sounds.bottle.collect.play();
     this.world.level.bottlesInGround = this.world.level.bottlesInGround.filter(
       (filteredElem) => filteredElem !== bottleObj
@@ -475,9 +475,8 @@ class Character extends MovableObject {
    * @param {Object} sound - The sound object to be played.
    */
   playSoundWhileThrowingOrBuying(sound) {
-    sounds.character.noCoinNoBottle.pause();
-    sounds.character.noCoinNoBottle.currentTime = 0;
-    sound.currentTime = 0;
+    sounds.character.noCoinNoBottle.stop();
+    sound.stop();
     sound.play();
   }
 
