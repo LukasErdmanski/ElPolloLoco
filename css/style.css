@@ -162,7 +162,6 @@ h1 {
 }
 
 button {
-  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.4));
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -258,10 +257,10 @@ canvas {
   border: 2px solid black;
   border-radius: 16px;
   padding: 16px;
-  width: 300px;
+  width: 420px;
   height: 300px;
-  max-width: 95vh;
   max-height: 95vh;
+  max-width: 134vh;
   background-color: rgb(245 222 201);
   display: flex;
   flex-direction: column;
@@ -278,11 +277,11 @@ canvas {
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow: auto;
 }
 
 #gameInfo {
   font-size: 18px;
-  overflow: auto;
 }
 
 .controlInfoButtons {
@@ -346,6 +345,11 @@ canvas {
 
   #screensButtonsLayerContainer {
     border-radius: unset;
+  }
+
+  #infoBoxContainer button {
+    height: 38px;
+    width: 38px;
   }
 }
 
