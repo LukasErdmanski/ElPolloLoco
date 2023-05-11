@@ -124,7 +124,9 @@ function removeBtnHighlight(element) {
  * Applies the event listeners for click event to all buttons.
  */
 function applyOnClickEventListenerToAllButtons() {
-  const ALL_BUTTONS = getElem('buttonsLayer').getElementsByTagName('button');
+  let ALL_BUTTONS = Array.from(getElem('buttonsLayer').getElementsByTagName('button'));
+  const closeBtn = getElem('closeBtn');
+  ALL_BUTTONS.push(closeBtn);
   for (let i = 0; i < ALL_BUTTONS.length; i++) {
     const button = ALL_BUTTONS[i];
     button.addEventListener('click', () => highlightBtn(button));
@@ -410,24 +412,27 @@ function setControlInfoBox() {
  * Switches to the game information box, hiding the control information box.
  */
 function switchGameInfoBox() {
-  switchInfoBox();
-  getElem('gameInfo').classList.remove('dNone');
-  getElem('controlInfo').classList.add('dNone');
+    switchInfoBox();
+    getElem('gameInfo').classList.remove('dNone');
+    getElem('controlInfo').classList.add('dNone');
 }
 
 /**
  * Switches to the control information box, hiding the game information box.
  */
 function switchControlInfoBox() {
-  switchInfoBox();
-  getElem('controlInfo').classList.remove('dNone');
-  getElem('gameInfo').classList.add('dNone');
+    switchInfoBox();
+    getElem('controlInfo').classList.remove('dNone');
+    getElem('gameInfo').classList.add('dNone');
+
 }
 
 /**
  * Toggles the visibility of the info box and pauses/plays the game.
  */
 function switchInfoBox() {
-  getElem('infoBoxContainer').classList.toggle('dNone');
-  pausePlayGame();
+  setTimeout(() => {
+    getElem('infoBoxContainer').classList.toggle('dNone');
+    pausePlayGame();
+  }, 330);
 }

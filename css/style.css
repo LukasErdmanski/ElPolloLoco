@@ -183,20 +183,6 @@ button:hover {
   background-color: rgb(123, 179, 215);
 }
 
-/* Prevents users from selecting the images on the page through a longer touch.*/
-/* img {
-  -webkit-user-select: none;
-  user-select: none;
-}
- */
-
-/* Prevents users from selecting the text or symbols inside these elements through a longer touch.*/
-/* button,
-i {
-  -webkit-user-select: none;
-  user-select: none;
-} */
-
 button img {
   width: 80%;
   height: 80%;

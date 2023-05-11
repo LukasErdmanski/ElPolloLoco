@@ -103,17 +103,20 @@ function giveInitErrorReloadApp(error) {
  * @async
  */
 async function startGame() {
-  worldSingletonInstance.stopDrawing();
-  clearAllStoppableIntervals();
-  pause = false;
-  resetPausePlayBtn();
-  // resetCreateCanvasElement();
-  resetAllSound();
-  resetLevelAndWorldSingleton();
-  setScreenBtnsAsPerGameState('running');
-  worldSingletonInstance.run();
-  playBgMusic();
-  if (musicMuted) turnMusicOff();
+  setTimeout(() => {
+    getElem('resetBtn').classList.remove('clickBtn')
+    worldSingletonInstance.stopDrawing();
+    clearAllStoppableIntervals();
+    pause = false;
+    resetPausePlayBtn();
+    // resetCreateCanvasElement();
+    resetAllSound();
+    resetLevelAndWorldSingleton();
+    setScreenBtnsAsPerGameState('running');
+    worldSingletonInstance.run();
+    playBgMusic();
+    if (musicMuted) turnMusicOff();
+  }, 330);
 }
 
 /**
