@@ -141,13 +141,11 @@ function highlightBtn(element) {
 }
 
 /**
- * Applies the event listeners for mouse/touch up and down events to all controller buttons.
+ * Applies the event listeners for mouse up and down events to all controller buttons.
  */
-function applyMouseTouchUpDownEventListeners() {
+function applyMouseUpDownEventListeners() {
   applyEventListenerToAllControllerButtons('mousedown', true, { passive: true });
   applyEventListenerToAllControllerButtons('mouseup', false, { passive: true });
-  applyEventListenerToAllControllerButtons('touchstart', true, { passive: true });
-  applyEventListenerToAllControllerButtons('touchend', false, { passive: true });
 }
 
 /**
@@ -182,7 +180,7 @@ function applyEventListenerToAllControllerButtons(event, isPressedValue, options
 function resetPausePlayBtn() {
   getElem('pausePlayBtn').remove();
   let pausePlayBtn = /* html */ `
-        <button id="pausePlayBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', this, 'img/10_buttons/play-button.png')"><img src="img/10_buttons/pause-128.png" alt="pause-play-button-icon"></button>
+        <button id="pausePlayBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', 'pausePlayBtn', 'img/10_buttons/play-button.png')"><img src="img/10_buttons/pause-128.png" alt="pause-play-button-icon"></button>
       `;
   let buttonsRowBottomButtonsGroupCenter = getElem('buttonsRowBottomButtonsGroupCenter');
   buttonsRowBottomButtonsGroupCenter.innerHTML += pausePlayBtn;
@@ -192,12 +190,13 @@ function resetPausePlayBtn() {
  * Executes currently set function on click event. Changes the 'onclick' attribute to new function and the button icon.
  * @param {string} currentFn - The name of the function that is currently to be executed.
  * @param {string} newFn - The name of the function to be executed next.
- * @param {HTMLButtonElement} btnElem - The button element that was clicked.
+ * @param {HTMLButtonElement} btnElemId - The button element id that was clicked.
  * @param {string} newSrc - The new source of the button icon.
  */
-function exeFnChangeOnclickAndBtnSrc(currentFn, newFn, btnElem, newSrc) {
+function exeFnChangeOnclickAndBtnSrc(currentFn, newFn, btnElemId, newSrc) {
+  let btnElem = getElem(btnElemId);
   let currentSrc = changeBtnIcon(btnElem, newSrc);
-  let newOnCLickValue = `exeFnChangeOnclickAndBtnSrc('${newFn}', '${currentFn}', this, '${currentSrc}')`;
+  let newOnCLickValue = `exeFnChangeOnclickAndBtnSrc('${newFn}', '${currentFn}', '${btnElemId}', '${currentSrc}')`;
   btnElem.setAttribute('onclick', newOnCLickValue);
   let exeFn = new Function(`${currentFn}()`);
   exeFn();

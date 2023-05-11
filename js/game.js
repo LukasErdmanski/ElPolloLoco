@@ -48,13 +48,15 @@ let soundsMuted = false;
  */
 async function init() {
   try {
+    // showLogOutDetectedTouchEvent();
+    blockSelectContextMenuZoomMagnifierOnTouchDevice();
     canvas = getElem('canvas');
     checkOrientationSetContentElements();
     let preloadImagesSoundsPromise = preloadImagesSounds(imagePaths, sounds);
     await preloadImagesSoundsPromise;
     resetLevelAndWorldSingleton();
     applyOnClickEventListenerToAllButtons();
-    applyMouseTouchUpDownEventListeners();
+    applyMouseUpDownEventListeners();
     setScreenBtnsAsPerGameState('start');
     hideLoadingScreen();
   } catch (error) {

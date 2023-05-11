@@ -4,14 +4,18 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- the property viewport-fit-cover has to be added to the viewport attributes in order the env(safe.are.inset-*) works -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" disables the ability to zoom in or out of the page throung a fast or double touch. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
     <!-- Disable automatic translating in chrome. -->
     <meta name="google" content="notranslate" />
+
+
     <link rel="shortcut icon" href="img/11_favicon/favicon.png" type="image/x-icon" />
     <link rel=" stylesheet" href="css/safeArea.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/loader.css" />
-    <!-- safe-area css -->
+    <link rel="stylesheet" href="css/disableSelectContextMenuZoomMagniferOnTouchDevice.css" />
     <!-- safe-area css -->
     <script src="node_modules/howler/dist/howler.min.js"></script>
     <script src="models/sound.class.js"></script>
@@ -38,10 +42,11 @@
    
         <!-- GAME -->
         <h1 id="title" class="dNone">El pollo loco</h1>
-
         <div id="rotateDeviceInfo" class="dNone">
-        <span>Please rotate<br>your device.</span>
-        <button><img src="img/10_buttons/restart.png" alt="rotate-icon"></button>
+            <!-- ONLY FOR DEVELOPMENT TESTS / DEFAULT: HIDDEN -->
+            <div id="touchEventDetectionInfo"></div>
+            <span>Please rotate<br>your device.</span>
+            <button><img src="img/10_buttons/restart.png" alt="rotate-icon"></button>
         </div>
         
         <div id="content" class="content dNone">
@@ -57,33 +62,33 @@
             </div>
             <!-- Buttons layer -->
             <div id="buttonsLayer" class="buttonsLayer">
-            <div class="buttonsRowTop">
-                <button id="switchGameInfoBoxBtn" onclick="switchGameInfoBox()">i</button>
-                <button onclick="switchControlInfoBox()"><img src="img/10_buttons/gamepad-solid.svg" alt="gamepad-icon"></button>
-                <button id="turnOnOfMusicBtn" class="btnHover" onclick="exeFnChangeOnclickAndBtnSrc('turnMusicOff', 'turnMusicOn', this, 'img/10_buttons/bgMusicOff.png')"><img src="img/10_buttons/bgMusicOn.png" alt="bgMusic-icon"></button>
-                <button id="turnOnOfSoundsBtn" onclick="exeFnChangeOnclickAndBtnSrc('turnSoundsOff', 'turnSoundsOn', this, 'img/10_buttons/sound-off-icon.svg')"><img src="img/10_buttons/sound-on-icon.svg" alt="bgMusic-icon"></button>
-                <button id="enterExitFullScreenBtn" onclick="exeFnChangeOnclickAndBtnSrc('enterFullscreen', 'exitFullscreen', this, 'img/10_buttons/fullscreen-exit-128.png')"><img src="img/10_buttons/fullscreen-enter-128.png" alt="expand-icon"></button>
-            </div>
-    
-            <div id="buttonsRowBottom" class="buttonsRowBottom">
-                <div class="buttonsGroup">
-                <button id="LEFT"><img src="img/10_buttons/arrow-left.png" alt="arrow-left-icon"></button>
-                <button id="RIGHT"><img src="img/10_buttons/arrow-right.png" alt="arrow-right-icon"></button>
+                <div class="buttonsRowTop">
+                    <button id="switchGameInfoBoxBtn" onclick="switchGameInfoBox()">i</button>
+                    <button onclick="switchControlInfoBox()"><img src="img/10_buttons/gamepad-solid.svg" alt="gamepad-icon"></button>
+                    <button id="turnOnOfMusicBtn" class="btnHover" onclick="exeFnChangeOnclickAndBtnSrc('turnMusicOff', 'turnMusicOn', 'turnOnOfMusicBtn', 'img/10_buttons/bgMusicOff.png')"><img src="img/10_buttons/bgMusicOn.png" alt="bgMusic-icon"></button>
+                    <button id="turnOnOfSoundsBtn" onclick="exeFnChangeOnclickAndBtnSrc('turnSoundsOff', 'turnSoundsOn', 'turnOnOfSoundsBtn', 'img/10_buttons/sound-off-icon.svg')"><img src="img/10_buttons/sound-on-icon.svg" alt="bgMusic-icon"></button>
+                    <button id="enterExitFullScreenBtn" onclick="exeFnChangeOnclickAndBtnSrc('enterFullscreen', 'exitFullscreen', 'enterExitFullScreenBtn', 'img/10_buttons/fullscreen-exit-128.png')"><img src="img/10_buttons/fullscreen-enter-128.png" alt="expand-icon"></button>
                 </div>
         
-                <div id="buttonsRowBottomButtonsGroupCenter" class="buttonsGroup">
-                <button id="startBtn" onclick="startGame()"><img src="img/10_buttons/start.png" alt="start-button-icon"></button>
-                <button id="resetBtn" onclick="startGame()" class="dNone"><img src="img/10_buttons/restart.png" alt="reset-button-icon"></button>
-                <button id="pausePlayBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', this, 'img/10_buttons/play-button.png')"><img src="img/10_buttons/pause-128.png" alt="pause-play-button-icon"></button>
+                <div id="buttonsRowBottom" class="buttonsRowBottom">
+                    <div class="buttonsGroup">
+                    <button id="LEFT" class="control-button"><img src="img/10_buttons/arrow-left.png" alt="arrow-left-icon"></button>
+                    <button id="RIGHT" class="control-button"><img src="img/10_buttons/arrow-right.png" alt="arrow-right-icon"></button>
+                    </div>
+            
+                    <div id="buttonsRowBottomButtonsGroupCenter" class="buttonsGroup">
+                    <button id="startBtn" onclick="startGame()"><img src="img/10_buttons/start.png" alt="start-button-icon"></button>
+                    <button id="resetBtn" onclick="startGame()" class="dNone"><img src="img/10_buttons/restart.png" alt="reset-button-icon"></button>
+                    <button id="pausePlayBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', 'pausePlayBtn', 'img/10_buttons/play-button.png')"><img src="img/10_buttons/pause-128.png" alt="pause-play-button-icon"></button>
+                    </div>
+            
+                    <div class="buttonsGroup buttonsGroupColumn">
+                    <button id="A" class="control-button"><img src="img/10_buttons/heart.png" alt="heart-icon"></button>
+                    <button id="S" class="control-button"><img src="img/10_buttons/beer-bottle-128.png" alt="bottle-icon"></button>
+                    <button id="D" class="control-button"><img src="img/10_buttons/throw.png" alt="throw-icon"></button>
+                    <button id="UP" class="control-button"><img src="img/10_buttons/arrow-up.png" alt="arrow-up-icon"></button>
+                    </div>
                 </div>
-        
-                <div class="buttonsGroup buttonsGroupColumn">
-                <button id="A"><img src="img/10_buttons/heart.png" alt="heart-icon"></button>
-                <button id="S"><img src="img/10_buttons/beer-bottle-128.png" alt="bottle-icon"></button>
-                <button id="D"><img src="img/10_buttons/throw.png" alt="throw-icon"></button>
-                <button id="UP"><img src="img/10_buttons/arrow-up.png" alt="arrow-up-icon"></button>
-                </div>
-            </div>
             </div>
         </div>
         <!-- Info box -->
@@ -169,6 +174,7 @@
     <script src="js/bars.js"></script>
     <script src="js/screenButtonsFunctions.js"></script>
     <script src="js/soundFunctions.js"></script>
+    <script src="js/touchEventFunctions.js"></script>
     <script src="js/game.js"></script>
   </body>
 </html>

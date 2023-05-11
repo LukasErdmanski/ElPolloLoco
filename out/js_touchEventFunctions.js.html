@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: WorldSingleton</title>
+    <title>JSDoc: Source: js/touchEventFunctions.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,436 +17,110 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: WorldSingleton</h1>
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2><span class="attribs"><span class="type-signature"></span></span>WorldSingleton<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description">Singleton class for managing the game world.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-    <h2>Constructor</h2>
-    
-
-    
-    <h4 class="name" id="WorldSingleton"><span class="type-signature"></span>new WorldSingleton<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_worldSingleton.class.js.html">models/worldSingleton.class.js</a>, <a href="models_worldSingleton.class.js.html#line4">line 4</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".getInstance"><span class="type-signature">(static) </span>getInstance<span class="signature">(canvas, keyboard)</span><span class="type-signature"> &rarr; {<a href="World.html">World</a>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Returns the instance of the world or creates it if it doesn't exist.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>canvas</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">HTMLCanvasElement</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The canvas element for rendering.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>keyboard</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Keyboard.html">Keyboard</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The keyboard object for input handling.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_worldSingleton.class.js.html">models/worldSingleton.class.js</a>, <a href="models_worldSingleton.class.js.html#line17">line 17</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The single instance of the world.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="World.html">World</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".removeInstance"><span class="type-signature">(static) </span>removeInstance<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="World.html">World</a>|null}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Removes the instance of the world.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_worldSingleton.class.js.html">models/worldSingleton.class.js</a>, <a href="models_worldSingleton.class.js.html#line29">line 29</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The removed instance of the world or null if there is no instance.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="World.html">World</a></span>
-|
-
-<span class="param-type">null</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">Source: js/touchEventFunctions.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Displays the detected touch event in the console and updates the touchEventDetectionInfo element.
+ */
+function showLogOutDetectedTouchEvent() {
+  const touchEventNamesArray = ['touchstart', 'touchend', 'touchcancel', 'touchmove'];
+  touchEventNamesArray.forEach((eventName, index) => {
+    document.addEventListener(eventName, () => {
+      const textInput = ['touch start', 'touch end', 'touch cancel', 'touch move'][index];
+      console.log(textInput);
+      document.getElementById('touchEventDetectionInfo').innerHTML = textInput;
+    });
+  });
+}
+
+/**
+ * Blocks select, context menu, zoom, zoom magnifier, and double-click on touch devices.
+ */
+function blockSelectContextMenuZoomMagnifierOnTouchDevice() {
+  blockAllTouchStartEventTypesExceptButtons();
+  blockAllTouchEndEventTypesExceptButtons();
+  blockAllDoubleClickEvents();
+}
+
+let holdTimers = {};
+
+/**
+ * Blocks all touch start events except for buttons.
+ */
+function blockAllTouchStartEventTypesExceptButtons() {
+  document.ontouchstart = function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const touchedBtn = event.target.closest('button');
+    if (touchedBtn &amp;&amp; touchedBtn instanceof HTMLButtonElement &amp;&amp; touchedBtn.classList.contains('control-button')) {
+      clearHoldTimer(touchedBtn.id);
+      keyboard[touchedBtn.id].isPressed = true;
+      addBtnHighlight(touchedBtn);
+    }
+  };
+}
+
+/**
+ * Blocks all touch end events except for buttons.
+ */
+function blockAllTouchEndEventTypesExceptButtons() {
+  document.ontouchend = function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const touchedBtn = event.target.closest('button');
+    if (touchedBtn &amp;&amp; touchedBtn instanceof HTMLButtonElement &amp;&amp; touchedBtn.classList.contains('control-button')) {
+      keyboard[touchedBtn.id].isPressed = true;
+      startHoldTimer(touchedBtn);
+    } else if (touchedBtn &amp;&amp; touchedBtn instanceof HTMLButtonElement) {
+      eval(touchedBtn.onclick());
+      highlightBtn(touchedBtn);
+    }
+  };
+}
+
+/**
+ * Clears the hold timer for the specified button.
+ * @param {string} btnId - The ID of the button.
+ */
+function clearHoldTimer(btnId) {
+  if (holdTimers[btnId]) {
+    clearTimeout(holdTimers[btnId]);
+    delete holdTimers[btnId];
+  }
+}
+
+/**
+ * Starts the hold timer for the specified button.
+ * @param {HTMLButtonElement} button - The button element.
+ */
+function startHoldTimer(button) {
+  const btnId = button.id;
+  holdTimers[btnId] = setTimeout(() => {
+    keyboard[btnId].isPressed = false;
+    removeBtnHighlight(button);
+    delete holdTimers[btnId];
+  }, 40);
+}
+
+/**
+ * Blocks all double-click events.
+ */
+function blockAllDoubleClickEvents() {
+  document.ondblclick = function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

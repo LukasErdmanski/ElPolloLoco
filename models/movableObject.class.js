@@ -272,7 +272,7 @@ class MovableObject extends DrawableObject {
    * @param {number} [movementFrameRate=60] - The movement frame rate.
    * @param {number} [imgChangeFrameRate=20] - The image change frame rate.
    */
-  animate(movementFrameRate = 60, imgChangeFrameRate = 20) {
+  animate(movementFrameRate = 60, imgChangeFrameRate = 30) {
     // Calculate time intervals for movement and changing images
     let movementTimeout = 1000 / movementFrameRate;
     let imgChangeTimeout = 1000 / imgChangeFrameRate;

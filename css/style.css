@@ -20,10 +20,38 @@ html {
   /* Firefox */
 }
 
+* {
+  -ms-touch-action: none;
+  touch-action: none;
+
+  -webkit-touch-callout: none;
+  -webkit-user-callout: none;
+
+  -webkit-user-drag: none;
+
+  -webkit-highlight: none;
+
+  -webkit-user-modify: none;
+  -moz-user-modify: none;
+
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
 h1 {
   font-size: 64px;
   letter-spacing: 3px;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+#touchEventDetectionInfo {
+  margin: 18px;
+  font-size: 30;
+  color: blue;
 }
 
 #rotateDeviceInfo {
@@ -155,6 +183,20 @@ button:hover {
   scale: 1.15;
   background-color: rgb(123, 179, 215);
 }
+
+/* Prevents users from selecting the images on the page through a longer touch.*/
+/* img {
+  -webkit-user-select: none;
+  user-select: none;
+}
+ */
+
+/* Prevents users from selecting the text or symbols inside these elements through a longer touch.*/
+/* button,
+i {
+  -webkit-user-select: none;
+  user-select: none;
+} */
 
 button img {
   width: 80%;
