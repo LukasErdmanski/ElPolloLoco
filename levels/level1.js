@@ -14,7 +14,7 @@ function initLevel() {
     initSoManyLevelObjects(Cloud, 10),
     initSoManyEnemies(5),
     initSoManyLevelObjects(Coin, 18),
-    initSoManyLevelObjects(Bottle, 18),
+    initSoManyLevelObjects(Bottle, 18)
   );
 }
 
@@ -70,7 +70,7 @@ function initSoManyEnemies(amount) {
   // Create the endboss
   let endboss = new Endboss();
   // Concatenate all enemy arrays
-  // let enemies = normalChickens.concat(smallChcickens, endboss);
-  let enemies = [endboss];
+  let enemies = normalChickens.concat(smallChcickens, endboss);
+  // let enemies = [endboss];
   return enemies;
 }

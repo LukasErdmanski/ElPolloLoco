@@ -44,4 +44,18 @@ class Sound extends Howl {
       autoplay: false,
     };
   }
+
+  /**
+   * Plays the sound.
+   */
+  play() {
+    if (!super.playing()) super.play();
+  }
+
+  /**
+   * Pauses the sound.
+   */
+  pause() {
+    if (super.playing()) super.pause();
+  }
 }

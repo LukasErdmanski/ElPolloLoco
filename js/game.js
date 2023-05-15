@@ -104,12 +104,12 @@ function giveInitErrorReloadApp(error) {
  */
 async function startGame() {
   setTimeout(() => {
-    getElem('resetBtn').classList.remove('clickBtn')
+    getElem('resetBtn').classList.remove('clickBtn');
     worldSingletonInstance.stopDrawing();
     clearAllStoppableIntervals();
     pause = false;
     resetPausePlayBtn();
-    // resetCreateCanvasElement();
+    resetCreateCanvasElement();
     resetAllSound();
     resetLevelAndWorldSingleton();
     setScreenBtnsAsPerGameState('running');
