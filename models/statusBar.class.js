@@ -82,11 +82,12 @@ class StatusBar extends DrawableObject {
    * @returns {number} The index of the status bar image to be displayed.
    */
   resolveImageIndex() {
-    /**
-     * Calculate and return only the integer part of the division 100 / 20, i.e. 5, 4, 3, 2, 1, 0, one of the possible
-     * six indices 'IMAGES' array.
-     * @type {number}
-     */
-    return Math.ceil(this.percentage / 20);
+    let roundedPercentage = Math.round(this.percentage);
+    if (roundedPercentage == 0) return 0;
+    if (roundedPercentage > 0 && roundedPercentage <= 30) return 1;
+    if (roundedPercentage > 31 && roundedPercentage <= 50) return 2;
+    if (roundedPercentage > 51 && roundedPercentage <= 70) return 3;
+    if (roundedPercentage > 71 && roundedPercentage <= 99) return 4;
+    if (roundedPercentage == 100) return 5;
   }
 }

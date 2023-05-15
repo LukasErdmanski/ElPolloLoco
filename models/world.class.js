@@ -34,7 +34,7 @@ class World {
   cameraXShift;
 
   /**
-   * Minimal value of cameraX.
+   * Minimal value of cameraX.ta
    * @type {number}
    */
   cameraXMin;

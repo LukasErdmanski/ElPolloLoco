@@ -370,13 +370,17 @@ class Character extends MovableObject {
    * @param {Object} bottleObj - The bottle object to add to the character's collection.
    */
   takeBottle(bottleObj) {
-    sounds.bottle.collect.stop();
-    sounds.bottle.collect.play();
-    this.world.level.bottlesInGround = this.world.level.bottlesInGround.filter(
-      (filteredElem) => filteredElem !== bottleObj
-    );
-    this.bottles.push(bottleObj);
-    this.updateBottlesPercentage();
+    // Check if the character doesn't already have the maximum number of bottles.
+    if (this.bottles.length < this.world.level.amountOfAllBottles) {
+      // No, take the bottle from the ground.
+      sounds.bottle.collect.stop();
+      sounds.bottle.collect.play();
+      this.world.level.bottlesInGround = this.world.level.bottlesInGround.filter(
+        (filteredElem) => filteredElem !== bottleObj
+      );
+      this.bottles.push(bottleObj);
+      this.updateBottlesPercentage();
+    }
   }
 
   /**

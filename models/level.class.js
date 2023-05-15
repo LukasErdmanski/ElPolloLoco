@@ -78,15 +78,14 @@ class Level {
    * @param {Enemy[]} enemies - The enemies in the level.
    * @param {Coin[]} coins - The coins in the level.
    * @param {Bottle[]} bottlesInGround - The bottles on the ground in the level.
-   * @param {Bottle[]} bottlesInFlight - The bottles in flight in the level.
    */
-  constructor(backgroundObjects, clouds, enemies, coins, bottlesInGround, bottlesInFlight) {
+  constructor(backgroundObjects, clouds, enemies, coins, bottlesInGround) {
     this.backgroundObjects = backgroundObjects;
     this.clouds = clouds;
     this.enemies = enemies;
     this.coins = coins;
     this.bottlesInGround = bottlesInGround;
-    this.bottlesInFlight = bottlesInFlight;
+    this.bottlesInFlight = [];
     this.amountOfAllCoins = this.coins.length;
     this.amountOfAllBottles = this.bottlesInGround.length;
     this.startX = this.getLevelStartX();
