@@ -184,13 +184,15 @@ class Endboss extends MovableObject {
   checkMakeMovementIntervalHandler() {
     sounds.endboss.attack.pause();
     if (this.canMoveAsDead()) this.moveAsDead();
-    else if (this.isCharacterAlive()) {
-      if (this.isHurtAndNotPreparedToAttack()) this.prepareToAttack();
-      else if (this.isPreparedToAttack()) this.startAttack();
-      else if (this.isInAtack()) this.attack();
-      else if (this.isPreparedToRunBack()) this.startRunBack();
-      else if (this.isInRunBack()) this.runBack();
-      else if (this.inInWalk()) this.walk();
+    else if (this.wasCharacterNearby()) {
+      if (this.isCharacterAlive()) {
+        if (this.isHurtAndNotPreparedToAttack()) this.prepareToAttack();
+        else if (this.isPreparedToAttack()) this.startAttack();
+        else if (this.isInAtack()) this.attack();
+        else if (this.isPreparedToRunBack()) this.startRunBack();
+        else if (this.isInRunBack()) this.runBack();
+        else if (this.reachedNotCharacterCenter()) this.walk();
+      } else this.walk();
     }
   }
 
@@ -214,7 +216,7 @@ class Endboss extends MovableObject {
    * @returns {boolean} Returns true if the character is alive, false otherwise.
    */
   isCharacterAlive() {
-    return this.world && this.world.character != null && !this.world.character.isDead();
+    return this.world.character && !this.world.character.isDead();
   }
 
   //#region ****************************** ATTACK-RUN BACK ******************************//
@@ -284,7 +286,7 @@ class Endboss extends MovableObject {
   attack() {
     sounds.endboss.attack.play();
     if (!this.isAboveGround()) this.jump(12);
-    this.setDirectionForAttack();
+    if (this.isCharacterAlive()) this.setDirectionForAttack();
     this.moveInXDirection();
   }
 
@@ -292,19 +294,10 @@ class Endboss extends MovableObject {
    * Sets the direction of the end boss for the attack.
    */
   setDirectionForAttack() {
-    // Checking in which direction is character
-    if (this.checkIfCharacterOnLeftOrRightEndbossHalf()) this.otherDirection = false;
-    else this.otherDirection = true;
-  }
-
-  /**
-   * Checks if the character is on the left or right half of the end boss.
-   * @returns {boolean} Returns true if the character is on the left half of the end boss, false otherwise.
-   */
-  checkIfCharacterOnLeftOrRightEndbossHalf() {
     let xCharacterCenter = this.world.character.x + this.world.character.width / 2;
     let xEndbossCenter = this.x + this.width / 2;
-    return xEndbossCenter > xCharacterCenter;
+    if (xEndbossCenter > xCharacterCenter) this.otherDirection = false;
+    else if (xEndbossCenter < xCharacterCenter) this.otherDirection = true;
   }
 
   //#endregion *************************** ATTACKING ******************************//
@@ -456,23 +449,19 @@ class Endboss extends MovableObject {
   //#region ****************************** WALKING ******************************//
 
   /**
-   * Checks if the end boss is in the walk mode.
-   * @returns {boolean} Returns true if the end boss is in the walk mode and false otherwise.
+   * Checks if the end boss reached the center of the character.
+   * @returns {boolean} Returns true if the end boss reached the center of the character and false otherwise.
    */
-  inInWalk() {
-    return this.wasCharacterNearby() && this.isNotInMiddleOfCharacter() && !this.isHurt();
-  }
-
-  /**
-   * Checks if the end boss is not in the middle of the character.
-   * @returns {boolean} Returns true if the end boss is not in the middle of the character and false otherwise.
-   */
-  isNotInMiddleOfCharacter() {
+  reachedNotCharacterCenter() {
     let xCharacterCenter = this.world.character.x + this.world.character.width / 2;
-    let xEndboss = this.x;
-    let xEndbossWidth = this.width;
-    if (this.checkIfCharacterOnLeftOrRightEndbossHalf()) return xEndboss >= xCharacterCenter;
-    else return xEndboss + xEndbossWidth <= xCharacterCenter;
+    let xEndbossCenter = this.x + this.width / 2;
+    if (xEndbossCenter > xCharacterCenter) {
+      if (xEndbossCenter <= xCharacterCenter + this.speedX) return false;
+      else return true;
+    } else if (xEndbossCenter < xCharacterCenter) {
+      if (xEndbossCenter >= xCharacterCenter - this.speedX) return false;
+      else return true;
+    } else if (xEndbossCenter == xCharacterCenter) return false;
   }
 
   /**
@@ -480,7 +469,7 @@ class Endboss extends MovableObject {
    */
   walk() {
     this.speedX = this.speedXInitial;
-    this.setDirectionForAttack();
+    if (this.isCharacterAlive()) this.setDirectionForAttack();
     this.moveInXDirection();
   }
 
@@ -491,13 +480,11 @@ class Endboss extends MovableObject {
    * @override
    */
   checkSetImagesIntervalHandler() {
-    if (this.isCharacterAlive()) {
-      if (!this.wasCharacterNearby()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
-      else if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
-      else if (this.isHurt()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_HURT);
-      else if (this.isFlyingOrCollidingCharacter()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ATTACK);
-      else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
-    }
+    if (!this.wasCharacterNearby()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
+    else if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
+    else if (this.isHurt()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_HURT);
+    else if (this.isFlyingOrCollidingCharacter()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ATTACK);
+    else this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_WALKING);
   }
 
   /**

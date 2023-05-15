@@ -179,6 +179,7 @@ class MovableObject extends DrawableObject {
   isColliding(obj) {
     return (
       !this.isDead() &&
+      obj != null &&
       !obj.isDead() &&
       this.x + this.width - this.offset.right >= obj.x + obj.offset.left && // R -> L. Compare the right character side width left object side considering the offset distances.
       this.y + this.height - this.offset.bottom >= obj.y + obj.offset.top && // T -> B. Compare the bottom character side width top object side considering the offset distances.

@@ -280,7 +280,6 @@ async function createLoadSaveSound(soundsObj, path, i, allPathPositionsInSoundsO
       const [categoryKey, soundKey] = allPathPositionsInSoundsObj[i];
       const volumeInitial = soundsObj[categoryKey][soundKey].volumeInitial;
       const sound = await createLoadSound(path, volumeInitial);
-      // debugger
       soundsObj[categoryKey][soundKey] = sound;
       resolve(sound);
     } catch (error) {
