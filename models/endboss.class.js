@@ -184,16 +184,16 @@ class Endboss extends MovableObject {
   checkMakeMovementIntervalHandler() {
     sounds.endboss.attack.pause();
     if (this.canMoveAsDead()) this.moveAsDead();
-    else if (this.wasCharacterNearby()) {
-      if (this.isCharacterAlive()) {
+    else if (this.isCharacterAlive()) {
+      if (this.wasCharacterNearby()) {
         if (this.isHurtAndNotPreparedToAttack()) this.prepareToAttack();
         else if (this.isPreparedToAttack()) this.startAttack();
         else if (this.isInAtack()) this.attack();
         else if (this.isPreparedToRunBack()) this.startRunBack();
         else if (this.isInRunBack()) this.runBack();
         else if (this.reachedNotCharacterCenter()) this.walk();
-      } else this.walk();
-    }
+      }
+    } else this.walk();
   }
 
   /**
