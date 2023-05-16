@@ -1,4 +1,20 @@
 /**
+ * Set the visibility of the button with the id 'enterExitFullScreenBtn' as per device type.
+ */
+function setVisibilityOfEnterExitFullScreenBtn() {
+  if (isIOS()) {
+    document.getElementById('enterExitFullScreenBtn').style.display = 'none';
+  }
+}
+
+/**
+ * Checks if the device has iOS.
+ */
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+/**
  * Resets the canvas element.
  */
 function resetCreateCanvasElement() {
@@ -412,19 +428,18 @@ function setControlInfoBox() {
  * Switches to the game information box, hiding the control information box.
  */
 function switchGameInfoBox() {
-    switchInfoBox();
-    getElem('gameInfo').classList.remove('dNone');
-    getElem('controlInfo').classList.add('dNone');
+  switchInfoBox();
+  getElem('gameInfo').classList.remove('dNone');
+  getElem('controlInfo').classList.add('dNone');
 }
 
 /**
  * Switches to the control information box, hiding the game information box.
  */
 function switchControlInfoBox() {
-    switchInfoBox();
-    getElem('controlInfo').classList.remove('dNone');
-    getElem('gameInfo').classList.add('dNone');
-
+  switchInfoBox();
+  getElem('controlInfo').classList.remove('dNone');
+  getElem('gameInfo').classList.add('dNone');
 }
 
 /**

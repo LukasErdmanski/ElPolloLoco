@@ -1,7 +1,7 @@
 /* Disable select, context menu, zoom, zoom magnifier, and double-click on touch devices. */
 * {
-  -ms-touch-action: none;
-  touch-action: none;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
 
   -webkit-touch-callout: none;
   -webkit-user-callout: none;

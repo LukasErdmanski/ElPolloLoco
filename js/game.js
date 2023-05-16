@@ -49,6 +49,7 @@ let soundsMuted = false;
 async function init() {
   try {
     // showLogOutDetectedTouchEvent();
+    setVisibilityOfEnterExitFullScreenBtn();
     blockSelectContextMenuZoomMagnifierOnTouchDevice();
     canvas = getElem('canvas');
     checkOrientationSetContentElements();
