@@ -104,6 +104,7 @@ function giveInitErrorReloadApp(error) {
  * @async
  */
 async function startGame() {
+  if (worldSingletonInstance.character) worldSingletonInstance.character.health = 0;
   setTimeout(() => {
     getElem('resetBtn').classList.remove('clickBtn');
     worldSingletonInstance.stopDrawing();

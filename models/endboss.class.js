@@ -480,7 +480,7 @@ class Endboss extends MovableObject {
    * @override
    */
   checkSetImagesIntervalHandler() {
-    if (!this.wasCharacterNearby()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
+    if (this.isCharacterAlive() && !this.wasCharacterNearby()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ALERT);
     else if (this.isDead()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_DEAD);
     else if (this.isHurt()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_HURT);
     else if (this.isFlyingOrCollidingCharacter()) this.changeImagesSetAndCurrentImg(this.IMAGES_PATHS_ATTACK);
