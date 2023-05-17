@@ -15,16 +15,20 @@ function isIOS() {
 }
 
 /**
- * Resets the canvas element.
+ * Shows the reset screen.
  */
-function resetCreateCanvasElement() {
-  canvas.remove();
-  let element = document.createElement('canvas');
-  getElem('content').append(element);
-  element.id = 'canvas';
-  canvas = getElem('canvas');
-  canvas.width = 960;
-  canvas.height = 480;
+function showResetScreen() {
+  getElem('resetScreen').classList.toggle('dNone');
+  getElem('resetScreen').classList.toggle('resetScreenFadeOut');
+}
+
+/**
+ * Hides the reset screen.
+ */
+function hideResetScreen() {
+  getElem('resetScreen').classList.add('resetScreenFadeOut');
+  getElem('resetScreen').classList.add('dNone');
+  setScreenBtnsAsPerGameState('running');
 }
 
 /**
@@ -64,6 +68,7 @@ function setScreenAsPerGameState(idOfVisibleScreen) {
   getElem('startScreen').classList.add('dNone');
   getElem('lossScreen').classList.add('dNone');
   getElem('winScreen').classList.add('dNone');
+  getElem('resetScreen').classList.add('dNone');
   if (idOfVisibleScreen) getElem(idOfVisibleScreen).classList.remove('dNone');
 }
 
@@ -278,6 +283,7 @@ function checkOrientationSetContentElements() {
   setVisibilityFullscreenBtn();
   turnOnOffHoverEffectForBtns();
   setControlInfoBox();
+  setresetScreen();
 }
 
 /**
@@ -450,4 +456,14 @@ function switchInfoBox() {
     getElem('infoBoxContainer').classList.toggle('dNone');
     pausePlayGame();
   }, 330);
+}
+
+/**
+ * Sets the dimensions of the 'resetScreen'.
+ */
+function setresetScreen() {
+  let screensLayer = getElem('screensLayer');
+  let resetScreen = getElem('resetScreen');
+  resetScreen.style.width = screensLayer.clientWidth;
+  resetScreen.style.height = screensLayer.clientHeight;
 }

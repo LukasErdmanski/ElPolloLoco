@@ -60,6 +60,7 @@
                     <img id="startScreen" class="screen" src="img/9_intro_outro_screens/start/startscreen_2.png" alt="startScreen"></img>
                     <img id="lossScreen" class="screen dNone" src="img/9_intro_outro_screens/game_over/you lost.png" alt="lossScreen"></img>
                     <img id="winScreen" class="screen dNone" src="img/9_intro_outro_screens/game_over/game over.png" alt="winScreen"></img>
+                    <div id="resetScreen" class="screen dNone"></div>
                 </div>
                 <!-- Buttons layer -->
                 <div id="buttonsLayer" class="buttonsLayer">
@@ -78,8 +79,8 @@
                         </div>
                 
                         <div id="buttonsRowBottomButtonsGroupCenter" class="buttonsGroup">
-                            <button id="startBtn" onclick="startGame()"><img src="img/10_buttons/start.png" alt="start-button-icon"></button>
-                            <button id="resetBtn" onclick="startGame()" class="dNone"><img src="img/10_buttons/restart.png" alt="reset-button-icon"></button>
+                            <button id="startBtn" onclick="resetGame()"><img src="img/10_buttons/start.png" alt="start-button-icon"></button>
+                            <button id="resetBtn" onclick="resetGame()" class="dNone"><img src="img/10_buttons/restart.png" alt="reset-button-icon"></button>
                             <button id="pausePlayBtn" onclick="exeFnChangeOnclickAndBtnSrc('pausePlayGame', 'pausePlayGame', 'pausePlayBtn', 'img/10_buttons/play-button.png')"><img src="img/10_buttons/pause-128.png" alt="pause-play-button-icon"></button>
                         </div>
                 

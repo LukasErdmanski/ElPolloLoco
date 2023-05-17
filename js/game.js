@@ -100,24 +100,33 @@ function giveInitErrorReloadApp(error) {
 }
 
 /**
- * Starts the game.
+ * Resets the game.
  * @async
  */
-async function startGame() {
-  if (worldSingletonInstance.character) worldSingletonInstance.character.health = 0;
+async function resetGame() {
+  worldSingletonInstance.stopDrawing();
+  pause = true;
+  showResetScreen();
+  resetComponentsForNewGame();
+}
+
+/**
+ * Resets the game components like current running intervals, buttons, sounds, screens, level, world.
+ * Starts at the end a new game with last sound and music settings.
+ */
+function resetComponentsForNewGame() {
   setTimeout(() => {
-    getElem('resetBtn').classList.remove('clickBtn');
-    worldSingletonInstance.stopDrawing();
     clearAllStoppableIntervals();
-    pause = false;
+    getElem('resetBtn').classList.remove('clickBtn');
     resetPausePlayBtn();
-    resetCreateCanvasElement();
     resetAllSound();
     resetLevelAndWorldSingleton();
+    hideResetScreen();
     setScreenBtnsAsPerGameState('running');
     worldSingletonInstance.run();
     playBgMusic();
     if (musicMuted) turnMusicOff();
+    pause = false;
   }, 330);
 }
 
