@@ -11,7 +11,7 @@
   transition: opacity 1.3s ease-in-out;
 }
 
-.loadingScreenloaderContentImgZIndex {
+.loadingScreenLoaderContentImgZIndex {
   z-index: 3;
 }
 
