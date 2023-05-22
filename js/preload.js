@@ -22,7 +22,7 @@ async function preloadImagesSounds(imagePaths, soundsObj) {
  * @returns {Promise<void>} A promise that resolves once all images have been preloaded and rendered.
  */
 async function createLoadRenderSaveImages(imagePaths) {
-  const [maxWidth, maxHeight] = getMaxWidthHeightMainCanvas();
+  const [maxWidth, maxHeight] = getMaxWidthHeightDeviceWindow();
   const tempCanvasesContainer = createTempCanvasesContainer();
   const freeTempCanvases = [];
   const tempCanvasSettings = [maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases];
@@ -34,12 +34,11 @@ async function createLoadRenderSaveImages(imagePaths) {
 }
 
 /**
- * Gets the maximum width and height of the main canvas.
+ * Gets the maximum width and height of the device window.
  * @function
- * @returns {number[]} An array containing the maximum width and height of the main canvas.
+ * @returns {number[]} An array containing the maximum width and height of the device window.
  */
-function getMaxWidthHeightMainCanvas() {
-  const mainCanvas = document.getElementById('canvas');
+function getMaxWidthHeightDeviceWindow() {
   const maxWidth = window.innerWidth;
   const maxHeight = window.innerHeight;
   return [maxWidth, maxHeight];

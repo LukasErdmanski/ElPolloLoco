@@ -79,6 +79,8 @@ function getElem(id) {
  */
 function resetLevelAndWorldSingleton() {
   level1 = null;
+  worldSingletonInstance = null;
+  WorldSingleton.removeInstance();
   initLevel();
   worldSingletonInstance = WorldSingleton.getInstance(canvas, keyboard);
 }
