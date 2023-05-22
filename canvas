@@ -1,0 +1,11 @@
+
+C:\Users\fraw823e\OneDrive - ISHGroup\_DA\M11\ElPolloLoco>git pull 
+Already up to date.
+
+C:\Users\fraw823e\OneDrive - ISHGroup\_DA\M11\ElPolloLoco>git add . 
+
+C:\Users\fraw823e\OneDrive - ISHGroup\_DA\M11\ElPolloLoco>git commit -m "Fixed game.js -- was unvisible added jsdoc" 
+[main b1acfaa] Fixed game.js -- was unvisible added jsdoc
+ 44 files changed, 115 insertions(+), 113 deletions(-)
+
+C:\Users\fraw823e\OneDrive - ISHGroup\_DA\M11\ElPolloLoco>git push 

@@ -271,7 +271,7 @@ async function exitFullscreen() {
 
 // Add event listeners for window resize and orientation change
 window.addEventListener('resize', checkOrientationSetContentElements);
-window.addEventListener('orientationchange', checkOrientationSetContentElements);
+// window.addEventListener('orientationchange', checkOrientationSetContentElements);
 
 /**
  * Checks the device orientation and adjusts the content elements accordingly.
@@ -283,7 +283,7 @@ function checkOrientationSetContentElements() {
   setVisibilityFullscreenBtn();
   turnOnOffHoverEffectForBtns();
   setControlInfoBox();
-  setresetScreen();
+  setResetScreen();
 }
 
 /**
@@ -461,7 +461,7 @@ function switchInfoBox() {
 /**
  * Sets the dimensions of the 'resetScreen'.
  */
-function setresetScreen() {
+function setResetScreen() {
   let screensLayer = getElem('screensLayer');
   let resetScreen = getElem('resetScreen');
   resetScreen.style.width = screensLayer.clientWidth;

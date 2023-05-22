@@ -22,25 +22,25 @@ async function preloadImagesSounds(imagePaths, soundsObj) {
  * @returns {Promise<void>} A promise that resolves once all images have been preloaded and rendered.
  */
 async function createLoadRenderSaveImages(imagePaths) {
-  const [maxWidth, maxHeight] = getMaxWidthHeigtMainCanvas();
+  const [maxWidth, maxHeight] = getMaxWidthHeightDeviceWindow();
   const tempCanvasesContainer = createTempCanvasesContainer();
   const freeTempCanvases = [];
   const tempCanvasSettings = [maxWidth, maxHeight, tempCanvasesContainer, freeTempCanvases];
   return Promise.all(imagePaths.map((path) => createLoadRenderSaveImg(path, tempCanvasSettings))).then((images) => {
-    document.body.removeChild(tempCanvasesContainer);
+    const safeArea = getElem('safeArea');
+    safeArea.removeChild(tempCanvasesContainer);
     return images;
   });
 }
 
 /**
- * Gets the maximum width and height of the main canvas.
+ * Gets the maximum width and height of the device window.
  * @function
- * @returns {number[]} An array containing the maximum width and height of the main canvas.
+ * @returns {number[]} An array containing the maximum width and height of the device window.
  */
-function getMaxWidthHeigtMainCanvas() {
-  const mainCanvas = document.getElementById('canvas');
-  const maxWidth = mainCanvas.width;
-  const maxHeight = mainCanvas.height;
+function getMaxWidthHeightDeviceWindow() {
+  const maxWidth = window.innerWidth;
+  const maxHeight = window.innerHeight;
   return [maxWidth, maxHeight];
 }
 
@@ -52,7 +52,8 @@ function getMaxWidthHeigtMainCanvas() {
 function createTempCanvasesContainer() {
   const tempCanvasesContainer = document.createElement('div');
   tempCanvasesContainer.id = 'tempCanvasesContainer';
-  document.body.appendChild(tempCanvasesContainer);
+  const safeArea = getElem('safeArea');
+  safeArea.appendChild(tempCanvasesContainer);
   return tempCanvasesContainer;
 }
 
